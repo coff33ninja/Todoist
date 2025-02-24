@@ -1,4 +1,11 @@
 import argparse
+import sys
+import os
+
+# Add root directory to Python path
+root_dir = os.path.abspath(os.path.dirname(__file__))
+sys.path.insert(0, root_dir)
+
 import subprocess
 import sys
 import os
@@ -6,7 +13,10 @@ import os
 def start_application():
     """Start the Flask application"""
     print("Starting Todoist application...")
-    subprocess.run(["python", "core/main.py"])
+    # Set Python path before running the application
+    env = os.environ.copy()
+    env["PYTHONPATH"] = os.path.abspath(os.path.dirname(__file__))
+    subprocess.run(["python", "core/main.py"], env=env)
 
 def train_model():
     """Train the NLU model"""
