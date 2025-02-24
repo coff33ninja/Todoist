@@ -1,14 +1,24 @@
 import sqlite3
 from datetime import datetime
+import threading
 
 class InventoryManager:
+    _instance = None
+    _lock = threading.Lock()
+    
     def __init__(self, db_path='inventory.db'):
         self.db_path = db_path
-        self.conn = sqlite3.connect(db_path)
-        self.create_tables()
+        self._local = threading.local()
+        
+    def get_connection(self):
+        if not hasattr(self._local, 'conn'):
+            self._local.conn = sqlite3.connect(self.db_path)
+            self._local.conn.row_factory = sqlite3.Row
+            self.create_tables()
+        return self._local.conn
 
     def create_tables(self):
-        cursor = self.conn.cursor()
+        cursor = self.get_connection().cursor()
         # Table for inventory items
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS items (
@@ -42,13 +52,13 @@ class InventoryManager:
                 FOREIGN KEY(item_id) REFERENCES items(id)
             )
         ''')
-        self.conn.commit()
+        self.get_connection().commit()
 
     def add_item(self, name, description=None, quantity=1, acquisition_type='purchase',
                 source_details=None, price=None, purchase_date=None,
                 warranty_expiry=None, location=None, condition='new', notes=None):
         """Add a new item to inventory"""
-        cursor = self.conn.cursor()
+        cursor = self.get_connection().cursor()
         current_time = datetime.now().isoformat()
         
         cursor.execute('''
@@ -59,13 +69,13 @@ class InventoryManager:
         ''', (name, description, quantity, acquisition_type, source_details,
               price, purchase_date, warranty_expiry, location, condition,
               notes, current_time))
-        self.conn.commit()
+        self.get_connection().commit()
         return cursor.lastrowid
 
     def add_trade(self, item_id, traded_item, traded_item_value=None,
                  trade_date=None, trade_partner=None, notes=None):
         """Record a trade transaction"""
-        cursor = self.conn.cursor()
+        cursor = self.get_connection().cursor()
         current_time = datetime.now().isoformat()
         if not trade_date:
             trade_date = current_time
@@ -76,12 +86,12 @@ class InventoryManager:
             VALUES (?, ?, ?, ?, ?, ?, ?)
         ''', (item_id, traded_item, traded_item_value, trade_date,
               trade_partner, notes, current_time))
-        self.conn.commit()
+        self.get_connection().commit()
         return cursor.lastrowid
 
     def get_items(self, acquisition_type=None):
         """Get all items, optionally filtered by acquisition type"""
-        cursor = self.conn.cursor()
+        cursor = self.get_connection().cursor()
         query = 'SELECT * FROM items'
         params = []
         
@@ -92,22 +102,23 @@ class InventoryManager:
         query += ' ORDER BY created_at DESC'
         
         cursor.execute(query, params)
-        return cursor.fetchall()
+        return [dict(row) for row in cursor.fetchall()]
 
     def get_item(self, item_id):
         """Get a specific item by ID"""
-        cursor = self.conn.cursor()
+        cursor = self.get_connection().cursor()
         cursor.execute('''
             SELECT i.*, t.traded_item, t.traded_item_value, t.trade_partner
             FROM items i
             LEFT JOIN trades t ON i.id = t.item_id
             WHERE i.id = ?
         ''', (item_id,))
-        return cursor.fetchone()
+        row = cursor.fetchone()
+        return dict(row) if row else None
 
     def update_item(self, item_id, **kwargs):
         """Update item details"""
-        cursor = self.conn.cursor()
+        cursor = self.get_connection().cursor()
         updates = []
         values = []
         
@@ -126,24 +137,24 @@ class InventoryManager:
             '''
             values.append(item_id)
             cursor.execute(query, values)
-            self.conn.commit()
+            self.get_connection().commit()
             return True
         return False
 
     def get_trades(self):
         """Get all trade records"""
-        cursor = self.conn.cursor()
+        cursor = self.get_connection().cursor()
         cursor.execute('''
             SELECT t.*, i.name as item_name
             FROM trades t
             JOIN items i ON t.item_id = i.id
             ORDER BY t.trade_date DESC
         ''')
-        return cursor.fetchall()
+        return [dict(row) for row in cursor.fetchall()]
 
     def search_items(self, query):
         """Search items by name, description, or notes"""
-        cursor = self.conn.cursor()
+        cursor = self.get_connection().cursor()
         search = f'%{query}%'
         cursor.execute('''
             SELECT * FROM items
@@ -152,8 +163,10 @@ class InventoryManager:
                OR notes LIKE ?
             ORDER BY created_at DESC
         ''', (search, search, search))
-        return cursor.fetchall()
+        return [dict(row) for row in cursor.fetchall()]
 
     def close(self):
         """Close the database connection"""
-        self.conn.close()
+        if hasattr(self._local, 'conn'):
+            self._local.conn.close()
+            del self._local.conn

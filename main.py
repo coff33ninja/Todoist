@@ -8,12 +8,13 @@ from receipt_processor import ReceiptProcessor
 from task_manager import TaskManager
 from budget_tracker import BudgetTracker
 from nlu_processor import NLUProcessor
+import threading
 
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 
-# Initialize components
+# Initialize components with thread-local storage
 inventory = InventoryManager()
 receipt_processor = ReceiptProcessor()
 task_manager = TaskManager()
@@ -26,22 +27,24 @@ if not os.path.exists(UPLOAD_FOLDER):
 
 # Database setup
 DATABASE = "inventory.db"
-
-
-def dict_factory(cursor, row):
-    """Convert database rows to dictionaries"""
-    d = {}
-    for idx, col in enumerate(cursor.description):
-        d[col[0]] = row[idx]
-    return d
-
+db_local = threading.local()
 
 def get_db():
     """Get database connection with row factory"""
-    conn = sqlite3.connect(DATABASE)
-    conn.row_factory = dict_factory
-    return conn
+    if not hasattr(db_local, 'conn'):
+        db_local.conn = sqlite3.connect(DATABASE)
+        db_local.conn.row_factory = sqlite3.Row
+    return db_local.conn
 
+def close_db():
+    """Close the database connection"""
+    if hasattr(db_local, 'conn'):
+        db_local.conn.close()
+        del db_local.conn
+
+@app.teardown_appcontext
+def teardown_db(exception):
+    close_db()
 
 def init_db():
     with sqlite3.connect(DATABASE) as conn:
@@ -215,11 +218,9 @@ def add_repair():
         if "components" in data and isinstance(data["components"], list):
             for component in data["components"]:
                 task_manager.add_component(
-                    repair_id=repair_id,  # Fixed: Using repair_id instead of item_id
+                    repair_id=repair_id,
                     name=component["name"],
-                    quantity=component.get(
-                        "quantity", 1
-                    ),  # Fixed: Using quantity instead of quantity_needed
+                    quantity=component.get("quantity", 1),
                     estimated_cost=component.get("estimated_cost"),
                     priority=component.get("priority", "medium"),
                     status=component.get("status", "needed"),
@@ -282,17 +283,15 @@ def update_budget():
 @app.route("/api/components", methods=["POST"])
 def add_component():
     data = request.get_json()
-    required_fields = ["repair_id", "name"]  # Fixed: Changed item_id to repair_id
+    required_fields = ["repair_id", "name"]
     if not all(field in data for field in required_fields):
         return jsonify({"error": "Missing required fields"}), 400
 
     try:
         task_manager.add_component(
-            repair_id=data["repair_id"],  # Fixed: Using repair_id
+            repair_id=data["repair_id"],
             name=data["name"],
-            quantity=data.get(
-                "quantity", 1
-            ),  # Fixed: Using quantity instead of quantity_needed
+            quantity=data.get("quantity", 1),
             estimated_cost=data.get("estimated_cost"),
             priority=data.get("priority", "medium"),
             status=data.get("status", "needed"),
@@ -337,8 +336,10 @@ def upload_receipt():
 
     try:
         # Save the file
-        filename = file.filename or ""
-        file_path = os.path.join(UPLOAD_FOLDER, filename)
+        if file.filename:
+            file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        else:
+            return jsonify({"error": "Invalid file name"}), 400
         file.save(file_path)
 
         # Process the receipt
