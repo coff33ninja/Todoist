@@ -337,7 +337,8 @@ def upload_receipt():
 
     try:
         # Save the file
-        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        filename = file.filename or ""
+        file_path = os.path.join(UPLOAD_FOLDER, filename)
         file.save(file_path)
 
         # Process the receipt
