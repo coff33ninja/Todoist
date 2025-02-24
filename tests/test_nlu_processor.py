@@ -3,47 +3,51 @@ import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from nlu_processor import NLUProcessor
+from ai.nlu_processor import NLUProcessor
 
-def test_inventory_query(sample_data):
+def test_inventory_query(sample_data: dict):
     """Test querying about inventory items"""
     query = "Show me all items"
     processor = NLUProcessor()
-    result = processor.process_natural_language_query(query, lambda: sample_data)
-    assert result["type"] == "search"
-    assert result["count"] >= 2
-    assert any("Test Item 1" in item["name"] for item in result["items"])
-    assert any("Test Item 2" in item["name"] for item in result["items"])
+    result: dict = processor.process_natural_language_query(query, lambda: sample_data)
+    assert result.get("type") == "search"
+    assert isinstance(result.get("count"), int) and result["count"] >= 2
+    items = result.get("items", [])
+    assert any("Test Item 1" in item.get("name", "") for item in items)
+    assert any("Test Item 2" in item.get("name", "") for item in items)
 
-def test_repairs_query(sample_data):
+def test_repairs_query(sample_data: dict):
     """Test querying about repairs"""
     query = "List all repairs"
     processor = NLUProcessor()
-    result = processor.process_natural_language_query(query, lambda: sample_data)
-    assert result["type"] == "repairs"
-    assert result["count"] >= 2
-    assert any("First repair" in repair["description"] for repair in result["repairs"])
-    assert any("Second repair" in repair["description"] for repair in result["repairs"])
+    result: dict = processor.process_natural_language_query(query, lambda: sample_data)
+    assert result.get("type") == "repairs"
+    assert isinstance(result.get("count"), int) and result["count"] >= 2
+    repairs = result.get("repairs", [])
+    assert any("First repair" in repair.get("description", "") for repair in repairs)
+    assert any("Second repair" in repair.get("description", "") for repair in repairs)
 
-def test_budget_query(sample_data):
+def test_budget_query(sample_data: dict):
     """Test querying about budget"""
     query = "Show me the budget"
     processor = NLUProcessor()
-    result = processor.process_natural_language_query(query, lambda: sample_data)
-    assert result["type"] == "budget"
-    assert isinstance(result["budget"], dict)
-    assert result["budget"]["amount"] == 1000.0
-    assert result["budget"]["period"] == "monthly"
+    result: dict = processor.process_natural_language_query(query, lambda: sample_data)
+    assert result.get("type") == "budget"
+    budget = result.get("budget", {})
+    assert isinstance(budget, dict)
+    assert budget.get("amount") == 1000.0
+    assert budget.get("period") == "monthly"
 
-def test_components_query(sample_data):
+def test_components_query(sample_data: dict):
     """Test querying about components"""
     query = "Show me all components"
     processor = NLUProcessor()
-    result = processor.process_natural_language_query(query, lambda: sample_data)
-    assert result["type"] == "components"
-    assert result["count"] >= 2
-    assert any("Component 1" in component["name"] for component in result["components"])
-    assert any("Component 2" in component["name"] for component in result["components"])
+    result: dict = processor.process_natural_language_query(query, lambda: sample_data)
+    assert result.get("type") == "components"
+    assert isinstance(result.get("count"), int) and result["count"] >= 2
+    components = result.get("components", [])
+    assert any("Component 1" in component.get("name", "") for component in components)
+    assert any("Component 2" in component.get("name", "") for component in components)
 
 def test_unknown_query(sample_data):
     """Test handling of unknown query types"""

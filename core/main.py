@@ -3,11 +3,11 @@ from flask_cors import CORS
 import sqlite3
 import os
 from datetime import datetime
-from inventory_manager import InventoryManager
-from receipt_processor import ReceiptProcessor
-from task_manager import TaskManager
-from budget_tracker import BudgetTracker
-from nlu_processor import NLUProcessor
+from core.inventory_manager import InventoryManager
+from ai.receipt_processor import ReceiptProcessor
+from core.task_manager import TaskManager
+from utils.budget_tracker import BudgetTracker
+from ai.nlu_processor import NLUProcessor
 import threading
 import time
 
@@ -280,7 +280,7 @@ def upload_receipt():
 
     try:
         # Save the file
-        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+        file_path = os.path.join(str(UPLOAD_FOLDER), str(file.filename))
         file.save(file_path)
 
         # Process the receipt

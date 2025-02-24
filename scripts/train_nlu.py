@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from nlu_processor import NLUProcessor
+from ai.nlu_processor import NLUProcessor
 
 def main():
     # Sample training data
