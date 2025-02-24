@@ -36,8 +36,84 @@ def test_db():
     
     conn.row_factory = dict_factory
     
-    # Initialize the database schema
-    init_db()
+    # Initialize the database schema for the test database
+    cursor = conn.cursor()
+    # Create tables
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT,
+            quantity INTEGER DEFAULT 1,
+            purchase_date TEXT,
+            price REAL,
+            warranty_expiry TEXT,
+            acquisition_type TEXT CHECK(acquisition_type IN ('purchase', 'trade', 'gift')),
+            location TEXT,
+            condition TEXT,
+            notes TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+        )
+    """
+    )
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS transactions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            item_id INTEGER,
+            transaction_type TEXT CHECK(transaction_type IN ('purchase', 'trade', 'gift')),
+            amount REAL,
+            source TEXT,
+            date TEXT,
+            details TEXT,
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(item_id) REFERENCES items(id)
+        )
+    """
+    )
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS repairs (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            item_id INTEGER,
+            repair_date TEXT,
+            description TEXT,
+            cost REAL,
+            next_due_date TEXT,
+            status TEXT CHECK(status IN ('scheduled', 'in_progress', 'completed', 'cancelled')),
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(item_id) REFERENCES items(id)
+        )
+    """
+    )
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS budget (
+            id INTEGER PRIMARY KEY,
+            amount REAL,
+            period TEXT,  -- 'monthly', 'yearly', etc.
+            last_updated TEXT,
+            notes TEXT
+        )
+    """
+    )
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS components (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            item_id INTEGER,
+            name TEXT NOT NULL,
+            quantity_needed INTEGER,
+            estimated_cost REAL,
+            priority TEXT CHECK(priority IN ('low', 'medium', 'high')),
+            status TEXT CHECK(status IN ('needed', 'ordered', 'received')),
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY(item_id) REFERENCES items(id)
+        )
+    """
+    )
+    conn.commit()
     
     yield conn
     

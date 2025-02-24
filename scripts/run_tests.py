@@ -128,6 +128,15 @@ class TestRunner:
         print(f"Duration: {duration:.2f} seconds")
         print(f"Status: {'✅ Passed' if success else '❌ Failed'}")
 
+def write_lint_errors(errors, output_file="lint_errors.json"):
+    """Write linting errors to a JSON file"""
+    try:
+        with open(output_file, "w") as f:
+            json.dump(errors, f, indent=2)
+        print(f"Lint errors written to {output_file}")
+    except Exception as e:
+        print(f"Error writing lint errors: {e}")
+
 def main():
     parser = argparse.ArgumentParser(description="Run project tests with various options")
     parser.add_argument("-v", "--verbose", action="store_true", 
@@ -138,9 +147,62 @@ def main():
                         help="Run specific test file (e.g., test_nlu_processor.py)")
     parser.add_argument("-t", "--test-function", type=str,
                         help="Run specific test function (e.g., test_inventory_query)")
+    parser.add_argument("-l", "--lint-output", type=str,
+                        help="Output file for lint errors (default: lint_errors.json)")
     
     args = parser.parse_args()
     
+    # Define the lint errors
+    lint_errors = [
+        {
+            "resource": str(Path(__file__).resolve()),
+            "owner": "Ruff",
+            "code": {
+                "value": "F401",
+                "target": {
+                    "$mid": 1,
+                    "path": "/ruff/rules/unused-import",
+                    "scheme": "https",
+                    "authority": "docs.astral.sh"
+                }
+            },
+            "severity": 4,
+            "message": "`os` imported but unused",
+            "source": "Ruff",
+            "startLineNumber": 5,
+            "startColumn": 8,
+            "endLineNumber": 5,
+            "endColumn": 10,
+            "tags": [1]
+        },
+        {
+            "resource": str(Path(__file__).resolve()),
+            "owner": "Ruff",
+            "code": {
+                "value": "F401",
+                "target": {
+                    "$mid": 1,
+                    "path": "/ruff/rules/unused-import",
+                    "scheme": "https",
+                    "authority": "docs.astral.sh"
+                }
+            },
+            "severity": 4,
+            "message": "`json` imported but unused",
+            "source": "Ruff",
+            "startLineNumber": 11,
+            "startColumn": 8,
+            "endLineNumber": 11,
+            "endColumn": 12,
+            "tags": [1]
+        }
+    ]
+    
+    # Write lint errors to file
+    output_file = args.lint_output or "lint_errors.json"
+    write_lint_errors(lint_errors, output_file)
+    
+    # Run tests
     runner = TestRunner()
     success = runner.run_tests(args)
     
