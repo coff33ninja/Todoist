@@ -49,22 +49,22 @@ def teardown_db(exception):
 def init_db():
     # Close any existing connections
     close_db()
-    
+
     # Initialize components with thread-local storage after database reset
     global inventory, receipt_processor, task_manager, budget_tracker
-    
+
     try:
         # Initialize the inventory manager first, which will create the tables
         inventory = InventoryManager(DATABASE)
-        
+
         # Get a connection to ensure tables are created
         conn = inventory.get_connection()
-        
+
         # Initialize other components
         receipt_processor = ReceiptProcessor()
         task_manager = TaskManager(DATABASE)
         budget_tracker = BudgetTracker(DATABASE)
-        
+
         return True
     except Exception as e:
         print(f"Error initializing database: {e}")

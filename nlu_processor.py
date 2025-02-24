@@ -28,14 +28,14 @@ class NLUProcessor:
         """Process a natural language query and return relevant information"""
         if not query:
             return {"error": "Empty query"}
-            
+
         query = query.lower().strip()
-        
+
         try:
             # Get database connection
             conn = get_db()
             cursor = conn.cursor()
-            
+
             # Try to match query patterns
             for intent, patterns in self.patterns.items():
                 for pattern in patterns:
@@ -49,71 +49,71 @@ class NLUProcessor:
                             return self._handle_value(cursor, match)
                         elif intent == 'price_range':
                             return self._handle_price_range(cursor, match)
-            
+
             return {"message": "I don't understand that query. Try asking about items, their count, or value."}
-            
+
         except Exception as e:
             return {"error": str(e)}
 
     def _handle_search(self, cursor, match):
         """Handle search queries"""
         location = match.group(1) if match.groups() else None
-        
+
         if location:
             cursor.execute('''
-                SELECT * FROM items 
-                WHERE location LIKE ? 
+                SELECT * FROM items
+                WHERE location LIKE ?
                 ORDER BY name
             ''', (f'%{location}%',))
         else:
             cursor.execute('SELECT * FROM items ORDER BY name')
-        
+
         items = []
         for row in cursor.fetchall():
             items.append(dict(row))
-        
+
         if not items:
             return {"message": "No items found"}
-            
+
         return {"items": items}
 
     def _handle_count(self, cursor, match):
         """Handle count queries"""
         location = match.group(1) if match.groups() else None
-        
+
         if location:
             cursor.execute('''
-                SELECT COUNT(*) as count FROM items 
+                SELECT COUNT(*) as count FROM items
                 WHERE location LIKE ?
             ''', (f'%{location}%',))
         else:
             cursor.execute('SELECT COUNT(*) as count FROM items')
-        
+
         result = cursor.fetchone()
         count = result['count'] if isinstance(result, sqlite3.Row) else result[0]
-        
+
         location_str = f" in {location}" if location else ""
         return {"message": f"You have {count} items{location_str}."}
 
     def _handle_value(self, cursor, match):
         """Handle value queries"""
         location = match.group(1) if match.groups() else None
-        
+
         if location:
             cursor.execute('''
-                SELECT SUM(price * quantity) as total FROM items 
+                SELECT SUM(price * quantity) as total FROM items
                 WHERE location LIKE ? AND price IS NOT NULL
             ''', (f'%{location}%',))
         else:
             cursor.execute('''
-                SELECT SUM(price * quantity) as total FROM items 
+                SELECT SUM(price * quantity) as total FROM items
                 WHERE price IS NOT NULL
             ''')
-        
+
         result = cursor.fetchone()
         total = result['total'] if isinstance(result, sqlite3.Row) else result[0]
         total = total or 0
-        
+
         location_str = f" in {location}" if location else ""
         return {"message": f"The total value of items{location_str} is ${total:.2f}"}
 
@@ -121,25 +121,25 @@ class NLUProcessor:
         """Handle price range queries"""
         comparison = 'more' if 'more' in match.group(0) else 'less'
         price = float(match.group(1))
-        
+
         if comparison == 'more':
             cursor.execute('''
-                SELECT * FROM items 
-                WHERE price > ? 
+                SELECT * FROM items
+                WHERE price > ?
                 ORDER BY price DESC
             ''', (price,))
         else:
             cursor.execute('''
-                SELECT * FROM items 
-                WHERE price < ? 
+                SELECT * FROM items
+                WHERE price < ?
                 ORDER BY price
             ''', (price,))
-        
+
         items = []
         for row in cursor.fetchall():
             items.append(dict(row))
-        
+
         if not items:
             return {"message": f"No items found {comparison} than ${price:.2f}"}
-            
+
         return {"items": items}
