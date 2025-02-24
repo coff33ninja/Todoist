@@ -1,0 +1,21 @@
+First Phase - Testing Infrastructure
+📍OTHER 002
+# Create tests/test_nlu_processor.py with:
+- Basic unit tests for keyword detection
+- Mock database tests
+- Integration tests with Flask endpoints
+- Error case coverage
+Second Phase - Code Refactoring
+📍OTHER 003
+# Refactor nlu_processor.py into:
+- IntentDetector class (keyword/pattern matching)
+- QueryBuilder class (SQL generation)
+- ResponseFormatter class (result formatting)
+- Add proper logging
+Third Phase - NLP Enhancement
+📍OTHER 004
+# Enhance with:
+- spaCy integration for better entity recognition
+- Synonym handling
+- Query context tracking
+- Feedback collection
