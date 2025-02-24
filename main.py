@@ -7,7 +7,7 @@ from inventory_manager import InventoryManager
 from receipt_processor import ReceiptProcessor
 from task_manager import TaskManager
 from budget_tracker import BudgetTracker
-from nlu_processor import process_natural_language_query
+from nlu_processor import NLUProcessor
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -315,7 +315,8 @@ def handle_query():
         return jsonify({"error": "No query provided"}), 400
 
     try:
-        response = process_natural_language_query(query_text, get_db())
+        nlu_processor = NLUProcessor()
+        response = nlu_processor.process_natural_language_query(query_text, get_db())
         return jsonify({"response": response})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
