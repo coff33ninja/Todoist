@@ -3,8 +3,17 @@ from flask_cors import CORS
 import sqlite3
 import os
 from datetime import datetime
-from ocr_processor import ReceiptProcessor
+from inventory_manager import InventoryManager
+from receipt_processor import ReceiptProcessor
+from task_manager import TaskManager
+from budget_tracker import BudgetTracker
 from nlu_processor import process_natural_language_query
+
+# Initialize components
+inventory = InventoryManager()
+receipt_processor = ReceiptProcessor()
+task_manager = TaskManager()
+budget_tracker = BudgetTracker()
 
 # Configure upload folder
 UPLOAD_FOLDER = "uploads"
@@ -119,11 +128,8 @@ def init_db():
 
 @app.route("/api/items", methods=["GET"])
 def get_items():
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM items ORDER BY created_at DESC")
-        items = cursor.fetchall()
-        return jsonify(items)
+    items = inventory.get_items()
+    return jsonify(items)
 
 
 @app.route("/api/items", methods=["POST"])
@@ -133,51 +139,22 @@ def add_item():
     if not all(field in data for field in required_fields):
         return jsonify({"error": "Missing required fields"}), 400
 
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            INSERT INTO items (
-                name, description, quantity, purchase_date, price,
-                warranty_expiry, acquisition_type, location, condition, notes
-            )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        """,
-            (
-                data["name"],
-                data.get("description"),
-                data["quantity"],
-                data.get("purchase_date"),
-                data.get("price"),
-                data.get("warranty_expiry"),
-                data.get("acquisition_type", "purchase"),
-                data.get("location"),
-                data.get("condition"),
-                data.get("notes"),
-            ),
+    try:
+        item_id = inventory.add_item(
+            name=data["name"],
+            quantity=data["quantity"],
+            description=data.get("description"),
+            purchase_date=data.get("purchase_date"),
+            price=data.get("price"),
+            warranty_expiry=data.get("warranty_expiry"),
+            acquisition_type=data.get("acquisition_type", "purchase"),
+            location=data.get("location"),
+            condition=data.get("condition"),
+            notes=data.get("notes")
         )
-        item_id = cursor.lastrowid
-
-        # Add transaction record if it's a purchase
-        if data.get("price") is not None:
-            cursor.execute(
-                """
-                INSERT INTO transactions (
-                    item_id, transaction_type, amount, source, date, details
-                )
-                VALUES (?, ?, ?, ?, ?, ?)
-            """,
-                (
-                    item_id,
-                    data.get("acquisition_type", "purchase"),
-                    data.get("price"),
-                    data.get("source"),
-                    data.get("purchase_date", datetime.now().strftime("%Y-%m-%d")),
-                    data.get("notes"),
-                ),
-            )
-        conn.commit()
         return jsonify({"message": "Item added successfully", "id": item_id}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/repairs", methods=["POST"])
@@ -228,13 +205,10 @@ def get_repairs():
 
 @app.route("/api/budget", methods=["GET"])
 def get_budget():
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM budget WHERE id=1")
-        budget = cursor.fetchone()
-        if not budget:
-            return jsonify({"error": "Budget not set"}), 404
-        return jsonify(budget)
+    budget = budget_tracker.get_budget()
+    if not budget:
+        return jsonify({"error": "Budget not set"}), 404
+    return jsonify(budget)
 
 
 @app.route("/api/budget", methods=["POST"])
@@ -243,19 +217,15 @@ def update_budget():
     if "amount" not in data:
         return jsonify({"error": "Amount is required"}), 400
 
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            INSERT OR REPLACE INTO budget (
-                id, amount, period, last_updated, notes
-            )
-            VALUES (1, ?, ?, CURRENT_TIMESTAMP, ?)
-        """,
-            (data["amount"], data.get("period", "monthly"), data.get("notes")),
+    try:
+        budget_tracker.update_budget(
+            amount=data["amount"],
+            period=data.get("period", "monthly"),
+            notes=data.get("notes")
         )
-        conn.commit()
         return jsonify({"message": "Budget updated successfully"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/components", methods=["POST"])
@@ -330,19 +300,21 @@ def upload_receipt():
         file.save(file_path)
 
         # Process the receipt
-        processor = ReceiptProcessor()
-        extracted_text = processor.extract_text(file_path)
-        if not extracted_text:
-            return jsonify({"error": "Failed to process receipt"}), 500
+        parsed_data = receipt_processor.parse_receipt(file_path)
+        
+        # Add items to inventory
+        for item in parsed_data['items']:
+            inventory.add_item(
+                name=item['name'],
+                purchase_date=parsed_data['date'],
+                price=item['price'],
+                acquisition_type='purchase'
+            )
 
-        parsed_data = processor.parse_receipt(extracted_text)
-        if not parsed_data:
-            return jsonify({"error": "Failed to parse receipt"}), 500
-
-        return (
-            jsonify({"message": "Receipt processed successfully", "data": parsed_data}),
-            200,
-        )
+        return jsonify({
+            "message": "Receipt processed and items added to inventory",
+            "data": parsed_data
+        }), 200
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
