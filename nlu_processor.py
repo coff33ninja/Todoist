@@ -1,99 +1,191 @@
-import sqlite3
+from datetime import datetime, timedelta
+import re
 
 def process_natural_language_query(query_text, get_db):
     """
     Process natural language queries for the inventory system.
     
-    Based on keywords in the query_text, this function handles queries
-    about items/inventory, repairs, budget/cost or components.
+    Examples:
+    - "What items did I buy last month?"
+    - "Show me all traded items"
+    - "What repairs are scheduled?"
+    - "How much budget is left?"
+    - "What components do I need to buy?"
     
     Args:
-        query_text (str): The natural language query.
-        get_db (function): A function returning a SQLite connection with a custom row factory.
+        query_text (str): The natural language query
+        get_db (callable): Function that returns a database connection
     
     Returns:
-        str: A response string with the query results or a message if nothing was found.
+        dict: Response with query results
     """
     query_lower = query_text.lower().strip()
-    response = ""
     
     try:
-        # Check for query intent based on keywords
+        conn = get_db()
+        cursor = conn.cursor()
         
-        # Query about items/inventory:
-        if "item" in query_lower or "inventory" in query_lower:
-            conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM items ORDER BY created_at DESC")
+        # Time-related patterns
+        time_patterns = {
+            "last month": (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d"),
+            "last week": (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d"),
+            "yesterday": (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
+            "today": datetime.now().strftime("%Y-%m-%d")
+        }
+        
+        # Check for time-specific queries
+        time_frame = None
+        for pattern, date in time_patterns.items():
+            if pattern in query_lower:
+                time_frame = date
+                break
+        
+        # Query about items by acquisition type
+        if "traded" in query_lower or "trade" in query_lower:
+            cursor.execute("""
+                SELECT i.*, t.traded_item, t.traded_item_value, t.trade_partner
+                FROM items i
+                JOIN trades t ON i.id = t.item_id
+                WHERE i.acquisition_type = 'trade'
+                ORDER BY i.created_at DESC
+            """)
             items = cursor.fetchall()
+            return {
+                "type": "trades",
+                "count": len(items),
+                "items": items
+            }
+        
+        # Query about purchases in a time frame
+        elif "buy" in query_lower or "bought" in query_lower or "purchase" in query_lower:
+            query = """
+                SELECT * FROM items 
+                WHERE acquisition_type = 'purchase'
+            """
+            if time_frame:
+                query += " AND purchase_date >= ?"
+                cursor.execute(query, (time_frame,))
+            else:
+                cursor.execute(query)
+            items = cursor.fetchall()
+            return {
+                "type": "purchases",
+                "count": len(items),
+                "items": items
+            }
+        
+        # Query about repairs
+        elif "repair" in query_lower or "fix" in query_lower:
+            status_patterns = {
+                "scheduled": "scheduled" in query_lower,
+                "in progress": "progress" in query_lower,
+                "completed": "completed" in query_lower or "done" in query_lower,
+                "pending": "pending" in query_lower or "need" in query_lower
+            }
             
-            if items:
-                response = "There are {} items in inventory. ".format(len(items))
-                # List names of first few items
-                item_names = [item.get("name", "unknown") for item in items[:5]]
-                response += "Some items are: " + ", ".join(item_names) + "."
+            status = next((k for k, v in status_patterns.items() if v), None)
+            
+            query = """
+                SELECT r.*, i.name as item_name 
+                FROM repairs r
+                JOIN items i ON r.item_id = i.id
+            """
+            if status:
+                query += " WHERE r.status = ?"
+                cursor.execute(query, (status,))
             else:
-                response = "No items are found in the inventory."
-        
-        # Query about repairs:
-        elif "repair" in query_lower:
-            conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute("""SELECT r.*, i.name as item_name
-                              FROM repairs r 
-                              JOIN items i ON r.item_id = i.id 
-                              ORDER BY repair_date DESC""")
+                cursor.execute(query)
             repairs = cursor.fetchall()
-            if repairs:
-                response = "There are {} repair records. ".format(len(repairs))
-                # Compose a summary for a few repairs
-                repair_details = []
-                for rep in repairs[:5]:
-                    date = rep.get("repair_date", "unknown date")
-                    item = rep.get("item_name", "unknown item")
-                    repair_details.append(f"{item} on {date}")
-                response += "Recent repairs: " + "; ".join(repair_details) + "."
-            else:
-                response = "No repair records were found."
+            return {
+                "type": "repairs",
+                "count": len(repairs),
+                "repairs": repairs
+            }
         
-        # Query about budget or overall cost:
-        elif "budget" in query_lower or "cost" in query_lower:
-            conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute("SELECT * FROM budget WHERE id=1")
-            budget = cursor.fetchone()
-            if budget:
-                amount = budget.get("amount", 0)
-                period = budget.get("period", "unspecified")
-                response = f"The current budget is set at ${amount} for the {period} period."
+        # Query about components
+        elif "component" in query_lower or "part" in query_lower:
+            status = None
+            if "needed" in query_lower:
+                status = "needed"
+            elif "ordered" in query_lower:
+                status = "ordered"
+            elif "received" in query_lower:
+                status = "received"
+            
+            query = """
+                SELECT c.*, r.description as repair_description
+                FROM components c
+                JOIN repairs r ON c.repair_id = r.id
+            """
+            if status:
+                query += " WHERE c.status = ?"
+                cursor.execute(query, (status,))
             else:
-                response = "The budget has not been set up yet."
-        
-        # Query about components:
-        elif "component" in query_lower:
-            conn = get_db()
-            cursor = conn.cursor()
-            cursor.execute("""SELECT c.*, i.name as item_name 
-                              FROM components c 
-                              JOIN items i ON c.item_id = i.id 
-                              ORDER BY priority DESC, created_at DESC""")
+                cursor.execute(query)
             components = cursor.fetchall()
-            if components:
-                response = "There are {} components required. ".format(len(components))
-                comp_details = []
-                for comp in components[:5]:
-                    cname = comp.get("name", "unknown")
-                    item = comp.get("item_name", "unknown item")
-                    comp_details.append(f"{cname} for {item}")
-                response += "Some components are: " + "; ".join(comp_details) + "."
-            else:
-                response = "No components were found."
+            return {
+                "type": "components",
+                "count": len(components),
+                "components": components
+            }
         
+        # Query about budget
+        elif "budget" in query_lower or "money" in query_lower or "spent" in query_lower:
+            cursor.execute("SELECT * FROM budget WHERE id = 1")
+            budget = cursor.fetchone()
+            
+            if not budget:
+                return {
+                    "type": "budget",
+                    "message": "No budget has been set"
+                }
+            
+            # Calculate spending
+            cursor.execute("SELECT SUM(price) FROM items WHERE acquisition_type = 'purchase'")
+            total_spent = cursor.fetchone()[0] or 0
+            
+            return {
+                "type": "budget",
+                "budget": budget,
+                "total_spent": total_spent,
+                "remaining": budget["amount"] - total_spent
+            }
+        
+        # General item search
         else:
-            response = ("I'm sorry, I didn't understand your query. "
-                        "Please ask about items, repairs, budget, or components.")
-    
-    except Exception as error:
-        response = f"An error occurred while processing your query: {error}"
-    
-    return response
+            # Extract potential search terms
+            words = re.findall(r'\w+', query_lower)
+            search_terms = [w for w in words if len(w) > 2 and w not in 
+                          ['the', 'and', 'for', 'that', 'what', 'where', 'when', 'how']]
+            
+            if search_terms:
+                placeholders = ' OR '.join(['name LIKE ? OR description LIKE ? OR notes LIKE ?' 
+                                          for _ in search_terms])
+                params = []
+                for term in search_terms:
+                    params.extend([f'%{term}%'] * 3)
+                
+                cursor.execute(f"""
+                    SELECT * FROM items 
+                    WHERE {placeholders}
+                    ORDER BY created_at DESC
+                """, params)
+                items = cursor.fetchall()
+                return {
+                    "type": "search",
+                    "count": len(items),
+                    "items": items
+                }
+            
+            # If no specific query is recognized
+            return {
+                "type": "error",
+                "message": "I'm not sure what you're asking about. Try asking about items, "
+                          "repairs, budget, or components."
+            }
+            
+    except Exception as e:
+        return {
+            "type": "error",
+            "message": f"An error occurred while processing your query: {str(e)}"
+        }

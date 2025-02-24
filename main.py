@@ -1,3 +1,22 @@
+@app.route("/api/trades", methods=["GET"])
+def get_trades():
+    try:
+        trades = inventory.get_trades()
+        return jsonify(trades)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route("/api/search", methods=["GET"])
+def search_items():
+    query = request.args.get("q", "")
+    if not query:
+        return jsonify({"error": "Search query is required"}), 400
+        
+    try:
+        items = inventory.search_items(query)
+        return jsonify(items)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import sqlite3
@@ -138,24 +157,39 @@ def get_items():
 @app.route("/api/items", methods=["POST"])
 def add_item():
     data = request.get_json()
-    required_fields = ["name", "quantity"]
+    required_fields = ["name"]
     if not all(field in data for field in required_fields):
         return jsonify({"error": "Missing required fields"}), 400
 
     try:
         item_id = inventory.add_item(
             name=data["name"],
-            quantity=data["quantity"],
             description=data.get("description"),
-            purchase_date=data.get("purchase_date"),
-            price=data.get("price"),
-            warranty_expiry=data.get("warranty_expiry"),
+            quantity=data.get("quantity", 1),
             acquisition_type=data.get("acquisition_type", "purchase"),
+            source_details=data.get("source_details"),
+            price=data.get("price"),
+            purchase_date=data.get("purchase_date"),
+            warranty_expiry=data.get("warranty_expiry"),
             location=data.get("location"),
-            condition=data.get("condition"),
+            condition=data.get("condition", "new"),
             notes=data.get("notes")
         )
-        return jsonify({"message": "Item added successfully", "id": item_id}), 201
+        
+        # If this is a trade, record the trade details
+        if data.get("acquisition_type") == "trade" and data.get("traded_item"):
+            inventory.add_trade(
+                item_id=item_id,
+                traded_item=data["traded_item"],
+                traded_item_value=data.get("traded_item_value"),
+                trade_partner=data.get("trade_partner"),
+                notes=data.get("trade_notes")
+            )
+            
+        return jsonify({
+            "message": "Item added successfully",
+            "id": item_id
+        }), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -163,20 +197,37 @@ def add_item():
 @app.route("/api/repairs", methods=["POST"])
 def add_repair():
     data = request.get_json()
-    required_fields = ["item_id", "repair_date", "description"]
+    required_fields = ["item_id", "description"]
     if not all(field in data for field in required_fields):
         return jsonify({"error": "Missing required fields"}), 400
 
     try:
-        task_manager.add_repair(
+        # Add the repair record
+        repair_id = task_manager.add_repair(
             item_id=data["item_id"],
-            repair_date=data["repair_date"],
             description=data["description"],
+            repair_date=data.get("repair_date"),
             cost=data.get("cost"),
             next_due_date=data.get("next_due_date"),
             status=data.get("status", "scheduled")
         )
-        return jsonify({"message": "Repair record added successfully"}), 201
+        
+        # If components are specified, add them
+        if "components" in data and isinstance(data["components"], list):
+            for component in data["components"]:
+                task_manager.add_component(
+                    repair_id=repair_id,
+                    name=component["name"],
+                    quantity=component.get("quantity", 1),
+                    estimated_cost=component.get("estimated_cost"),
+                    priority=component.get("priority", "medium"),
+                    status=component.get("status", "needed")
+                )
+        
+        return jsonify({
+            "message": "Repair record added successfully",
+            "repair_id": repair_id
+        }), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -196,10 +247,18 @@ def get_budget():
         budget = budget_tracker.get_budget()
         if not budget:
             return jsonify({"error": "Budget not set"}), 404
-        return jsonify(budget)
+        
+        # Get current period spending
+        total_spent = budget_tracker.calculate_total_spent()
+        available = budget_tracker.calculate_available_budget()
+        
+        return jsonify({
+            "budget": budget,
+            "total_spent": total_spent,
+            "available": available
+        })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
 
 @app.route("/api/budget", methods=["POST"])
 def update_budget():
