@@ -110,14 +110,14 @@ def init_db():
             """
             CREATE TABLE IF NOT EXISTS components (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                item_id INTEGER,
+                repair_id INTEGER,
                 name TEXT NOT NULL,
-                quantity_needed INTEGER,
+                quantity INTEGER DEFAULT 1,
                 estimated_cost REAL,
                 priority TEXT CHECK(priority IN ('low', 'medium', 'high')),
                 status TEXT CHECK(status IN ('needed', 'ordered', 'received')),
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(item_id) REFERENCES items(id)
+                FOREIGN KEY(repair_id) REFERENCES repairs(id)
             )
         """
         )
@@ -215,9 +215,11 @@ def add_repair():
         if "components" in data and isinstance(data["components"], list):
             for component in data["components"]:
                 task_manager.add_component(
-                    repair_id=repair_id,
+                    repair_id=repair_id,  # Fixed: Using repair_id instead of item_id
                     name=component["name"],
-                    quantity=component.get("quantity", 1),
+                    quantity=component.get(
+                        "quantity", 1
+                    ),  # Fixed: Using quantity instead of quantity_needed
                     estimated_cost=component.get("estimated_cost"),
                     priority=component.get("priority", "medium"),
                     status=component.get("status", "needed"),
@@ -280,15 +282,17 @@ def update_budget():
 @app.route("/api/components", methods=["POST"])
 def add_component():
     data = request.get_json()
-    required_fields = ["item_id", "name", "quantity_needed"]
+    required_fields = ["repair_id", "name"]  # Fixed: Changed item_id to repair_id
     if not all(field in data for field in required_fields):
         return jsonify({"error": "Missing required fields"}), 400
 
     try:
         task_manager.add_component(
-            item_id=data["item_id"],
+            repair_id=data["repair_id"],  # Fixed: Using repair_id
             name=data["name"],
-            quantity_needed=data["quantity_needed"],
+            quantity=data.get(
+                "quantity", 1
+            ),  # Fixed: Using quantity instead of quantity_needed
             estimated_cost=data.get("estimated_cost"),
             priority=data.get("priority", "medium"),
             status=data.get("status", "needed"),
@@ -316,7 +320,7 @@ def handle_query():
 
     try:
         nlu_processor = NLUProcessor()
-        response = nlu_processor.process_natural_language_query(query_text, get_db())
+        response = nlu_processor.process_natural_language_query(query_text, get_db)
         return jsonify({"response": response})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
