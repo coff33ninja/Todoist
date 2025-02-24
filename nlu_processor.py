@@ -1,183 +1,145 @@
-from datetime import datetime, timedelta
+import sqlite3
 import re
-import logging
-from typing import Dict, Any, Callable
+from datetime import datetime
 
 class NLUProcessor:
     def __init__(self):
-        self.logger = logging.getLogger(__name__)
+        self.patterns = {
+            'search': [
+                r'show\s+(?:me\s+)?(?:all\s+)?(?:the\s+)?(?:items?|products?|things?)(?:\s+in\s+(.+))?',
+                r'what\s+(?:items?|products?|things?)(?:\s+do\s+I\s+have)?(?:\s+in\s+(.+))?',
+                r'list\s+(?:all\s+)?(?:items?|products?|things?)(?:\s+in\s+(.+))?'
+            ],
+            'count': [
+                r'how\s+many\s+(?:items?|products?|things?)(?:\s+do\s+I\s+have)?(?:\s+in\s+(.+))?',
+                r'count\s+(?:all\s+)?(?:items?|products?|things?)(?:\s+in\s+(.+))?'
+            ],
+            'value': [
+                r'what\s+is\s+the\s+(?:total\s+)?value\s+of\s+(?:my\s+)?(?:inventory|items?|products?|things?)(?:\s+in\s+(.+))?',
+                r'how\s+much\s+(?:is|are)\s+(?:my\s+)?(?:inventory|items?|products?|things?)(?:\s+worth)?(?:\s+in\s+(.+))?'
+            ],
+            'price_range': [
+                r'what\s+(?:items?|products?|things?)\s+cost\s+(?:more|less)\s+than\s+(\d+(?:\.\d{2})?)',
+                r'show\s+(?:me\s+)?(?:items?|products?|things?)\s+(?:that\s+)?cost\s+(?:more|less)\s+than\s+(\d+(?:\.\d{2})?)'
+            ]
+        }
 
-    def process_natural_language_query(self, query_text: str, get_db: Callable) -> Dict[str, Any]:
-        """
-        Process natural language queries for the inventory system.
-        """
-        query_lower = query_text.lower().strip()
-
+    def process_natural_language_query(self, query, get_db):
+        """Process a natural language query and return relevant information"""
+        if not query:
+            return {"error": "Empty query"}
+            
+        query = query.lower().strip()
+        
         try:
+            # Get database connection
             conn = get_db()
             cursor = conn.cursor()
-
-            # Time-related patterns
-            time_patterns = {
-                "last month": (datetime.now() - timedelta(days=30)).strftime("%Y-%m-%d"),
-                "last week": (datetime.now() - timedelta(days=7)).strftime("%Y-%m-%d"),
-                "yesterday": (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
-                "today": datetime.now().strftime("%Y-%m-%d")
-            }
-
-            # Check for time-specific queries
-            time_frame = None
-            for pattern, date in time_patterns.items():
-                if pattern in query_lower:
-                    time_frame = date
-                    break
-
-            # Query about items by acquisition type
-            if "traded" in query_lower or "trade" in query_lower:
-                cursor.execute("""
-                    SELECT i.*, t.traded_item, t.traded_item_value, t.trade_partner
-                    FROM items i
-                    JOIN trades t ON i.id = t.item_id
-                    WHERE i.acquisition_type = 'trade'
-                    ORDER BY i.created_at DESC
-                """)
-                items = cursor.fetchall()
-                return {
-                    "type": "trades",
-                    "count": len(items),
-                    "items": items
-                }
-
-            # Query about purchases in a time frame
-            elif "buy" in query_lower or "bought" in query_lower or "purchase" in query_lower:
-                query = """
-                    SELECT * FROM items
-                    WHERE acquisition_type = 'purchase'
-                """
-                if time_frame:
-                    query += " AND purchase_date >= ?"
-                    cursor.execute(query, (time_frame,))
-                else:
-                    cursor.execute(query)
-                items = cursor.fetchall()
-                return {
-                    "type": "purchases",
-                    "count": len(items),
-                    "items": items
-                }
-
-            # Query about repairs
-            elif "repair" in query_lower or "fix" in query_lower or "list all repairs" in query_lower:
-                status_patterns = {
-                    "scheduled": "scheduled" in query_lower,
-                    "in progress": "progress" in query_lower,
-                    "completed": "completed" in query_lower or "done" in query_lower,
-                    "pending": "pending" in query_lower or "need" in query_lower
-                }
-
-                status = next((k for k, v in status_patterns.items() if v), None)
-
-                query = """
-                    SELECT r.*, i.name as item_name
-                    FROM repairs r
-                    LEFT JOIN items i ON r.item_id = i.id
-                """
-                if status:
-                    query += " WHERE r.status = ?"
-                    cursor.execute(query, (status,))
-                else:
-                    cursor.execute(query)
-                
-                repairs = cursor.fetchall()
-                return {
-                    "type": "repairs",
-                    "count": len(repairs),
-                    "repairs": repairs
-                }
-
-            # Query about components
-            elif "component" in query_lower or "part" in query_lower:
-                status = None
-                if "needed" in query_lower:
-                    status = "needed"
-                elif "ordered" in query_lower:
-                    status = "ordered"
-                elif "received" in query_lower:
-                    status = "received"
-
-                query = """
-                    SELECT c.*, i.name as item_name
-                    FROM components c
-                    JOIN items i ON c.item_id = i.id
-                """
-                if status:
-                    query += " WHERE c.status = ?"
-                    cursor.execute(query, (status,))
-                else:
-                    cursor.execute(query)
-                components = cursor.fetchall()
-                return {
-                    "type": "components",
-                    "count": len(components),
-                    "components": components
-                }
-
-            # Query about budget
-            elif any(phrase in query_lower for phrase in ["budget", "show me the budget", "money", "spent"]):
-                cursor.execute("SELECT id, amount, period FROM budget")
-                budgets = cursor.fetchall()
-
-                if not budgets:
-                    return {
-                        "type": "budget",
-                        "message": "No budget has been set"
-                    }
-
-                budget = budgets[0]
-
-                # Calculate spending
-                cursor.execute("SELECT COALESCE(SUM(price), 0) as total FROM items WHERE acquisition_type = 'purchase'")
-                total_spent = cursor.fetchone()["total"]
-
-                return {
-                    "type": "budget",
-                    "budget": budget,
-                    "total_spent": total_spent,
-                    "remaining": budget["amount"] - total_spent
-                }
-
-            # General item search
-            else:
-                # Extract potential search terms
-                words = re.findall(r'\w+', query_lower)
-                search_terms = [w for w in words if len(w) > 2 and w not in
-                              ['the', 'and', 'for', 'that', 'what', 'where', 'when', 'how']]
-
-                # If the query doesn't match any specific patterns
-                if not any(word in query_lower for word in ["item", "repair", "budget", "component", "part"]):
-                    return {
-                        "type": "error",
-                        "message": "I'm not sure what you're asking about. Try asking about items, "
-                                "repairs, budget, or components."
-                    }
-
-                # Default to returning all items
-                cursor.execute("SELECT * FROM items ORDER BY created_at DESC")
-                items = cursor.fetchall()
-                return {
-                    "type": "search",
-                    "count": len(items),
-                    "items": items
-                }
-
+            
+            # Try to match query patterns
+            for intent, patterns in self.patterns.items():
+                for pattern in patterns:
+                    match = re.match(pattern, query)
+                    if match:
+                        if intent == 'search':
+                            return self._handle_search(cursor, match)
+                        elif intent == 'count':
+                            return self._handle_count(cursor, match)
+                        elif intent == 'value':
+                            return self._handle_value(cursor, match)
+                        elif intent == 'price_range':
+                            return self._handle_price_range(cursor, match)
+            
+            return {"message": "I don't understand that query. Try asking about items, their count, or value."}
+            
         except Exception as e:
-            self.logger.error(f"Error processing query: {str(e)}")
-            return {
-                "type": "error",
-                "message": f"An error occurred while processing your query: {str(e)}"
-            }
+            return {"error": str(e)}
 
-# For backward compatibility with tests
-def process_natural_language_query(query_text: str, get_db: Callable) -> Dict[str, Any]:
-    processor = NLUProcessor()
-    return processor.process_natural_language_query(query_text, get_db)
+    def _handle_search(self, cursor, match):
+        """Handle search queries"""
+        location = match.group(1) if match.groups() else None
+        
+        if location:
+            cursor.execute('''
+                SELECT * FROM items 
+                WHERE location LIKE ? 
+                ORDER BY name
+            ''', (f'%{location}%',))
+        else:
+            cursor.execute('SELECT * FROM items ORDER BY name')
+        
+        items = []
+        for row in cursor.fetchall():
+            items.append(dict(row))
+        
+        if not items:
+            return {"message": "No items found"}
+            
+        return {"items": items}
+
+    def _handle_count(self, cursor, match):
+        """Handle count queries"""
+        location = match.group(1) if match.groups() else None
+        
+        if location:
+            cursor.execute('''
+                SELECT COUNT(*) as count FROM items 
+                WHERE location LIKE ?
+            ''', (f'%{location}%',))
+        else:
+            cursor.execute('SELECT COUNT(*) as count FROM items')
+        
+        result = cursor.fetchone()
+        count = result['count'] if isinstance(result, sqlite3.Row) else result[0]
+        
+        location_str = f" in {location}" if location else ""
+        return {"message": f"You have {count} items{location_str}."}
+
+    def _handle_value(self, cursor, match):
+        """Handle value queries"""
+        location = match.group(1) if match.groups() else None
+        
+        if location:
+            cursor.execute('''
+                SELECT SUM(price * quantity) as total FROM items 
+                WHERE location LIKE ? AND price IS NOT NULL
+            ''', (f'%{location}%',))
+        else:
+            cursor.execute('''
+                SELECT SUM(price * quantity) as total FROM items 
+                WHERE price IS NOT NULL
+            ''')
+        
+        result = cursor.fetchone()
+        total = result['total'] if isinstance(result, sqlite3.Row) else result[0]
+        total = total or 0
+        
+        location_str = f" in {location}" if location else ""
+        return {"message": f"The total value of items{location_str} is ${total:.2f}"}
+
+    def _handle_price_range(self, cursor, match):
+        """Handle price range queries"""
+        comparison = 'more' if 'more' in match.group(0) else 'less'
+        price = float(match.group(1))
+        
+        if comparison == 'more':
+            cursor.execute('''
+                SELECT * FROM items 
+                WHERE price > ? 
+                ORDER BY price DESC
+            ''', (price,))
+        else:
+            cursor.execute('''
+                SELECT * FROM items 
+                WHERE price < ? 
+                ORDER BY price
+            ''', (price,))
+        
+        items = []
+        for row in cursor.fetchall():
+            items.append(dict(row))
+        
+        if not items:
+            return {"message": f"No items found {comparison} than ${price:.2f}"}
+            
+        return {"items": items}

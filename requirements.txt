@@ -1,30 +1,7 @@
-# Web Framework
-flask==2.3.3
+flask==2.3.7
 flask-cors==4.0.0
-Werkzeug==2.3.7
-click>=8.0.0
-itsdangerous>=2.0
-Jinja2>=3.0
-
-# Image Processing
-opencv-python>=4.8.0
+pytest==8.3.4
 pytesseract==0.3.10
-Pillow==9.5.0
-numpy>=1.24.3
-
-# Development Tools
-debugpy>=1.6.5
-ipython>=7.23.1
-jupyter-client>=6.1.12
-psutil
-pyzmq>=24
-requests>=2.26.0,<3.0.0
-
-# Testing
-pytest>=7.4.0
-pytest-cov>=4.1.0
-pytest-mock>=3.11.1
-
-# NLP and Data Processing
-spacy>=3.6.0
-python-dateutil>=2.8.2
+Pillow==10.2.0
+python-dateutil==2.8.2
+werkzeug==2.3.7

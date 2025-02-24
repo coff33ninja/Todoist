@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 import threading
+import os
 
 class InventoryManager:
     _instance = None
@@ -11,15 +12,27 @@ class InventoryManager:
         self._local = threading.local()
         
     def get_connection(self):
+        """Get a thread-local database connection"""
         if not hasattr(self._local, 'conn'):
             self._local.conn = sqlite3.connect(self.db_path)
             self._local.conn.row_factory = sqlite3.Row
             self.create_tables()
         return self._local.conn
 
+    def close_connection(self):
+        """Close the thread-local database connection"""
+        if hasattr(self._local, 'conn'):
+            try:
+                self._local.conn.close()
+            except Exception:
+                pass
+            finally:
+                if hasattr(self._local, 'conn'):
+                    del self._local.conn
+
     def create_tables(self):
+        """Create database tables if they don't exist"""
         cursor = self.get_connection().cursor()
-        # Table for inventory items
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,7 +51,6 @@ class InventoryManager:
             )
         ''')
         
-        # Table for trades (when items are acquired through trading)
         cursor.execute('''
             CREATE TABLE IF NOT EXISTS trades (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -167,6 +179,8 @@ class InventoryManager:
 
     def close(self):
         """Close the database connection"""
-        if hasattr(self._local, 'conn'):
-            self._local.conn.close()
-            del self._local.conn
+        self.close_connection()
+
+    def __del__(self):
+        """Ensure connection is closed when object is destroyed"""
+        self.close()

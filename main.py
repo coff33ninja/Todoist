@@ -9,16 +9,11 @@ from task_manager import TaskManager
 from budget_tracker import BudgetTracker
 from nlu_processor import NLUProcessor
 import threading
+import time
 
 # Initialize Flask app
 app = Flask(__name__)
 CORS(app)
-
-# Initialize components with thread-local storage
-inventory = InventoryManager()
-receipt_processor = ReceiptProcessor()
-task_manager = TaskManager()
-budget_tracker = BudgetTracker()
 
 # Configure upload folder
 UPLOAD_FOLDER = "uploads"
@@ -39,92 +34,41 @@ def get_db():
 def close_db():
     """Close the database connection"""
     if hasattr(db_local, 'conn'):
-        db_local.conn.close()
-        del db_local.conn
+        try:
+            db_local.conn.close()
+        except Exception:
+            pass
+        finally:
+            if hasattr(db_local, 'conn'):
+                del db_local.conn
 
 @app.teardown_appcontext
 def teardown_db(exception):
     close_db()
 
 def init_db():
-    with sqlite3.connect(DATABASE) as conn:
-        cursor = conn.cursor()
-        # Create tables
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS items (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                description TEXT,
-                quantity INTEGER DEFAULT 1,
-                purchase_date TEXT,
-                price REAL,
-                warranty_expiry TEXT,
-                acquisition_type TEXT CHECK(acquisition_type IN ('purchase', 'trade', 'gift')),
-                location TEXT,
-                condition TEXT,
-                notes TEXT,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP
-            )
-        """
-        )
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS transactions (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                item_id INTEGER,
-                transaction_type TEXT CHECK(transaction_type IN ('purchase', 'trade', 'gift')),
-                amount REAL,
-                source TEXT,
-                date TEXT,
-                details TEXT,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(item_id) REFERENCES items(id)
-            )
-        """
-        )
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS repairs (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                item_id INTEGER,
-                repair_date TEXT,
-                description TEXT,
-                cost REAL,
-                next_due_date TEXT,
-                status TEXT CHECK(status IN ('scheduled', 'in_progress', 'completed', 'cancelled')),
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(item_id) REFERENCES items(id)
-            )
-        """
-        )
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS budget (
-                id INTEGER PRIMARY KEY,
-                amount REAL,
-                period TEXT,  -- 'monthly', 'yearly', etc.
-                last_updated TEXT,
-                notes TEXT
-            )
-        """
-        )
-        cursor.execute(
-            """
-            CREATE TABLE IF NOT EXISTS components (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                repair_id INTEGER,
-                name TEXT NOT NULL,
-                quantity INTEGER DEFAULT 1,
-                estimated_cost REAL,
-                priority TEXT CHECK(priority IN ('low', 'medium', 'high')),
-                status TEXT CHECK(status IN ('needed', 'ordered', 'received')),
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(repair_id) REFERENCES repairs(id)
-            )
-        """
-        )
-        conn.commit()
+    # Close any existing connections
+    close_db()
+    
+    # Initialize components with thread-local storage after database reset
+    global inventory, receipt_processor, task_manager, budget_tracker
+    
+    try:
+        # Initialize the inventory manager first, which will create the tables
+        inventory = InventoryManager(DATABASE)
+        
+        # Get a connection to ensure tables are created
+        conn = inventory.get_connection()
+        
+        # Initialize other components
+        receipt_processor = ReceiptProcessor()
+        task_manager = TaskManager(DATABASE)
+        budget_tracker = BudgetTracker(DATABASE)
+        
+        return True
+    except Exception as e:
+        print(f"Error initializing database: {e}")
+        return False
 
 
 # API Routes
@@ -336,10 +280,7 @@ def upload_receipt():
 
     try:
         # Save the file
-        if file.filename:
-            file_path = os.path.join(UPLOAD_FOLDER, file.filename)
-        else:
-            return jsonify({"error": "Invalid file name"}), 400
+        file_path = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(file_path)
 
         # Process the receipt
@@ -374,5 +315,7 @@ def get_receipt(filename):
 
 
 if __name__ == "__main__":
-    init_db()
-    app.run(debug=True)
+    if init_db():
+        app.run(debug=True)
+    else:
+        print("Error: Could not initialize database")
