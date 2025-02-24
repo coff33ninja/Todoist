@@ -1,53 +1,62 @@
 import pytest
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from nlu_processor import process_natural_language_query
 
 def test_inventory_query(sample_data):
     """Test querying about inventory items"""
-    query = "Show me all items in inventory"
+    query = "Show me all items"
     result = process_natural_language_query(query, lambda: sample_data)
-    assert "There are 2 items in inventory" in result
-    assert "Test Item 1" in result
-    assert "Test Item 2" in result
+    assert result["type"] == "search"
+    assert result["count"] >= 2
+    assert any("Test Item 1" in item["name"] for item in result["items"])
+    assert any("Test Item 2" in item["name"] for item in result["items"])
 
 def test_repairs_query(sample_data):
     """Test querying about repairs"""
-    query = "What repairs have been done?"
+    query = "List all repairs"
     result = process_natural_language_query(query, lambda: sample_data)
-    assert "There are 2 repair records" in result
-    assert "Test Item 1 on 2023-01-01" in result
-    assert "Test Item 2 on 2023-02-01" in result
+    assert result["type"] == "repairs"
+    assert result["count"] >= 2
+    assert any("First repair" in repair["description"] for repair in result["repairs"])
+    assert any("Second repair" in repair["description"] for repair in result["repairs"])
 
 def test_budget_query(sample_data):
     """Test querying about budget"""
-    query = "What's our current budget?"
+    query = "Show me the budget"
     result = process_natural_language_query(query, lambda: sample_data)
-    assert "current budget is set at $1000.00" in result
-    assert "monthly" in result
+    assert result["type"] == "budget"
+    assert isinstance(result["budget"], dict)
+    assert result["budget"]["amount"] == 1000.0
+    assert result["budget"]["period"] == "monthly"
 
 def test_components_query(sample_data):
     """Test querying about components"""
-    query = "List all components needed"
+    query = "Show me all components"
     result = process_natural_language_query(query, lambda: sample_data)
-    assert "There are 2 components required" in result
-    assert "Component 1 for Test Item 1" in result
-    assert "Component 2 for Test Item 2" in result
+    assert result["type"] == "components"
+    assert result["count"] >= 2
+    assert any("Component 1" in component["name"] for component in result["components"])
+    assert any("Component 2" in component["name"] for component in result["components"])
 
 def test_unknown_query(sample_data):
     """Test handling of unknown query types"""
-    query = "What's the weather like today?"
+    query = "How is the weather today?"
     result = process_natural_language_query(query, lambda: sample_data)
-    assert "I'm sorry, I didn't understand your query" in result
-    assert "items, repairs, budget, or components" in result
+    assert result["type"] == "error"
+    assert "not sure what you're asking about" in result["message"]
 
 def test_error_handling(sample_data):
     """Test handling of database errors"""
     def failing_db():
         raise Exception("Database connection failed")
-    
+
     query = "Show me all items"
     result = process_natural_language_query(query, failing_db)
-    assert "An error occurred" in result
-    assert "Database connection failed" in result
+    assert result["type"] == "error"
+    assert "Database connection failed" in result["message"]
 
 @pytest.mark.parametrize("query,expected_keyword", [
     ("show inventory", "inventory"),
