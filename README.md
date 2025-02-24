@@ -9,7 +9,7 @@ Ever had that moment when your significant other asks "Where did you put that th
 - **Receipt Processing**: Scan receipts to automatically add items
 - **Budget Tracking**: Keep track of spending (before someone else does!)
 - **Repair Management**: Track item repairs and maintenance
-- **Trade History**: Keep record of items traded or gifted
+- **Trade History**: Keep records of items traded or gifted
 
 ## 🛠️ Setup
 
@@ -27,7 +27,7 @@ pip install -r requirements.txt
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/Todoist.git
+git clone https://github.com/coff33ninja/Todoist.git
 cd Todoist
 ```
 
@@ -43,13 +43,10 @@ python main.py
 
 ## 🚀 Usage
 
-### Starting the Server
-
-```bash
-python main.py
-```
-
-The server will start on `http://localhost:5000`
+### Starting the Application
+- Run `python main.py` to start the Flask server
+- Alternatively, use `./start.bat start` (Windows) to launch
+- Access the API at `http://localhost:5000`
 
 ### API Endpoints
 
@@ -66,12 +63,18 @@ The server will start on `http://localhost:5000`
   }
   ```
 
-#### Receipt Processing
-- `POST /api/receipts/upload` - Upload and process receipt
+#### Repair Tracking
+- `POST /api/repairs` - Log new repairs
+- `GET /api/repairs` - View repair history
+- `POST /api/components` - Track repair parts
 
 #### Budget Management
-- `GET /api/budget` - Get budget status
-- `POST /api/budget` - Update budget
+- `POST /api/budget` - Set budget
+- `GET /api/budget` - View financial status
+
+#### Receipt Processing
+- `POST /api/receipts/upload` - Upload and process receipt
+- `GET /api/receipts/[filename]` - View processed receipts
 
 ## 🧪 Testing
 
@@ -116,7 +119,31 @@ This project is designed to work with various AI models to enhance its capabilit
 3. **The Receipt Savior**
    - Wife: "Where's the receipt for the blender? It's broken!"
    - You: *pulls up warranty info and receipt in seconds*
-   - Result: Customer service hero 🦸‍♂️
+   - Result: Customer service hero 🧨‍♂️
+
+## Current Implementation Status
+
+### Implemented Features
+- Basic inventory management
+- Repair tracking
+- Budget management
+- Receipt processing
+- API endpoints for core functionality
+
+### Missing Features
+- Advanced NLP for natural queries
+- Sophisticated OCR for receipts
+- AI model integration
+- Context-aware conversations
+- Financial insights and forecasting
+
+## Next Steps
+
+1. Enhance `nlu_processor.py` with ML models
+2. Improve `ocr_processor.py` with advanced preprocessing
+3. Add AI model training scripts
+4. Expand API endpoints for new features
+5. Update documentation and tests
 
 ## 🤝 Contributing
 
@@ -145,4 +172,4 @@ This project does not guarantee:
 But it sure helps! 😉
 
 ---
-Remember: A organized home is a happy home! 🏠✨
+Remember: An organized home is a happy home! 🏠✨
