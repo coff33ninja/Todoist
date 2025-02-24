@@ -164,43 +164,27 @@ def add_repair():
     if not all(field in data for field in required_fields):
         return jsonify({"error": "Missing required fields"}), 400
 
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            INSERT INTO repairs (
-                item_id, repair_date, description, cost,
-                next_due_date, status
-            )
-            VALUES (?, ?, ?, ?, ?, ?)
-        """,
-            (
-                data["item_id"],
-                data["repair_date"],
-                data["description"],
-                data.get("cost"),
-                data.get("next_due_date"),
-                data.get("status", "scheduled"),
-            ),
+    try:
+        task_manager.add_repair(
+            item_id=data["item_id"],
+            repair_date=data["repair_date"],
+            description=data["description"],
+            cost=data.get("cost"),
+            next_due_date=data.get("next_due_date"),
+            status=data.get("status", "scheduled")
         )
-        conn.commit()
         return jsonify({"message": "Repair record added successfully"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/repairs", methods=["GET"])
 def get_repairs():
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            SELECT r.*, i.name as item_name 
-            FROM repairs r 
-            JOIN items i ON r.item_id = i.id 
-            ORDER BY repair_date DESC
-        """
-        )
-        repairs = cursor.fetchall()
+    try:
+        repairs = task_manager.get_repairs()
         return jsonify(repairs)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/budget", methods=["GET"])
@@ -235,43 +219,27 @@ def add_component():
     if not all(field in data for field in required_fields):
         return jsonify({"error": "Missing required fields"}), 400
 
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            INSERT INTO components (
-                item_id, name, quantity_needed, estimated_cost,
-                priority, status
-            )
-            VALUES (?, ?, ?, ?, ?, ?)
-        """,
-            (
-                data["item_id"],
-                data["name"],
-                data["quantity_needed"],
-                data.get("estimated_cost"),
-                data.get("priority", "medium"),
-                data.get("status", "needed"),
-            ),
+    try:
+        task_manager.add_component(
+            item_id=data["item_id"],
+            name=data["name"],
+            quantity_needed=data["quantity_needed"],
+            estimated_cost=data.get("estimated_cost"),
+            priority=data.get("priority", "medium"),
+            status=data.get("status", "needed")
         )
-        conn.commit()
         return jsonify({"message": "Component added successfully"}), 201
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/components", methods=["GET"])
 def get_components():
-    with get_db() as conn:
-        cursor = conn.cursor()
-        cursor.execute(
-            """
-            SELECT c.*, i.name as item_name 
-            FROM components c 
-            JOIN items i ON c.item_id = i.id 
-            ORDER BY priority DESC, created_at DESC
-        """
-        )
-        components = cursor.fetchall()
+    try:
+        components = task_manager.get_components()
         return jsonify(components)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/query", methods=["POST"])
