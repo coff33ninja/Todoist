@@ -1,22 +1,3 @@
-@app.route("/api/trades", methods=["GET"])
-def get_trades():
-    try:
-        trades = inventory.get_trades()
-        return jsonify(trades)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-
-@app.route("/api/search", methods=["GET"])
-def search_items():
-    query = request.args.get("q", "")
-    if not query:
-        return jsonify({"error": "Search query is required"}), 400
-        
-    try:
-        items = inventory.search_items(query)
-        return jsonify(items)
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
 import sqlite3
@@ -28,6 +9,10 @@ from task_manager import TaskManager
 from budget_tracker import BudgetTracker
 from nlu_processor import process_natural_language_query
 
+# Initialize Flask app
+app = Flask(__name__)
+CORS(app)
+
 # Initialize components
 inventory = InventoryManager()
 receipt_processor = ReceiptProcessor()
@@ -38,9 +23,6 @@ budget_tracker = BudgetTracker()
 UPLOAD_FOLDER = "uploads"
 if not os.path.exists(UPLOAD_FOLDER):
     os.makedirs(UPLOAD_FOLDER)
-
-app = Flask(__name__)
-CORS(app)
 
 # Database setup
 DATABASE = "inventory.db"
@@ -143,6 +125,26 @@ def init_db():
 
 
 # API Routes
+@app.route("/api/trades", methods=["GET"])
+def get_trades():
+    try:
+        trades = inventory.get_trades()
+        return jsonify(trades)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/search", methods=["GET"])
+def search_items():
+    query = request.args.get("q", "")
+    if not query:
+        return jsonify({"error": "Search query is required"}), 400
+
+    try:
+        items = inventory.search_items(query)
+        return jsonify(items)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/items", methods=["GET"])
@@ -173,9 +175,9 @@ def add_item():
             warranty_expiry=data.get("warranty_expiry"),
             location=data.get("location"),
             condition=data.get("condition", "new"),
-            notes=data.get("notes")
+            notes=data.get("notes"),
         )
-        
+
         # If this is a trade, record the trade details
         if data.get("acquisition_type") == "trade" and data.get("traded_item"):
             inventory.add_trade(
@@ -183,13 +185,10 @@ def add_item():
                 traded_item=data["traded_item"],
                 traded_item_value=data.get("traded_item_value"),
                 trade_partner=data.get("trade_partner"),
-                notes=data.get("trade_notes")
+                notes=data.get("trade_notes"),
             )
-            
-        return jsonify({
-            "message": "Item added successfully",
-            "id": item_id
-        }), 201
+
+        return jsonify({"message": "Item added successfully", "id": item_id}), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -209,9 +208,9 @@ def add_repair():
             repair_date=data.get("repair_date"),
             cost=data.get("cost"),
             next_due_date=data.get("next_due_date"),
-            status=data.get("status", "scheduled")
+            status=data.get("status", "scheduled"),
         )
-        
+
         # If components are specified, add them
         if "components" in data and isinstance(data["components"], list):
             for component in data["components"]:
@@ -221,13 +220,15 @@ def add_repair():
                     quantity=component.get("quantity", 1),
                     estimated_cost=component.get("estimated_cost"),
                     priority=component.get("priority", "medium"),
-                    status=component.get("status", "needed")
+                    status=component.get("status", "needed"),
                 )
-        
-        return jsonify({
-            "message": "Repair record added successfully",
-            "repair_id": repair_id
-        }), 201
+
+        return (
+            jsonify(
+                {"message": "Repair record added successfully", "repair_id": repair_id}
+            ),
+            201,
+        )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
@@ -247,18 +248,17 @@ def get_budget():
         budget = budget_tracker.get_budget()
         if not budget:
             return jsonify({"error": "Budget not set"}), 404
-        
+
         # Get current period spending
         total_spent = budget_tracker.calculate_total_spent()
         available = budget_tracker.calculate_available_budget()
-        
-        return jsonify({
-            "budget": budget,
-            "total_spent": total_spent,
-            "available": available
-        })
+
+        return jsonify(
+            {"budget": budget, "total_spent": total_spent, "available": available}
+        )
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @app.route("/api/budget", methods=["POST"])
 def update_budget():
@@ -270,7 +270,7 @@ def update_budget():
         budget_tracker.update_budget(
             amount=data["amount"],
             period=data.get("period", "monthly"),
-            notes=data.get("notes")
+            notes=data.get("notes"),
         )
         return jsonify({"message": "Budget updated successfully"}), 200
     except Exception as e:
@@ -291,7 +291,7 @@ def add_component():
             quantity_needed=data["quantity_needed"],
             estimated_cost=data.get("estimated_cost"),
             priority=data.get("priority", "medium"),
-            status=data.get("status", "needed")
+            status=data.get("status", "needed"),
         )
         return jsonify({"message": "Component added successfully"}), 201
     except Exception as e:
@@ -337,20 +337,25 @@ def upload_receipt():
 
         # Process the receipt
         parsed_data = receipt_processor.parse_receipt(file_path)
-        
+
         # Add items to inventory
-        for item in parsed_data['items']:
+        for item in parsed_data["items"]:
             inventory.add_item(
-                name=item['name'],
-                purchase_date=parsed_data['date'],
-                price=item['price'],
-                acquisition_type='purchase'
+                name=item["name"],
+                purchase_date=parsed_data["date"],
+                price=item["price"],
+                acquisition_type="purchase",
             )
 
-        return jsonify({
-            "message": "Receipt processed and items added to inventory",
-            "data": parsed_data
-        }), 200
+        return (
+            jsonify(
+                {
+                    "message": "Receipt processed and items added to inventory",
+                    "data": parsed_data,
+                }
+            ),
+            200,
+        )
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
