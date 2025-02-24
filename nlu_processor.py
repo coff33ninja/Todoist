@@ -75,7 +75,7 @@ def process_natural_language_query(query_text, get_db):
             }
 
         # Query about repairs
-        elif "repair" in query_lower or "fix" in query_lower:
+        elif "repair" in query_lower or "fix" in query_lower or "list all repairs" in query_lower:
             status_patterns = {
                 "scheduled": "scheduled" in query_lower,
                 "in progress": "progress" in query_lower,
@@ -88,10 +88,14 @@ def process_natural_language_query(query_text, get_db):
             query = """
                 SELECT r.*, i.name as item_name
                 FROM repairs r
-                JOIN items i ON r.item_id = i.id
-                ORDER BY r.repair_date DESC
+                LEFT JOIN items i ON r.item_id = i.id
             """
-            cursor.execute(query)
+            if status:
+                query += " WHERE r.status = ?"
+                cursor.execute(query, (status,))
+            else:
+                cursor.execute(query)
+            
             repairs = cursor.fetchall()
             return {
                 "type": "repairs",
@@ -127,8 +131,8 @@ def process_natural_language_query(query_text, get_db):
             }
 
         # Query about budget
-        elif "budget" in query_lower or "money" in query_lower or "spent" in query_lower:
-            cursor.execute("SELECT * FROM budget")
+        elif "budget" in query_lower or "show me the budget" in query_lower or "money" in query_lower or "spent" in query_lower:
+            cursor.execute("SELECT id, amount, period FROM budget")
             budgets = cursor.fetchall()
 
             if not budgets:
@@ -140,8 +144,8 @@ def process_natural_language_query(query_text, get_db):
             budget = budgets[0]
 
             # Calculate spending
-            cursor.execute("SELECT SUM(price) FROM items WHERE acquisition_type = 'purchase'")
-            total_spent = cursor.fetchone()[0] or 0
+            cursor.execute("SELECT COALESCE(SUM(price), 0) as total FROM items WHERE acquisition_type = 'purchase'")
+            total_spent = cursor.fetchone()["total"]
 
             return {
                 "type": "budget",

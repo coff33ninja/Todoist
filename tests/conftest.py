@@ -135,6 +135,12 @@ def sample_data(test_db):
     
     # Insert sample repairs
     cursor.execute("""
+        INSERT INTO repairs (item_id, repair_date, description, cost, status)
+        VALUES 
+            (1, '2023-01-01', 'First repair', 50.00, 'scheduled'),
+            (2, '2023-02-01', 'Second repair', 75.00, 'completed')
+    """)
+    cursor.execute("""
         INSERT INTO repairs (item_id, repair_date, description, cost)
         VALUES 
             (1, '2023-01-01', 'Test Repair 1', 50.00),
