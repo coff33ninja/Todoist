@@ -4,6 +4,7 @@ from datetime import datetime
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
+from ai.nlu_model import NLUModel
 import joblib
 import os
 
@@ -47,27 +48,31 @@ class NLUProcessor:
             ])
             return model
 
-    def train_model(self, X, y):
-        """Train the ML model with new data"""
-        self.model.fit(X, y)
-        # Ensure directory exists
-        os.makedirs(os.path.dirname(self.model_path), exist_ok=True)
-        joblib.dump(self.model, self.model_path)
+    def train(self, data_path):
+        """Train the NLU model using the provided dataset path."""
+        self.model.train(data_path)
 
     def process_natural_language_query(self, query, get_db):
-        """Process a natural language query using both pattern matching and ML"""
+        """Process a natural language query using the Transformers model"""
         if not query:
             return {"error": "Empty query"}
 
-        query = query.lower().strip()
+        predicted_label = self.model.predict_intent(query)
+        predicted_intent = list(intent_labels.keys())[
+            predicted_label
+        ]  # Adjust based on the model's output format
 
-        # First try pattern matching
-        pattern_result = self._try_pattern_matching(query, get_db)
-        if pattern_result.get('items') or pattern_result.get('message'):
-            return pattern_result
-
-        # Fall back to ML model
-        return self._handle_with_ml(query, get_db)
+        # Handle intent
+        if predicted_intent == "search":
+            return self._handle_search(get_db().cursor(), None)
+        elif predicted_intent == "count":
+            return self._handle_count(get_db().cursor(), None)
+        elif predicted_intent == "value":
+            return self._handle_value(get_db().cursor(), None)
+        elif predicted_intent == "price_range":
+            return self._handle_price_range(get_db().cursor(), None)
+        else:
+            return {"message": "I'm not sure how to handle that request."}
 
     def _try_pattern_matching(self, query, get_db):
         """Try to match query patterns"""
