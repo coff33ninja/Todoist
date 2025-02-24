@@ -128,8 +128,11 @@ def init_db():
 
 @app.route("/api/items", methods=["GET"])
 def get_items():
-    items = inventory.get_items()
-    return jsonify(items)
+    try:
+        items = inventory.get_items()
+        return jsonify(items)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/items", methods=["POST"])
@@ -189,10 +192,13 @@ def get_repairs():
 
 @app.route("/api/budget", methods=["GET"])
 def get_budget():
-    budget = budget_tracker.get_budget()
-    if not budget:
-        return jsonify({"error": "Budget not set"}), 404
-    return jsonify(budget)
+    try:
+        budget = budget_tracker.get_budget()
+        if not budget:
+            return jsonify({"error": "Budget not set"}), 404
+        return jsonify(budget)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/budget", methods=["POST"])
@@ -249,8 +255,11 @@ def handle_query():
     if not query_text:
         return jsonify({"error": "No query provided"}), 400
 
-    response = process_natural_language_query(query_text, get_db())
-    return jsonify({"response": response})
+    try:
+        response = process_natural_language_query(query_text, get_db())
+        return jsonify({"response": response})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @app.route("/api/receipts/upload", methods=["POST"])
