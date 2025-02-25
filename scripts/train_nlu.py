@@ -15,7 +15,27 @@ def main():
         "count all products in storage",
         "what items are in the living room",
         "how much are my things worth",
-        "show me things that cost less than 20"
+        "show me things that cost less than 20",
+        "Where did I put my keys?",
+        "What items do I have in the garage?",
+        "How much did I spend on groceries last month?",
+        "List all items that need to be repaired.",
+        "Where is my winter coat?",
+        "Show me all items that cost more than $100.",
+        "What did I buy last week?",
+        "How many items are in the kitchen?",
+        "Where are the receipts for the items I bought?",
+        "What is the total value of my inventory?",
+        "Can you remind me where I stored the holiday decorations?",
+        "How much have I spent on electronics this year?",
+        "What items are in the living room?",
+        "List all items that I need to return.",
+        "Where did I put the blender?",
+        "What is the warranty status of my appliances?",
+        "How many items do I have in storage?",
+        "What items are due for repair soon?",
+        "Can you show me the items I bought on sale?",
+        "Where are my tools?",
     ]
 
     # Corresponding intents with mapping to integers
@@ -25,16 +45,38 @@ def main():
         'value': 2,
         'price_range': 3
     }
-    
+
     y = [
-        label_mapping['search'],
-        label_mapping['count'],
-        label_mapping['value'],
-        label_mapping['price_range'],
-        label_mapping['count'],
-        label_mapping['search'],
-        label_mapping['value'],
-        label_mapping['price_range']
+        label_mapping["search"],  # "show me things that cost less than 20"
+        label_mapping["count"],  # "how many items do I have in the garage"
+        label_mapping["value"],  # "what is the total value of my inventory"
+        label_mapping["price_range"],  # "list items that cost more than 50 dollars"
+        label_mapping["count"],  # "count all products in storage"
+        label_mapping["search"],  # "what items are in the living room"
+        label_mapping["value"],  # "how much are my things worth"
+        label_mapping["search"],  # "show me things that cost less than 20"
+        label_mapping["search"],  # "Where did I put my keys?"
+        label_mapping["count"],  # "What items do I have in the garage?"
+        label_mapping["value"],  # "How much did I spend on groceries last month?"
+        label_mapping["count"],  # "List all items that need to be repaired."
+        label_mapping["search"],  # "Where is my winter coat?"
+        label_mapping["search"],  # "Show me all items that cost more than $100."
+        label_mapping["search"],  # "What did I buy last week?"
+        label_mapping["count"],  # "How many items are in the kitchen?"
+        label_mapping["search"],  # "Where are the receipts for the items I bought?"
+        label_mapping["value"],  # "What is the total value of my inventory?"
+        label_mapping[
+            "search"
+        ],  # "Can you remind me where I stored the holiday decorations?"
+        label_mapping["value"],  # "How much have I spent on electronics this year?"
+        label_mapping["search"],  # "What items are in the living room?"
+        label_mapping["count"],  # "List all items that I need to return."
+        label_mapping["search"],  # "Where did I put the blender?"
+        label_mapping["search"],  # "What is the warranty status of my appliances?"
+        label_mapping["count"],  # "How many items do I have in storage?"
+        label_mapping["search"],  # "What items are due for repair soon?"
+        label_mapping["search"],  # "Can you show me the items I bought on sale?"
+        label_mapping["search"],  # "Where are my tools?"
     ]
 
     from transformers import DistilBertTokenizerFast
