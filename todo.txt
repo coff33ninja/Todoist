@@ -1,0 +1,65 @@
+Plan:
+
+Enhance Natural Language Processing:
+
+[] nlu_processor.py
+[] Add machine learning models for intent classification and entity recognition
+[] Improve pattern matching with more sophisticated NLP techniques
+[] Add support for context-aware conversations
+
+Create New AI Components:
+[] ai_models/
+[] Create directory for storing trained models
+[] Add model training scripts
+[] data_processor.py
+[] Create new module for data preprocessing and feature engineering
+
+-Almost happy with end results-
+______________________________________________________________________________________________________
+Expand Optical Character Recognition:
+
+[] ocr_processor.py
+[] Implement advanced image preprocessing techniques
+[] Add support for different receipt formats and languages
+[] Integrate with external OCR APIs for improved accuracy
+-Current implementations:
+Integrate Tesseract OCR for extracting data from receipts, allowing users to upload receipts and automatically log purchases.
+ curl -X POST http://localhost:5000/api/upload_receipt -F 
+ curl -X POST http://localhost:5000/api/upload_receipt -F "file=@../uploads/sample_receipt_international.txt"-
+
+
+Update Main Application:
+
+[] main.py
+[] Integrate enhanced AI components
+[] Add new API endpoints for AI features
+-still in progress as more api's are being added and tested-
+Update Testing:
+
+[] tests/test_nlu_processor.py
+[] Add tests for new NLP features
+[] tests/test_ocr_processor.py
+[] Create new test file for OCR enhancements
+[] tests/test_ai_models.py
+[] Create new test file for AI model functionality
+
+
+Task and Inventory Management Features:
+Develop features for tracking warranty dates, repair schedules, and maintenance reminders.
+Implement a system for logging trades, gifts, and free acquisitions.
+
+Budget Tracking Enhancements:
+I need to add functionality to track spending against a budget and provide alerts when nearing budget limits.
+
+User-Friendly Dashboard:
+I need to create a web-based dashboard for users to view inventory, track tasks, and manage budgets visually.
+
+Voice Interaction:
+I am considering integration of voice recognition capabilities for hands-free interaction with the system.
+
+Scenario-Based Training Data:
+Use the scenarios outlined in the conversation.txt as training data I got from OpenAi (that led to the idea of this agent/assistant/angry house wife[who also was the route cause of this rabbit hole]) to improve the model's understanding of user queries and context.
+More types of scenarios will be added for training.
+
+Integration with External APIs:
+I am going to explore the possibility of integrating with external services for enhanced functionality, such as price comparison or warranty tracking.
