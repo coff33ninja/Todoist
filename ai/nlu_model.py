@@ -34,7 +34,7 @@ class NLUModel:
 
         return train_texts, train_labels, intent_labels
 
-    def train(self, data_path, batch_size=8, epochs=3):
+    def train(self, data_path, batch_size=8, epochs=3, logging_dir='./logs'):
         """Train the NLU model."""
         train_texts, train_labels, intent_labels = self.load_data(data_path)
 
