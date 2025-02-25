@@ -107,6 +107,23 @@
         "documentation": {}
     },
     {
+        "label": "DistilBertTokenizerFast",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
+        "label": "re",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "re",
+        "description": "re",
+        "detail": "re",
+        "documentation": {}
+    },
+    {
         "label": "sqlite3",
         "kind": 6,
         "isExtraImport": true,
@@ -159,15 +176,6 @@
         "documentation": {}
     },
     {
-        "label": "re",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "re",
-        "description": "re",
-        "detail": "re",
-        "documentation": {}
-    },
-    {
         "label": "datetime",
         "importPath": "datetime",
         "description": "datetime",
@@ -208,12 +216,35 @@
         "documentation": {}
     },
     {
-        "label": "threading",
-        "kind": 6,
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
         "isExtraImport": true,
-        "importPath": "threading",
-        "description": "threading",
-        "detail": "threading",
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "request",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "jsonify",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
         "documentation": {}
     },
     {
@@ -265,6 +296,64 @@
         "documentation": {}
     },
     {
+        "label": "CORS",
+        "importPath": "flask_cors",
+        "description": "flask_cors",
+        "isExtraImport": true,
+        "detail": "flask_cors",
+        "documentation": {}
+    },
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "NLUProcessor",
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "isExtraImport": true,
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "NLUProcessor",
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "isExtraImport": true,
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "NLUProcessor",
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "isExtraImport": true,
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "NLUProcessor",
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "isExtraImport": true,
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "threading",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "threading",
+        "description": "threading",
+        "detail": "threading",
+        "documentation": {}
+    },
+    {
         "label": "InventoryManager",
         "importPath": "core.inventory_manager",
         "description": "core.inventory_manager",
@@ -303,15 +392,6 @@
         "importPath": "subprocess",
         "description": "subprocess",
         "detail": "subprocess",
-        "documentation": {}
-    },
-    {
-        "label": "sys",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "sys",
-        "description": "sys",
-        "detail": "sys",
         "documentation": {}
     },
     {
@@ -358,30 +438,6 @@
         "documentation": {}
     },
     {
-        "label": "NLUProcessor",
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
-        "isExtraImport": true,
-        "detail": "ai.nlu_processor",
-        "documentation": {}
-    },
-    {
-        "label": "NLUProcessor",
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
-        "isExtraImport": true,
-        "detail": "ai.nlu_processor",
-        "documentation": {}
-    },
-    {
-        "label": "NLUProcessor",
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
-        "isExtraImport": true,
-        "detail": "ai.nlu_processor",
-        "documentation": {}
-    },
-    {
         "label": "pytest",
         "kind": 6,
         "isExtraImport": true,
@@ -420,7 +476,7 @@
         "kind": 6,
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
-        "peekOfCode": "class NLUProcessor:\n    def __init__(self, model_path='ai_models/nlu_model.pkl'):\n        # Initialize patterns for basic matching\n        self.patterns = {\n            'search': [\n                r'show\\s+(?:me\\s+)?(?:all\\s+)?(?:the\\s+)?'\n                r'(?:items?|products?|things?)(?:\\s+in\\s+(.+))?',\n                r'what\\s+(?:items?|products?|things?)'\n                r'(?:\\s+do\\s+I\\s+have)?(?:\\s+in\\s+(.+))?',\n                r'list\\s+(?:all\\s+)?(?:items?|products?|things?)'",
+        "peekOfCode": "class NLUProcessor:\n    def __init__(self, model_path='ai_models/nlu_model.pkl'):\n        # Basic patterns still exist (they can be extended later)\n        self.patterns = {\n            'search': [\n                r'show\\s+(?:me\\s+)?(?:all\\s+)?(?:the\\s+)?(?:items?|products?|things?)(?:\\s+in\\s+(.+))?'\n            ],\n            'count': [\n                r'how\\s+many\\s+(?:items?|products?|things?)(?:\\s+in\\s+(.+))?'\n            ],",
         "detail": "ai.nlu_processor",
         "documentation": {}
     },
@@ -440,6 +496,87 @@
         "description": "ai.receipt_processor",
         "peekOfCode": "class ReceiptProcessor:\n    def __init__(self, tesseract_path=None):\n        if tesseract_path:\n            pytesseract.pytesseract.tesseract_cmd = tesseract_path\n    def preprocess_image(self, image_path):\n        \"\"\"Preprocess image for better OCR results\"\"\"\n        img = cv2.imread(image_path)\n        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)\n        # Apply thresholding\n        _, processed = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)",
         "detail": "ai.receipt_processor",
+        "documentation": {}
+    },
+    {
+        "label": "get_db",
+        "kind": 2,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "def get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    conn = sqlite3.connect(\"db/inventory.db\")\n    conn.row_factory = sqlite3.Row\n    return conn\n@app.route(\"/api/query\", methods=[\"POST\"])\ndef process_query():\n    \"\"\"Process natural language queries.\"\"\"\n    try:\n        data = request.get_json()",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "process_query",
+        "kind": 2,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "def process_query():\n    \"\"\"Process natural language queries.\"\"\"\n    try:\n        data = request.get_json()\n        if not data or \"query\" not in data:\n            return jsonify({\"error\": \"Missing query in request\"}), 400\n        query = data[\"query\"]\n        result = nlu_processor.process_natural_language_query(query, get_db)\n        return jsonify(result)\n    except Exception as e:",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "get_categories",
+        "kind": 2,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "def get_categories():\n    \"\"\"Get list of predefined categories.\"\"\"\n    try:\n        conn = get_db()\n        cursor = conn.cursor()\n        cursor.execute(\"SELECT name FROM categories ORDER BY name\")\n        categories = [row[0] for row in cursor.fetchall()]\n        conn.close()\n        return jsonify({\"categories\": categories})\n    except Exception as e:",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "add_item",
+        "kind": 2,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "def add_item():\n    \"\"\"Add a new item to the inventory.\"\"\"\n    try:\n        data = request.get_json()\n        required_fields = [\"name\", \"quantity\", \"price\", \"location\"]\n        # Validate required fields\n        if not all(field in data for field in required_fields):\n            return (\n                jsonify(\n                    {",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "delete_item",
+        "kind": 2,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "def delete_item(item_id):\n    \"\"\"Delete an item from the inventory.\"\"\"\n    try:\n        conn = get_db()\n        cursor = conn.cursor()\n        cursor.execute(\"SELECT 1 FROM items WHERE id = ?\", (item_id,))\n        if not cursor.fetchone():\n            return jsonify({\"error\": \"Item not found\"}), 404\n        cursor.execute(\"DELETE FROM items WHERE id = ?\", (item_id,))\n        conn.commit()",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "get_locations",
+        "kind": 2,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "def get_locations():\n    \"\"\"Get list of existing locations for autocomplete.\"\"\"\n    try:\n        conn = get_db()\n        cursor = conn.cursor()\n        cursor.execute('SELECT DISTINCT location FROM items WHERE location IS NOT NULL')\n        locations = [row[0] for row in cursor.fetchall()]\n        conn.close()\n        return jsonify({\"locations\": locations})\n    except Exception as e:",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "health_check",
+        "kind": 2,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "def health_check():\n    \"\"\"Health check endpoint.\"\"\"\n    return jsonify({\"status\": \"healthy\"})\nif __name__ == \"__main__\":\n    app.run(debug=True, port=5000)",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "app = Flask(__name__)\nCORS(app)  # Enable CORS for all routes\n# Initialize NLU processor\nnlu_processor = NLUProcessor(model_path=\"ai_models/nlu_model.pkl\")\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    conn = sqlite3.connect(\"db/inventory.db\")\n    conn.row_factory = sqlite3.Row\n    return conn\n@app.route(\"/api/query\", methods=[\"POST\"])",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "nlu_processor",
+        "kind": 5,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "nlu_processor = NLUProcessor(model_path=\"ai_models/nlu_model.pkl\")\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    conn = sqlite3.connect(\"db/inventory.db\")\n    conn.row_factory = sqlite3.Row\n    return conn\n@app.route(\"/api/query\", methods=[\"POST\"])\ndef process_query():\n    \"\"\"Process natural language queries.\"\"\"\n    try:",
+        "detail": "backend.app",
         "documentation": {}
     },
     {
@@ -578,6 +715,15 @@
         "documentation": {}
     },
     {
+        "label": "init_db",
+        "kind": 2,
+        "importPath": "scripts.init_db",
+        "description": "scripts.init_db",
+        "peekOfCode": "def init_db():\n    \"\"\"Initialize the database with required tables.\"\"\"\n    # Ensure db directory exists\n    db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), \"db\")\n    os.makedirs(db_dir, exist_ok=True)\n    db_path = os.path.join(db_dir, \"inventory.db\")\n    # Connect to database (creates it if it doesn't exist)\n    conn = sqlite3.connect(db_path)\n    conn.row_factory = sqlite3.Row\n    cursor = conn.cursor()",
+        "detail": "scripts.init_db",
+        "documentation": {}
+    },
+    {
         "label": "install_dependencies",
         "kind": 2,
         "importPath": "scripts.install_deps",
@@ -614,11 +760,29 @@
         "documentation": {}
     },
     {
+        "label": "load_and_prepare_data",
+        "kind": 2,
+        "importPath": "scripts.train_nlu",
+        "description": "scripts.train_nlu",
+        "peekOfCode": "def load_and_prepare_data(data_path=None, label_mapping=None):\n    \"\"\"Load training data from file or use default examples if no file provided.\"\"\"\n    if data_path and os.path.exists(data_path):\n        # Read from CSV file if it exists\n        df = pd.read_csv(data_path)\n        df[\"label\"] = df[\"intent\"].map(label_mapping)\n        df = df.dropna(subset=[\"label\"])\n        return df[\"query\"].tolist(), df[\"label\"].tolist()\n    # Default training examples if no file provided\n    X = [",
+        "detail": "scripts.train_nlu",
+        "documentation": {}
+    },
+    {
+        "label": "create_dataset",
+        "kind": 2,
+        "importPath": "scripts.train_nlu",
+        "description": "scripts.train_nlu",
+        "peekOfCode": "def create_dataset(queries, labels, tokenizer):\n    \"\"\"Create a Dataset object from queries and labels.\"\"\"\n    tokenized_inputs = tokenizer(\n        queries,\n        padding=True,\n        truncation=True,\n        return_tensors=\"pt\"\n    )\n    return Dataset.from_dict({\n        'input_ids': tokenized_inputs['input_ids'].tolist(),",
+        "detail": "scripts.train_nlu",
+        "documentation": {}
+    },
+    {
         "label": "main",
         "kind": 2,
         "importPath": "scripts.train_nlu",
         "description": "scripts.train_nlu",
-        "peekOfCode": "def main():\n    # Sample training data\n    X = [\n        \"show me all items in the kitchen\",\n        \"how many items do I have in the garage\",\n        \"what is the total value of my inventory\",\n        \"list items that cost more than 50 dollars\",\n        \"count all products in storage\",\n        \"what items are in the living room\",\n        \"how much are my things worth\",",
+        "peekOfCode": "def main():\n    parser = argparse.ArgumentParser(description=\"Train an enhanced NLU model.\")\n    parser.add_argument(\n        \"--data\",\n        type=str,\n        help=\"Path to CSV training data (optional)\"\n    )\n    parser.add_argument(\n        \"--epochs\",\n        type=int,",
         "detail": "scripts.train_nlu",
         "documentation": {}
     },
