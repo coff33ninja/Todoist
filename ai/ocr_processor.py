@@ -64,6 +64,7 @@ class ReceiptProcessor:
             processed_image = self.preprocess_image(image_path)
 
             if processed_image is None:
+                print("Processed image is None")  # Debug statement
                 return None
 
             # Perform OCR with custom configuration
@@ -112,6 +113,8 @@ class ReceiptProcessor:
                     except Exception:
                         continue
 
+            print(f"Extracted Text for Parsing: {text}")  # Debug statement
+            print("Checking lines for store name...")  # Debug statement
             # Extract store name (usually at the top of receipt)
             lines = text.split("\n")
             for line in lines[:3]:  # Check first 3 lines

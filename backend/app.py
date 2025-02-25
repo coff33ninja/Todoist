@@ -12,6 +12,7 @@ from datetime import datetime
 # Ensure repository path is accessible
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from ai.nlu_processor import NLUProcessor
+from ai.ocr_processor import ReceiptProcessor
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -173,5 +174,73 @@ def health_check():
     """Health check endpoint."""
     return jsonify({"status": "healthy"})
 
+@app.route("/api/upload_receipt", methods=["POST"])
+def upload_receipt():
+    """Upload a receipt and extract text using OCR."""
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file part"}), 400
+        
+        file = request.files['file']
+        
+        if file.filename == '':
+            return jsonify({"error": "No selected file"}), 400
+        
+        # Save the file to the uploads directory
+        uploads_dir = 'uploads'
+        os.makedirs(uploads_dir, exist_ok=True)
+        file_path = os.path.join(uploads_dir, file.filename)
+        file.save(file_path)
+
+        # Process the receipt
+        receipt_processor = ReceiptProcessor()
+        if file.filename.endswith('.txt'):
+            # Read text file directly
+            extracted_text = file.read().decode('utf-8')
+        else:
+            # Process using OCR
+            extracted_text = receipt_processor.extract_text(file_path)
+
+        if extracted_text is None:
+            return jsonify({"error": "Failed to extract text from receipt"}), 500
+
+        print(f"Extracted Text: {extracted_text}")  # Debug statement
+        parsed_data = receipt_processor.parse_receipt(extracted_text)
+
+        if parsed_data is None:
+            return jsonify({"error": "Failed to parse receipt data"}), 500
+
+        # Log the parsed data into the database
+        conn = get_db()
+        cursor = conn.cursor()
+
+        # Insert store name and date into the purchases table
+        cursor.execute(
+            """
+            INSERT INTO purchases (store_name, purchase_date, total)
+            VALUES (?, ?, ?)
+            """,
+            (parsed_data["store_name"], parsed_data["date"], parsed_data["total"]),
+        )
+        purchase_id = cursor.lastrowid
+
+        # Insert items into the purchase_items table
+        for item in parsed_data["items"]:
+            cursor.execute(
+                """
+                INSERT INTO purchase_items (purchase_id, description, quantity, price, acquisition_type)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (purchase_id, item["description"], item["quantity"], item["price"], item["acquisition_type"]),
+            )
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({"message": "Receipt processed successfully", "parsed_data": parsed_data})
+        
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+            
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+            app.run(debug=True, port=5000)

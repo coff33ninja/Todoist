@@ -70,6 +70,33 @@ def init_db():
     """
     )
 
+    # Create purchases table
+    cursor.execute(
+        """
+    CREATE TABLE IF NOT EXISTS purchases (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        store_name TEXT NOT NULL,
+        purchase_date TEXT,
+        total REAL
+    )
+    """
+    )
+
+    # Create purchase_items table
+    cursor.execute(
+        """
+    CREATE TABLE IF NOT EXISTS purchase_items (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        purchase_id INTEGER,
+        description TEXT NOT NULL,
+        quantity INTEGER DEFAULT 1,
+        price REAL,
+        acquisition_type TEXT,
+        FOREIGN KEY (purchase_id) REFERENCES purchases(id)
+    )
+    """
+    )
+
     # Add sample data
     sample_items = [
         (

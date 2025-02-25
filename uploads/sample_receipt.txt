@@ -1,0 +1,6 @@
+Store Name: Sample Store
+Date: 2023-10-01
+Items:
+1 x Item A $10.00
+1 x Item B $15.50
+Total: $25.50

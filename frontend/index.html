@@ -171,6 +171,7 @@
     <div class="tabs">
         <button class="tab active" data-tab="query">Ask AI Assistant</button>
         <button class="tab" data-tab="add-item">Add New Item</button>
+        <button class="tab" data-tab="upload-receipt">Upload Receipt</button>
     </div>
 
     <div id="query-tab" class="tab-content active">
@@ -252,6 +253,20 @@
                 </div>
                 <button type="submit">Add Item</button>
                 <div id="addItemMessage"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="upload-receipt-tab" class="tab-content">
+        <div class="container">
+            <h2>Upload Receipt</h2>
+            <form id="uploadReceiptForm">
+                <div class="form-group">
+                    <label for="receipt">Select Receipt Image*</label>
+                    <input type="file" id="receipt" accept="image/*" required />
+                </div>
+                <button type="submit">Upload Receipt</button>
+                <div id="uploadMessage"></div>
             </form>
         </div>
     </div>
@@ -384,6 +399,37 @@
                     messageDiv.textContent = data.message;
                     e.target.reset();
                     loadLocations();
+                }
+            } catch (error) {
+                messageDiv.className = 'error-message';
+                messageDiv.textContent = 'Error: Could not connect to the server';
+            }
+        });
+
+        // Upload receipt form submission
+        document.getElementById('uploadReceiptForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const messageDiv = document.getElementById('uploadMessage');
+            const fileInput = document.getElementById('receipt');
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+
+            try {
+                const response = await fetch(`${API_URL}/api/upload_receipt`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    messageDiv.className = 'error-message';
+                    messageDiv.textContent = `Error: ${data.error}`;
+                } else {
+                    messageDiv.className = 'success-message';
+                    messageDiv.textContent = 'Receipt uploaded successfully! Extracted text: ' + data.extracted_text;
+                    e.target.reset();
                 }
             } catch (error) {
                 messageDiv.className = 'error-message';

@@ -345,6 +345,14 @@
         "documentation": {}
     },
     {
+        "label": "ReceiptProcessor",
+        "importPath": "ai.ocr_processor",
+        "description": "ai.ocr_processor",
+        "isExtraImport": true,
+        "detail": "ai.ocr_processor",
+        "documentation": {}
+    },
+    {
         "label": "threading",
         "kind": 6,
         "isExtraImport": true,
@@ -557,7 +565,16 @@
         "kind": 2,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "def health_check():\n    \"\"\"Health check endpoint.\"\"\"\n    return jsonify({\"status\": \"healthy\"})\nif __name__ == \"__main__\":\n    app.run(debug=True, port=5000)",
+        "peekOfCode": "def health_check():\n    \"\"\"Health check endpoint.\"\"\"\n    return jsonify({\"status\": \"healthy\"})\n@app.route(\"/api/upload_receipt\", methods=[\"POST\"])\ndef upload_receipt():\n    \"\"\"Upload a receipt and extract text using OCR.\"\"\"\n    try:\n        if 'file' not in request.files:\n            return jsonify({\"error\": \"No file part\"}), 400\n        file = request.files['file']",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "upload_receipt",
+        "kind": 2,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "def upload_receipt():\n    \"\"\"Upload a receipt and extract text using OCR.\"\"\"\n    try:\n        if 'file' not in request.files:\n            return jsonify({\"error\": \"No file part\"}), 400\n        file = request.files['file']\n        if file.filename == '':\n            return jsonify({\"error\": \"No selected file\"}), 400\n        # Save the file to the uploads directory\n        uploads_dir = 'uploads'",
         "detail": "backend.app",
         "documentation": {}
     },
@@ -712,6 +729,15 @@
         "description": "core.task_manager",
         "peekOfCode": "class TaskManager:\n    def __init__(self, db_path='inventory.db'):\n        self.db_path = db_path\n        self.conn = sqlite3.connect(db_path)\n        self.create_tables()\n    def create_tables(self):\n        cursor = self.conn.cursor()\n        # Table for repair tasks\n        cursor.execute('''\n            CREATE TABLE IF NOT EXISTS repairs (",
         "detail": "core.task_manager",
+        "documentation": {}
+    },
+    {
+        "label": "check_receipts",
+        "kind": 2,
+        "importPath": "scripts.check_receipts",
+        "description": "scripts.check_receipts",
+        "peekOfCode": "def check_receipts():\n    \"\"\"Check the contents of the purchases and purchase_items tables.\"\"\"\n    conn = sqlite3.connect(\"db/inventory.db\")\n    cursor = conn.cursor()\n    # Check if purchases table exists\n    cursor.execute(\"SELECT name FROM sqlite_master WHERE type='table' AND name='purchases'\")\n    if cursor.fetchone() is None:\n        print(\"Purchases table does not exist.\")\n    else:\n        # Fetch purchases",
+        "detail": "scripts.check_receipts",
         "documentation": {}
     },
     {
