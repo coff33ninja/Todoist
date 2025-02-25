@@ -35,6 +35,14 @@
         "documentation": {}
     },
     {
+        "label": "Dataset",
+        "importPath": "datasets",
+        "description": "datasets",
+        "isExtraImport": true,
+        "detail": "datasets",
+        "documentation": {}
+    },
+    {
         "label": "DistilBertTokenizerFast",
         "importPath": "transformers",
         "description": "transformers",
