@@ -511,7 +511,7 @@
         "kind": 2,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "def get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    conn = sqlite3.connect(\"db/inventory.db\")\n    conn.row_factory = sqlite3.Row\n    return conn\n@app.route(\"/api/query\", methods=[\"POST\"])\ndef process_query():\n    \"\"\"Process natural language queries.\"\"\"\n    try:\n        data = request.get_json()",
+        "peekOfCode": "def get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    conn = sqlite3.connect(db_path)\n    conn.row_factory = sqlite3.Row\n    return conn\n@app.route(\"/api/query\", methods=[\"POST\"])\ndef process_query():\n    \"\"\"Process natural language queries.\"\"\"\n    try:",
         "detail": "backend.app",
         "documentation": {}
     },
@@ -565,7 +565,7 @@
         "kind": 2,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "def health_check():\n    \"\"\"Health check endpoint.\"\"\"\n    return jsonify({\"status\": \"healthy\"})\n@app.route(\"/api/upload_receipt\", methods=[\"POST\"])\ndef upload_receipt():\n    \"\"\"Upload a receipt and extract text using OCR.\"\"\"\n    try:\n        if 'file' not in request.files:\n            return jsonify({\"error\": \"No file part\"}), 400\n        file = request.files['file']",
+        "peekOfCode": "def health_check():\n    \"\"\"Health check endpoint.\"\"\"\n    return jsonify({\"status\": \"healthy\"})\n@app.route('/api/upload_receipt', methods=['POST'])\ndef upload_receipt():\n    try:\n        print(\"Received upload_receipt request\")\n        if 'file' not in request.files:\n            print(\"No file part in request\")\n            return jsonify({\"error\": \"No file part\"}), 400",
         "detail": "backend.app",
         "documentation": {}
     },
@@ -574,7 +574,7 @@
         "kind": 2,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "def upload_receipt():\n    \"\"\"Upload a receipt and extract text using OCR.\"\"\"\n    try:\n        if 'file' not in request.files:\n            return jsonify({\"error\": \"No file part\"}), 400\n        file = request.files['file']\n        if file.filename == '':\n            return jsonify({\"error\": \"No selected file\"}), 400\n        # Save the file to the uploads directory\n        uploads_dir = 'uploads'",
+        "peekOfCode": "def upload_receipt():\n    try:\n        print(\"Received upload_receipt request\")\n        if 'file' not in request.files:\n            print(\"No file part in request\")\n            return jsonify({\"error\": \"No file part\"}), 400\n        file = request.files['file']\n        if file.filename == '':\n            print(\"No selected file\")\n            return jsonify({\"error\": \"No selected file\"}), 400",
         "detail": "backend.app",
         "documentation": {}
     },
@@ -583,7 +583,7 @@
         "kind": 5,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "app = Flask(__name__)\nCORS(app)  # Enable CORS for all routes\n# Initialize NLU processor\nnlu_processor = NLUProcessor(model_path=\"ai_models/nlu_model.pkl\")\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    conn = sqlite3.connect(\"db/inventory.db\")\n    conn.row_factory = sqlite3.Row\n    return conn\n@app.route(\"/api/query\", methods=[\"POST\"])",
+        "peekOfCode": "app = Flask(__name__)\nCORS(app)  # Enable CORS for all routes\n# Initialize NLU processor\nnlu_processor = NLUProcessor(model_path=\"ai_models/nlu_model.pkl\")\n# Ensure the uploads directory exists\nuploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)",
         "detail": "backend.app",
         "documentation": {}
     },
@@ -592,8 +592,35 @@
         "kind": 5,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "nlu_processor = NLUProcessor(model_path=\"ai_models/nlu_model.pkl\")\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    conn = sqlite3.connect(\"db/inventory.db\")\n    conn.row_factory = sqlite3.Row\n    return conn\n@app.route(\"/api/query\", methods=[\"POST\"])\ndef process_query():\n    \"\"\"Process natural language queries.\"\"\"\n    try:",
+        "peekOfCode": "nlu_processor = NLUProcessor(model_path=\"ai_models/nlu_model.pkl\")\n# Ensure the uploads directory exists\nuploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')",
         "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "uploads_dir",
+        "kind": 5,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    conn = sqlite3.connect(db_path)\n    conn.row_factory = sqlite3.Row",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "db_dir",
+        "kind": 5,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    conn = sqlite3.connect(db_path)\n    conn.row_factory = sqlite3.Row\n    return conn\n@app.route(\"/api/query\", methods=[\"POST\"])\ndef process_query():",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "init_db",
+        "kind": 2,
+        "importPath": "backend.init_db",
+        "description": "backend.init_db",
+        "peekOfCode": "def init_db():\n    # Get the path to the db directory\n    db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\n    os.makedirs(db_dir, exist_ok=True)\n    db_path = os.path.join(db_dir, 'inventory.db')\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    # Create purchases table\n    cursor.execute('''\n    CREATE TABLE IF NOT EXISTS purchases (",
+        "detail": "backend.init_db",
         "documentation": {}
     },
     {

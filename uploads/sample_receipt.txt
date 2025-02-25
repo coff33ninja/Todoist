@@ -1,6 +1,23 @@
-Store Name: Sample Store
-Date: 2023-10-01
+SHOPRITE
+456 Market Street
+Johannesburg, 2000
+
+Date: 2024-01-15
+Time: 14:30:25
+
 Items:
-1 x Item A $10.00
-1 x Item B $15.50
-Total: $25.50
+2 x Milk 2L R79.98
+1 x Bread R22.99
+3 x Bananas R17.97
+1 x Paper Towels R49.99
+2 x Cereal R89.98
+
+Subtotal: R260.91
+VAT (15%): R39.14
+Total: R300.05
+
+Payment Method: Debit Card
+Card ending in: ****1234
+
+Thank you for shopping at Shoprite!
+Receipt #: 9876-5432-1098
