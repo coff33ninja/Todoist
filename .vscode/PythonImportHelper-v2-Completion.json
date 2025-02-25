@@ -83,6 +83,22 @@
         "documentation": {}
     },
     {
+        "label": "Trainer",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
+        "label": "TrainingArguments",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
         "label": "sqlite3",
         "kind": 6,
         "isExtraImport": true,
@@ -376,18 +392,10 @@
     },
     {
         "label": "app",
-        "importPath": "main",
-        "description": "main",
+        "importPath": "core.main",
+        "description": "core.main",
         "isExtraImport": true,
-        "detail": "main",
-        "documentation": {}
-    },
-    {
-        "label": "init_db",
-        "importPath": "main",
-        "description": "main",
-        "isExtraImport": true,
-        "detail": "main",
+        "detail": "core.main",
         "documentation": {}
     },
     {
@@ -638,7 +646,7 @@
         "kind": 2,
         "importPath": "tests.conftest",
         "description": "tests.conftest",
-        "peekOfCode": "def sample_data(test_db):\n    \"\"\"Insert sample data into the test database\"\"\"\n    cursor = test_db.cursor()\n    # Insert sample items\n    cursor.execute(\"\"\"\n        INSERT INTO items (name, description, quantity, price)\n        VALUES \n            ('Test Item 1', 'Description 1', 1, 100.00),\n            ('Test Item 2', 'Description 2', 2, 200.00)\n    \"\"\")",
+        "peekOfCode": "def sample_data(test_db):\n    \"\"\"Insert sample data into the test database\"\"\"\n    cursor = test_db.cursor()\n    # Insert sample items\n    cursor.execute(\"\"\"\n        INSERT INTO items (name, description, quantity, price)\n        VALUES\n            ('Test Item 1', 'Description 1', 1, 100.00),\n            ('Test Item 2', 'Description 2', 2, 200.00)\n    \"\"\")",
         "detail": "tests.conftest",
         "documentation": {}
     },
@@ -697,47 +705,29 @@
         "documentation": {}
     },
     {
-        "label": "test_inventory_query",
+        "label": "test_intent_classification",
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_inventory_query(sample_data: dict):\n    \"\"\"Test querying about inventory items\"\"\"\n    query = \"Show me all items\"\n    processor = NLUProcessor()\n    result: dict = processor.process_natural_language_query(query, lambda: sample_data)\n    assert result.get(\"type\") == \"search\"\n    assert isinstance(result.get(\"count\"), int) and result[\"count\"] >= 2\n    items = result.get(\"items\", [])\n    assert any(\"Test Item 1\" in item.get(\"name\", \"\") for item in items)\n    assert any(\"Test Item 2\" in item.get(\"name\", \"\") for item in items)",
+        "peekOfCode": "def test_intent_classification():\n    \"\"\"Test the transformer model's intent classification\"\"\"\n    processor = NLUProcessor()\n    test_cases = [\n        (\"show me all items in the kitchen\", \"search\"),\n        (\"how many products do I have\", \"count\"),\n        (\"what is the total value of my inventory\", \"value\"),\n        (\"list items that cost more than 100 dollars\", \"price_range\"),\n        (\"unknown query that should fail\", \"unknown\")\n    ]",
         "detail": "tests.test_nlu_processor",
         "documentation": {}
     },
     {
-        "label": "test_repairs_query",
+        "label": "test_response_format",
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_repairs_query(sample_data: dict):\n    \"\"\"Test querying about repairs\"\"\"\n    query = \"List all repairs\"\n    processor = NLUProcessor()\n    result: dict = processor.process_natural_language_query(query, lambda: sample_data)\n    assert result.get(\"type\") == \"repairs\"\n    assert isinstance(result.get(\"count\"), int) and result[\"count\"] >= 2\n    repairs = result.get(\"repairs\", [])\n    assert any(\"First repair\" in repair.get(\"description\", \"\") for repair in repairs)\n    assert any(\"Second repair\" in repair.get(\"description\", \"\") for repair in repairs)",
+        "peekOfCode": "def test_response_format():\n    \"\"\"Test the response format for different intents\"\"\"\n    processor = NLUProcessor()\n    # Mock database function\n    def mock_db():\n        class MockCursor:\n            def execute(self, query, params):\n                pass\n            def fetchall(self):\n                return [{\"name\": \"Test Item\", \"price\": 10.0}]",
         "detail": "tests.test_nlu_processor",
         "documentation": {}
     },
     {
-        "label": "test_budget_query",
+        "label": "test_performance",
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_budget_query(sample_data: dict):\n    \"\"\"Test querying about budget\"\"\"\n    query = \"Show me the budget\"\n    processor = NLUProcessor()\n    result: dict = processor.process_natural_language_query(query, lambda: sample_data)\n    assert result.get(\"type\") == \"budget\"\n    budget = result.get(\"budget\", {})\n    assert isinstance(budget, dict)\n    assert budget.get(\"amount\") == 1000.0\n    assert budget.get(\"period\") == \"monthly\"",
-        "detail": "tests.test_nlu_processor",
-        "documentation": {}
-    },
-    {
-        "label": "test_components_query",
-        "kind": 2,
-        "importPath": "tests.test_nlu_processor",
-        "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_components_query(sample_data: dict):\n    \"\"\"Test querying about components\"\"\"\n    query = \"Show me all components\"\n    processor = NLUProcessor()\n    result: dict = processor.process_natural_language_query(query, lambda: sample_data)\n    assert result.get(\"type\") == \"components\"\n    assert isinstance(result.get(\"count\"), int) and result[\"count\"] >= 2\n    components = result.get(\"components\", [])\n    assert any(\"Component 1\" in component.get(\"name\", \"\") for component in components)\n    assert any(\"Component 2\" in component.get(\"name\", \"\") for component in components)",
-        "detail": "tests.test_nlu_processor",
-        "documentation": {}
-    },
-    {
-        "label": "test_unknown_query",
-        "kind": 2,
-        "importPath": "tests.test_nlu_processor",
-        "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_unknown_query(sample_data):\n    \"\"\"Test handling of unknown query types\"\"\"\n    query = \"How is the weather today?\"\n    processor = NLUProcessor()\n    result = processor.process_natural_language_query(query, lambda: sample_data)\n    assert result[\"type\"] == \"error\"\n    assert \"not sure what you're asking about\" in result[\"message\"]\ndef test_error_handling(sample_data):\n    \"\"\"Test handling of database errors\"\"\"\n    def failing_db():",
+        "peekOfCode": "def test_performance():\n    \"\"\"Test the performance of the NLU processor\"\"\"\n    processor = NLUProcessor()\n    # Warm up\n    for _ in range(5):\n        processor.process_natural_language_query(\"test query\", lambda: None)\n    # Measure performance\n    start_time = time.time()\n    for _ in range(100):\n        processor.process_natural_language_query(\"show me all items\", lambda: None)",
         "detail": "tests.test_nlu_processor",
         "documentation": {}
     },
@@ -746,16 +736,16 @@
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_error_handling(sample_data):\n    \"\"\"Test handling of database errors\"\"\"\n    def failing_db():\n        raise Exception(\"Database connection failed\")\n    query = \"Show me all items\"\n    processor = NLUProcessor()\n    result = processor.process_natural_language_query(query, failing_db)\n    assert result[\"type\"] == \"error\"\n    assert \"Database connection failed\" in result[\"message\"]\n@pytest.mark.parametrize(\"query,expected_keyword\", [",
+        "peekOfCode": "def test_error_handling():\n    \"\"\"Test error handling in the NLU processor\"\"\"\n    processor = NLUProcessor()\n    # Test database error\n    def failing_db():\n        raise Exception(\"Database connection failed\")\n    result = processor.process_natural_language_query(\"show me all items\", failing_db)\n    assert result.get(\"error\") == \"Database connection failed\"\n    # Test invalid query\n    result = processor.process_natural_language_query(\"invalid query\", lambda: None)",
         "detail": "tests.test_nlu_processor",
         "documentation": {}
     },
     {
-        "label": "test_keyword_detection",
+        "label": "test_various_phrasings",
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_keyword_detection(sample_data, query, expected_keyword):\n    \"\"\"Test various phrasings for each query type\"\"\"\n    processor = NLUProcessor()\n    result = processor.process_natural_language_query(query, lambda: sample_data)\n    assert result != \"I'm sorry, I didn't understand your query\"",
+        "peekOfCode": "def test_various_phrasings(query, expected_intent):\n    \"\"\"Test various phrasings for each intent\"\"\"\n    processor = NLUProcessor()\n    result = processor.process_natural_language_query(query, lambda: None)\n    assert result.get(\"intent\") == expected_intent, \\\n        f\"Expected {expected_intent} for query: {query}\"",
         "detail": "tests.test_nlu_processor",
         "documentation": {}
     },

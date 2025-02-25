@@ -1,5 +1,5 @@
 import sqlite3
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, Trainer, TrainingArguments
 from torch.nn.functional import softmax
 import torch
 
@@ -39,7 +39,28 @@ class NLUProcessor:
         # Initialize ML model
         self.model_path = model_path
         self.model, self.tokenizer = self._load_or_create_model()
+        self.trained = False  # Track if the model has been trained
+
         self.context = None
+
+    def train_model(self, train_dataset):
+        """Train the transformer model on the provided dataset."""
+        training_args = TrainingArguments(
+            output_dir='./results',
+            num_train_epochs=3,
+            per_device_train_batch_size=16,
+            save_steps=10_000,
+            save_total_limit=2,
+            logging_dir='./logs',
+        )
+
+        trainer = Trainer(
+            model=self.model,
+            args=training_args,
+            train_dataset=train_dataset,
+        )
+
+        trainer.train()
 
     def _load_or_create_model(self):
         """Load or create the transformer model"""
