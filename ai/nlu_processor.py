@@ -1,66 +1,78 @@
 import sqlite3
-import re
-from datetime import datetime
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression
-from sklearn.pipeline import Pipeline
-from ai.nlu_model import NLUModel
-import joblib
-import os
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+from torch.nn.functional import softmax
+import torch
+
 
 class NLUProcessor:
     def __init__(self, model_path='ai_models/nlu_model.pkl'):
         # Initialize patterns for basic matching
         self.patterns = {
             'search': [
-                r'show\s+(?:me\s+)?(?:all\s+)?(?:the\s+)?(?:items?|products?|things?)(?:\s+in\s+(.+))?',
-                r'what\s+(?:items?|products?|things?)(?:\s+do\s+I\s+have)?(?:\s+in\s+(.+))?',
-                r'list\s+(?:all\s+)?(?:items?|products?|things?)(?:\s+in\s+(.+))?'
+                r'show\s+(?:me\s+)?(?:all\s+)?(?:the\s+)?'
+                r'(?:items?|products?|things?)(?:\s+in\s+(.+))?',
+                r'what\s+(?:items?|products?|things?)'
+                r'(?:\s+do\s+I\s+have)?(?:\s+in\s+(.+))?',
+                r'list\s+(?:all\s+)?(?:items?|products?|things?)'
+                r'(?:\s+in\s+(.+))?'
             ],
             'count': [
-                r'how\s+many\s+(?:items?|products?|things?)(?:\s+do\s+I\s+have)?(?:\s+in\s+(.+))?',
-                r'count\s+(?:all\s+)?(?:items?|products?|things?)(?:\s+in\s+(.+))?'
+                r'how\s+many\s+(?:items?|products?|things?)'
+                r'(?:\s+do\s+I\s+have)?(?:\s+in\s+(.+))?',
+                r'count\s+(?:all\s+)?(?:items?|products?|things?)'
+                r'(?:\s+in\s+(.+))?'
             ],
             'value': [
-                r'what\s+is\s+the\s+(?:total\s+)?value\s+of\s+(?:my\s+)?(?:inventory|items?|products?|things?)(?:\s+in\s+(.+))?',
-                r'how\s+much\s+(?:is|are)\s+(?:my\s+)?(?:inventory|items?|products?|things?)(?:\s+worth)?(?:\s+in\s+(.+))?'
+                r'what\s+is\s+the\s+(?:total\s+)?value\s+of\s+(?:my\s+)?'
+                r'(?:inventory|items?|products?|things?)(?:\s+in\s+(.+))?',
+                r'how\s+much\s+(?:is|are)\s+(?:my\s+)?(?:inventory|items?'
+                r'|products?|things?)(?:\s+worth)?(?:\s+in\s+(.+))?'
             ],
             'price_range': [
-                r'what\s+(?:items?|products?|things?)\s+cost\s+(?:more|less)\s+than\s+(\d+(?:\.\d{2})?)',
-                r'show\s+(?:me\s+)?(?:items?|products?|things?)\s+(?:that\s+)?cost\s+(?:more|less)\s+than\s+(\d+(?:\.\d{2})?)'
+                r'what\s+(?:items?|products?|things?)\s+cost\s+(?:more|less)'
+                r'\s+than\s+(\d+(?:\.\d{2})?)',
+                r'show\s+(?:me\s+)?(?:items?|products?|things?)\s+(?:that\s+)?'
+                r'cost\s+(?:more|less)\s+than\s+(\d+(?:\.\d{2})?)'
             ]
         }
 
         # Initialize ML model
         self.model_path = model_path
-        self.model = self._load_or_create_model()
+        self.model, self.tokenizer = self._load_or_create_model()
         self.context = None
 
     def _load_or_create_model(self):
-        """Load or create the ML model"""
-        if os.path.exists(self.model_path):
-            return joblib.load(self.model_path)
-        else:
-            # Create new model pipeline
-            model = Pipeline([
-                ('tfidf', TfidfVectorizer()),
-                ('clf', LogisticRegression())
-            ])
-            return model
-
-    def train(self, data_path):
-        """Train the NLU model using the provided dataset path."""
-        self.model.train(data_path)
+        """Load or create the transformer model"""
+        model_name = "distilbert-base-uncased"
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForSequenceClassification.from_pretrained(
+            model_name,
+            num_labels=4  # 4 intents: search, count, value, price_range
+        )
+        return model, tokenizer
 
     def process_natural_language_query(self, query, get_db):
-        """Process a natural language query using the Transformers model"""
+        """Process a natural language query using the transformer model"""
         if not query:
             return {"error": "Empty query"}
 
-        predicted_label = self.model.predict_intent(query)
-        predicted_intent = list(intent_labels.keys())[
-            predicted_label
-        ]  # Adjust based on the model's output format
+        # Tokenize and predict
+        inputs = self.tokenizer(
+            query,
+            return_tensors="pt",
+            truncation=True,
+            padding=True
+        )
+        with torch.no_grad():
+            logits = self.model(**inputs).logits
+
+        # Get predicted intent
+        probabilities = softmax(logits, dim=1)
+        predicted_label = int(torch.argmax(probabilities, dim=1).item())
+
+        # Map label to intent
+        intents = ["search", "count", "value", "price_range"]
+        predicted_intent = intents[predicted_label]
 
         # Handle intent
         if predicted_intent == "search":
@@ -73,51 +85,6 @@ class NLUProcessor:
             return self._handle_price_range(get_db().cursor(), None)
         else:
             return {"message": "I'm not sure how to handle that request."}
-
-    def _try_pattern_matching(self, query, get_db):
-        """Try to match query patterns"""
-        try:
-            conn = get_db()
-            cursor = conn.cursor()
-
-            for intent, patterns in self.patterns.items():
-                for pattern in patterns:
-                    match = re.match(pattern, query)
-                    if match:
-                        if intent == 'search':
-                            return self._handle_search(cursor, match)
-                        elif intent == 'count':
-                            return self._handle_count(cursor, match)
-                        elif intent == 'value':
-                            return self._handle_value(cursor, match)
-                        elif intent == 'price_range':
-                            return self._handle_price_range(cursor, match)
-
-            return {"message": "I don't understand that query. Try asking about items, their count, or value."}
-
-        except Exception as e:
-            return {"error": str(e)}
-
-    def _handle_with_ml(self, query, get_db):
-        """Handle query using machine learning"""
-        try:
-            # Predict intent using ML model
-            predicted_intent = self.model.predict([query])[0]
-
-            # Handle based on predicted intent
-            if predicted_intent == 'search':
-                return self._handle_search(get_db().cursor(), None)
-            elif predicted_intent == 'count':
-                return self._handle_count(get_db().cursor(), None)
-            elif predicted_intent == 'value':
-                return self._handle_value(get_db().cursor(), None)
-            elif predicted_intent == 'price_range':
-                return self._handle_price_range(get_db().cursor(), None)
-            else:
-                return {"message": "I'm not sure how to handle that request."}
-
-        except Exception as e:
-            return {"error": str(e)}
 
     def _handle_search(self, cursor, match):
         """Handle search queries"""
@@ -179,7 +146,9 @@ class NLUProcessor:
         total = total or 0
 
         location_str = f" in {location}" if location else ""
-        return {"message": f"The total value of items{location_str} is ${total:.2f}"}
+        return {
+            "message": f"The total value of items{location_str} is ${total:.2f}"
+        }
 
     def _handle_price_range(self, cursor, match):
         """Handle price range queries"""
@@ -190,13 +159,13 @@ class NLUProcessor:
             cursor.execute('''
                 SELECT * FROM items
                 WHERE price > ?
-                ORDER BY price DESC
+                ORDER by price DESC
             ''', (price,))
         else:
             cursor.execute('''
                 SELECT * FROM items
                 WHERE price < ?
-                ORDER BY price
+                ORDER by price
             ''', (price,))
 
         items = []
@@ -204,7 +173,9 @@ class NLUProcessor:
             items.append(dict(row))
 
         if not items:
-            return {"message": f"No items found {comparison} than ${price:.2f}"}
+            return {
+                "message": f"No items found {comparison} than ${price:.2f}"
+            }
 
         return {"items": items}
 

@@ -67,12 +67,71 @@
         "documentation": {}
     },
     {
+        "label": "AutoTokenizer",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
+        "label": "AutoModelForSequenceClassification",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
         "label": "sqlite3",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "sqlite3",
         "description": "sqlite3",
         "detail": "sqlite3",
+        "documentation": {}
+    },
+    {
+        "label": "softmax",
+        "importPath": "torch.nn.functional",
+        "description": "torch.nn.functional",
+        "isExtraImport": true,
+        "detail": "torch.nn.functional",
+        "documentation": {}
+    },
+    {
+        "label": "cv2",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "cv2",
+        "description": "cv2",
+        "detail": "cv2",
+        "documentation": {}
+    },
+    {
+        "label": "pytesseract",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pytesseract",
+        "description": "pytesseract",
+        "detail": "pytesseract",
+        "documentation": {}
+    },
+    {
+        "label": "Image",
+        "importPath": "PIL",
+        "description": "PIL",
+        "isExtraImport": true,
+        "detail": "PIL",
+        "documentation": {}
+    },
+    {
+        "label": "numpy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "numpy",
+        "description": "numpy",
+        "detail": "numpy",
         "documentation": {}
     },
     {
@@ -122,98 +181,6 @@
         "description": "datetime",
         "isExtraImport": true,
         "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "TfidfVectorizer",
-        "importPath": "sklearn.feature_extraction.text",
-        "description": "sklearn.feature_extraction.text",
-        "isExtraImport": true,
-        "detail": "sklearn.feature_extraction.text",
-        "documentation": {}
-    },
-    {
-        "label": "LogisticRegression",
-        "importPath": "sklearn.linear_model",
-        "description": "sklearn.linear_model",
-        "isExtraImport": true,
-        "detail": "sklearn.linear_model",
-        "documentation": {}
-    },
-    {
-        "label": "Pipeline",
-        "importPath": "sklearn.pipeline",
-        "description": "sklearn.pipeline",
-        "isExtraImport": true,
-        "detail": "sklearn.pipeline",
-        "documentation": {}
-    },
-    {
-        "label": "NLUModel",
-        "importPath": "ai.nlu_model",
-        "description": "ai.nlu_model",
-        "isExtraImport": true,
-        "detail": "ai.nlu_model",
-        "documentation": {}
-    },
-    {
-        "label": "joblib",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "joblib",
-        "description": "joblib",
-        "detail": "joblib",
-        "documentation": {}
-    },
-    {
-        "label": "cv2",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "cv2",
-        "description": "cv2",
-        "detail": "cv2",
-        "documentation": {}
-    },
-    {
-        "label": "pytesseract",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "pytesseract",
-        "description": "pytesseract",
-        "detail": "pytesseract",
-        "documentation": {}
-    },
-    {
-        "label": "Image",
-        "importPath": "PIL",
-        "description": "PIL",
-        "isExtraImport": true,
-        "detail": "PIL",
-        "documentation": {}
-    },
-    {
-        "label": "numpy",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "numpy",
-        "description": "numpy",
-        "detail": "numpy",
         "documentation": {}
     },
     {
@@ -306,47 +273,6 @@
         "documentation": {}
     },
     {
-        "label": "NLUProcessor",
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
-        "isExtraImport": true,
-        "detail": "ai.nlu_processor",
-        "documentation": {}
-    },
-    {
-        "label": "NLUProcessor",
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
-        "isExtraImport": true,
-        "detail": "ai.nlu_processor",
-        "documentation": {}
-    },
-    {
-        "label": "NLUProcessor",
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
-        "isExtraImport": true,
-        "detail": "ai.nlu_processor",
-        "documentation": {}
-    },
-    {
-        "label": "NLUProcessor",
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
-        "isExtraImport": true,
-        "detail": "ai.nlu_processor",
-        "documentation": {}
-    },
-    {
-        "label": "time",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "time",
-        "description": "time",
-        "detail": "time",
-        "documentation": {}
-    },
-    {
         "label": "subprocess",
         "kind": 6,
         "isExtraImport": true,
@@ -390,12 +316,45 @@
         "documentation": {}
     },
     {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
         "label": "json",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "json",
         "description": "json",
         "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "NLUProcessor",
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "isExtraImport": true,
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "NLUProcessor",
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "isExtraImport": true,
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "NLUProcessor",
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "isExtraImport": true,
+        "detail": "ai.nlu_processor",
         "documentation": {}
     },
     {
@@ -445,7 +404,7 @@
         "kind": 6,
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
-        "peekOfCode": "class NLUProcessor:\n    def __init__(self, model_path='ai_models/nlu_model.pkl'):\n        # Initialize patterns for basic matching\n        self.patterns = {\n            'search': [\n                r'show\\s+(?:me\\s+)?(?:all\\s+)?(?:the\\s+)?(?:items?|products?|things?)(?:\\s+in\\s+(.+))?',\n                r'what\\s+(?:items?|products?|things?)(?:\\s+do\\s+I\\s+have)?(?:\\s+in\\s+(.+))?',\n                r'list\\s+(?:all\\s+)?(?:items?|products?|things?)(?:\\s+in\\s+(.+))?'\n            ],\n            'count': [",
+        "peekOfCode": "class NLUProcessor:\n    def __init__(self, model_path='ai_models/nlu_model.pkl'):\n        # Initialize patterns for basic matching\n        self.patterns = {\n            'search': [\n                r'show\\s+(?:me\\s+)?(?:all\\s+)?(?:the\\s+)?'\n                r'(?:items?|products?|things?)(?:\\s+in\\s+(.+))?',\n                r'what\\s+(?:items?|products?|things?)'\n                r'(?:\\s+do\\s+I\\s+have)?(?:\\s+in\\s+(.+))?',\n                r'list\\s+(?:all\\s+)?(?:items?|products?|things?)'",
         "detail": "ai.nlu_processor",
         "documentation": {}
     },
@@ -481,7 +440,7 @@
         "kind": 2,
         "importPath": "core.main",
         "description": "core.main",
-        "peekOfCode": "def get_db():\n    \"\"\"Get database connection with row factory\"\"\"\n    if not hasattr(db_local, 'conn'):\n        db_local.conn = sqlite3.connect(DATABASE)\n        db_local.conn.row_factory = sqlite3.Row\n    return db_local.conn\ndef close_db():\n    \"\"\"Close the database connection\"\"\"\n    if hasattr(db_local, 'conn'):\n        try:",
+        "peekOfCode": "def get_db():\n    \"\"\"Get database connection with row factory\"\"\"\n    if not hasattr(db_local, \"conn\"):\n        db_local.conn = sqlite3.connect(DATABASE)\n        db_local.conn.row_factory = sqlite3.Row\n    return db_local.conn\ndef close_db():\n    \"\"\"Close the database connection\"\"\"\n    if hasattr(db_local, \"conn\"):\n        try:",
         "detail": "core.main",
         "documentation": {}
     },
@@ -490,7 +449,7 @@
         "kind": 2,
         "importPath": "core.main",
         "description": "core.main",
-        "peekOfCode": "def close_db():\n    \"\"\"Close the database connection\"\"\"\n    if hasattr(db_local, 'conn'):\n        try:\n            db_local.conn.close()\n        except Exception:\n            pass\n        finally:\n            if hasattr(db_local, 'conn'):\n                del db_local.conn",
+        "peekOfCode": "def close_db():\n    \"\"\"Close the database connection\"\"\"\n    if hasattr(db_local, \"conn\"):\n        try:\n            db_local.conn.close()\n        except Exception:\n            pass\n        finally:\n            if hasattr(db_local, \"conn\"):\n                del db_local.conn",
         "detail": "core.main",
         "documentation": {}
     },
@@ -499,7 +458,7 @@
         "kind": 2,
         "importPath": "core.main",
         "description": "core.main",
-        "peekOfCode": "def teardown_db(exception):\n    close_db()\ndef init_db():\n    # Close any existing connections\n    close_db()\n    # Initialize components with thread-local storage after database reset\n    global inventory, receipt_processor, task_manager, budget_tracker\n    try:\n        # Initialize the inventory manager first, which will create the tables\n        inventory = InventoryManager(DATABASE)",
+        "peekOfCode": "def teardown_db(_):\n    close_db()\ndef init_db():\n    # Close any existing connections\n    close_db()\n    # Initialize components with thread-local storage after database reset\n    global inventory, receipt_processor, task_manager, budget_tracker\n    try:\n        # Initialize the inventory manager first, which will create the tables\n        inventory = InventoryManager(DATABASE)",
         "detail": "core.main",
         "documentation": {}
     },
@@ -508,34 +467,7 @@
         "kind": 2,
         "importPath": "core.main",
         "description": "core.main",
-        "peekOfCode": "def init_db():\n    # Close any existing connections\n    close_db()\n    # Initialize components with thread-local storage after database reset\n    global inventory, receipt_processor, task_manager, budget_tracker\n    try:\n        # Initialize the inventory manager first, which will create the tables\n        inventory = InventoryManager(DATABASE)\n        # Get a connection to ensure tables are created\n        conn = inventory.get_connection()",
-        "detail": "core.main",
-        "documentation": {}
-    },
-    {
-        "label": "get_trades",
-        "kind": 2,
-        "importPath": "core.main",
-        "description": "core.main",
-        "peekOfCode": "def get_trades():\n    try:\n        trades = inventory.get_trades()\n        return jsonify(trades)\n    except Exception as e:\n        return jsonify({\"error\": str(e)}), 500\n@app.route(\"/api/search\", methods=[\"GET\"])\ndef search_items():\n    query = request.args.get(\"q\", \"\")\n    if not query:",
-        "detail": "core.main",
-        "documentation": {}
-    },
-    {
-        "label": "search_items",
-        "kind": 2,
-        "importPath": "core.main",
-        "description": "core.main",
-        "peekOfCode": "def search_items():\n    query = request.args.get(\"q\", \"\")\n    if not query:\n        return jsonify({\"error\": \"Search query is required\"}), 400\n    try:\n        items = inventory.search_items(query)\n        return jsonify(items)\n    except Exception as e:\n        return jsonify({\"error\": str(e)}), 500\n@app.route(\"/api/items\", methods=[\"GET\"])",
-        "detail": "core.main",
-        "documentation": {}
-    },
-    {
-        "label": "get_items",
-        "kind": 2,
-        "importPath": "core.main",
-        "description": "core.main",
-        "peekOfCode": "def get_items():\n    try:\n        items = inventory.get_items()\n        return jsonify(items)\n    except Exception as e:\n        return jsonify({\"error\": str(e)}), 500\n@app.route(\"/api/items\", methods=[\"POST\"])\ndef add_item():\n    data = request.get_json()\n    required_fields = [\"name\"]",
+        "peekOfCode": "def init_db():\n    # Close any existing connections\n    close_db()\n    # Initialize components with thread-local storage after database reset\n    global inventory, receipt_processor, task_manager, budget_tracker\n    try:\n        # Initialize the inventory manager first, which will create the tables\n        inventory = InventoryManager(DATABASE)\n        # Initialize other components\n        receipt_processor = ReceiptProcessor()",
         "detail": "core.main",
         "documentation": {}
     },
@@ -558,60 +490,6 @@
         "documentation": {}
     },
     {
-        "label": "get_repairs",
-        "kind": 2,
-        "importPath": "core.main",
-        "description": "core.main",
-        "peekOfCode": "def get_repairs():\n    try:\n        repairs = task_manager.get_repairs()\n        return jsonify(repairs)\n    except Exception as e:\n        return jsonify({\"error\": str(e)}), 500\n@app.route(\"/api/budget\", methods=[\"GET\"])\ndef get_budget():\n    try:\n        budget = budget_tracker.get_budget()",
-        "detail": "core.main",
-        "documentation": {}
-    },
-    {
-        "label": "get_budget",
-        "kind": 2,
-        "importPath": "core.main",
-        "description": "core.main",
-        "peekOfCode": "def get_budget():\n    try:\n        budget = budget_tracker.get_budget()\n        if not budget:\n            return jsonify({\"error\": \"Budget not set\"}), 404\n        # Get current period spending\n        total_spent = budget_tracker.calculate_total_spent()\n        available = budget_tracker.calculate_available_budget()\n        return jsonify(\n            {\"budget\": budget, \"total_spent\": total_spent, \"available\": available}",
-        "detail": "core.main",
-        "documentation": {}
-    },
-    {
-        "label": "update_budget",
-        "kind": 2,
-        "importPath": "core.main",
-        "description": "core.main",
-        "peekOfCode": "def update_budget():\n    data = request.get_json()\n    if \"amount\" not in data:\n        return jsonify({\"error\": \"Amount is required\"}), 400\n    try:\n        budget_tracker.update_budget(\n            amount=data[\"amount\"],\n            period=data.get(\"period\", \"monthly\"),\n            notes=data.get(\"notes\"),\n        )",
-        "detail": "core.main",
-        "documentation": {}
-    },
-    {
-        "label": "add_component",
-        "kind": 2,
-        "importPath": "core.main",
-        "description": "core.main",
-        "peekOfCode": "def add_component():\n    data = request.get_json()\n    required_fields = [\"repair_id\", \"name\"]\n    if not all(field in data for field in required_fields):\n        return jsonify({\"error\": \"Missing required fields\"}), 400\n    try:\n        task_manager.add_component(\n            repair_id=data[\"repair_id\"],\n            name=data[\"name\"],\n            quantity=data.get(\"quantity\", 1),",
-        "detail": "core.main",
-        "documentation": {}
-    },
-    {
-        "label": "get_components",
-        "kind": 2,
-        "importPath": "core.main",
-        "description": "core.main",
-        "peekOfCode": "def get_components():\n    try:\n        components = task_manager.get_components()\n        return jsonify(components)\n    except Exception as e:\n        return jsonify({\"error\": str(e)}), 500\n@app.route(\"/api/query\", methods=[\"POST\"])\ndef handle_query():\n    data = request.get_json()\n    query_text = data.get(\"query\", \"\")",
-        "detail": "core.main",
-        "documentation": {}
-    },
-    {
-        "label": "handle_query",
-        "kind": 2,
-        "importPath": "core.main",
-        "description": "core.main",
-        "peekOfCode": "def handle_query():\n    data = request.get_json()\n    query_text = data.get(\"query\", \"\")\n    if not query_text:\n        return jsonify({\"error\": \"No query provided\"}), 400\n    try:\n        nlu_processor = NLUProcessor()\n        response = nlu_processor.process_natural_language_query(query_text, get_db)\n        return jsonify({\"response\": response})\n    except Exception as e:",
-        "detail": "core.main",
-        "documentation": {}
-    },
-    {
         "label": "upload_receipt",
         "kind": 2,
         "importPath": "core.main",
@@ -625,7 +503,16 @@
         "kind": 2,
         "importPath": "core.main",
         "description": "core.main",
-        "peekOfCode": "def get_receipt(filename):\n    return send_from_directory(UPLOAD_FOLDER, filename)\nif __name__ == \"__main__\":\n    if init_db():\n        app.run(debug=True)\n    else:\n        print(\"Error: Could not initialize database\")",
+        "peekOfCode": "def get_receipt(filename):\n    return send_from_directory(UPLOAD_FOLDER, filename)\n@app.route(\"/api/query\", methods=[\"POST\"])\ndef handle_query():\n    data = request.get_json()\n    query_text = data.get(\"query\", \"\")\n    if not query_text:\n        return jsonify({\"error\": \"No query provided\"}), 400\n    try:\n        # Import NLUProcessor only when needed to avoid circular imports",
+        "detail": "core.main",
+        "documentation": {}
+    },
+    {
+        "label": "handle_query",
+        "kind": 2,
+        "importPath": "core.main",
+        "description": "core.main",
+        "peekOfCode": "def handle_query():\n    data = request.get_json()\n    query_text = data.get(\"query\", \"\")\n    if not query_text:\n        return jsonify({\"error\": \"No query provided\"}), 400\n    try:\n        # Import NLUProcessor only when needed to avoid circular imports\n        from ai.nlu_processor import NLUProcessor\n        nlu_processor = NLUProcessor()\n        response = nlu_processor.process_natural_language_query(",
         "detail": "core.main",
         "documentation": {}
     },
@@ -643,7 +530,7 @@
         "kind": 5,
         "importPath": "core.main",
         "description": "core.main",
-        "peekOfCode": "UPLOAD_FOLDER = \"uploads\"\nif not os.path.exists(UPLOAD_FOLDER):\n    os.makedirs(UPLOAD_FOLDER)\n# Database setup\nDATABASE = \"inventory.db\"\ndb_local = threading.local()\ndef get_db():\n    \"\"\"Get database connection with row factory\"\"\"\n    if not hasattr(db_local, 'conn'):\n        db_local.conn = sqlite3.connect(DATABASE)",
+        "peekOfCode": "UPLOAD_FOLDER = \"uploads\"\nif not os.path.exists(UPLOAD_FOLDER):\n    os.makedirs(UPLOAD_FOLDER)\n# Database setup\nDATABASE = \"inventory.db\"\ndb_local = threading.local()\ndef get_db():\n    \"\"\"Get database connection with row factory\"\"\"\n    if not hasattr(db_local, \"conn\"):\n        db_local.conn = sqlite3.connect(DATABASE)",
         "detail": "core.main",
         "documentation": {}
     },
@@ -652,7 +539,7 @@
         "kind": 5,
         "importPath": "core.main",
         "description": "core.main",
-        "peekOfCode": "DATABASE = \"inventory.db\"\ndb_local = threading.local()\ndef get_db():\n    \"\"\"Get database connection with row factory\"\"\"\n    if not hasattr(db_local, 'conn'):\n        db_local.conn = sqlite3.connect(DATABASE)\n        db_local.conn.row_factory = sqlite3.Row\n    return db_local.conn\ndef close_db():\n    \"\"\"Close the database connection\"\"\"",
+        "peekOfCode": "DATABASE = \"inventory.db\"\ndb_local = threading.local()\ndef get_db():\n    \"\"\"Get database connection with row factory\"\"\"\n    if not hasattr(db_local, \"conn\"):\n        db_local.conn = sqlite3.connect(DATABASE)\n        db_local.conn.row_factory = sqlite3.Row\n    return db_local.conn\ndef close_db():\n    \"\"\"Close the database connection\"\"\"",
         "detail": "core.main",
         "documentation": {}
     },
@@ -661,7 +548,7 @@
         "kind": 5,
         "importPath": "core.main",
         "description": "core.main",
-        "peekOfCode": "db_local = threading.local()\ndef get_db():\n    \"\"\"Get database connection with row factory\"\"\"\n    if not hasattr(db_local, 'conn'):\n        db_local.conn = sqlite3.connect(DATABASE)\n        db_local.conn.row_factory = sqlite3.Row\n    return db_local.conn\ndef close_db():\n    \"\"\"Close the database connection\"\"\"\n    if hasattr(db_local, 'conn'):",
+        "peekOfCode": "db_local = threading.local()\ndef get_db():\n    \"\"\"Get database connection with row factory\"\"\"\n    if not hasattr(db_local, \"conn\"):\n        db_local.conn = sqlite3.connect(DATABASE)\n        db_local.conn.row_factory = sqlite3.Row\n    return db_local.conn\ndef close_db():\n    \"\"\"Close the database connection\"\"\"\n    if hasattr(db_local, \"conn\"):",
         "detail": "core.main",
         "documentation": {}
     },
