@@ -18,10 +18,10 @@ def start_application():
     env["PYTHONPATH"] = os.path.abspath(os.path.dirname(__file__))
     subprocess.run(["python", "core/main.py"], env=env)
 
-def train_model():
+def train_model(epochs=3, batch_size=16, model_dir="ai_models"):
     """Train the NLU model"""
     print("Training NLU model...")
-    subprocess.run(["python", "scripts/train_nlu.py"])
+    subprocess.run(["python", "scripts/train_nlu.py", "--epochs", str(epochs), "--batch_size", str(batch_size), "--model_dir", model_dir])
 
 def run_tests():
     """Run all tests"""

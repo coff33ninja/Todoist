@@ -953,7 +953,7 @@
         "kind": 2,
         "importPath": "start",
         "description": "start",
-        "peekOfCode": "def start_application():\n    \"\"\"Start the Flask application\"\"\"\n    print(\"Starting Todoist application...\")\n    # Set Python path before running the application\n    env = os.environ.copy()\n    env[\"PYTHONPATH\"] = os.path.abspath(os.path.dirname(__file__))\n    subprocess.run([\"python\", \"core/main.py\"], env=env)\ndef train_model():\n    \"\"\"Train the NLU model\"\"\"\n    print(\"Training NLU model...\")",
+        "peekOfCode": "def start_application():\n    \"\"\"Start the Flask application\"\"\"\n    print(\"Starting Todoist application...\")\n    # Set Python path before running the application\n    env = os.environ.copy()\n    env[\"PYTHONPATH\"] = os.path.abspath(os.path.dirname(__file__))\n    subprocess.run([\"python\", \"core/main.py\"], env=env)\ndef train_model(epochs=3, batch_size=16, model_dir=\"ai_models\"):\n    \"\"\"Train the NLU model\"\"\"\n    print(\"Training NLU model...\")",
         "detail": "start",
         "documentation": {}
     },
@@ -962,7 +962,7 @@
         "kind": 2,
         "importPath": "start",
         "description": "start",
-        "peekOfCode": "def train_model():\n    \"\"\"Train the NLU model\"\"\"\n    print(\"Training NLU model...\")\n    subprocess.run([\"python\", \"scripts/train_nlu.py\"])\ndef run_tests():\n    \"\"\"Run all tests\"\"\"\n    print(\"Running tests...\")\n    subprocess.run([\"pytest\", \"tests/\"])\ndef add_data():\n    \"\"\"Add sample data to the database\"\"\"",
+        "peekOfCode": "def train_model(epochs=3, batch_size=16, model_dir=\"ai_models\"):\n    \"\"\"Train the NLU model\"\"\"\n    print(\"Training NLU model...\")\n    subprocess.run([\"python\", \"scripts/train_nlu.py\", \"--epochs\", str(epochs), \"--batch_size\", str(batch_size), \"--model_dir\", model_dir])\ndef run_tests():\n    \"\"\"Run all tests\"\"\"\n    print(\"Running tests...\")\n    subprocess.run([\"pytest\", \"tests/\"])\ndef add_data():\n    \"\"\"Add sample data to the database\"\"\"",
         "detail": "start",
         "documentation": {}
     },
