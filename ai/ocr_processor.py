@@ -57,19 +57,16 @@ class ReceiptProcessor:
         )
         return rotated
 
-    def extract_text(self, image_path):
-        """Extract text from receipt image"""
+    def extract_text(self, text):
+        """Extract text from receipt input"""
         try:
-            # Preprocess image
-            processed_image = self.preprocess_image(image_path)
+            # Directly use the text input for parsing
+            text = text.strip()
 
-            if processed_image is None:
-                print("Processed image is None")  # Debug statement
+            if not text:
+                print("Input text is empty")  # Debug statement
                 return None
 
-            # Perform OCR with custom configuration
-            custom_config = r"--oem 3 --psm 6"
-            text = pytesseract.image_to_string(processed_image, config=custom_config)
             return text
         except Exception as e:
             print(f"Error extracting text: {e}")
@@ -80,7 +77,7 @@ class ReceiptProcessor:
         try:
             print("Starting receipt parsing...")
             print(f"Input text:\n{text}")
-            
+
             result = {
                 "items": [],
                 "total": None,
@@ -93,7 +90,7 @@ class ReceiptProcessor:
             }
 
             # Split text into lines and remove empty lines
-            lines = [line.strip() for line in text.split('\n') if line.strip()]
+            lines = [line.strip() for line in text.split("\n") if line.strip()]
             print(f"Processed lines: {len(lines)}")
 
             # Extract store name (first non-empty line)
@@ -103,17 +100,20 @@ class ReceiptProcessor:
 
             # Detect currency symbol/code
             currency_patterns = [
-                r'(?:[\$\£\€\¥\₹\R])\s*\d+[.,]\d{2}',  # Common currency symbols
-                r'\d+[.,]\d{2}\s*(?:USD|EUR|GBP|JPY|INR|ZAR|AUD|CAD|NZD|BRL)',  # Currency codes
-                r'\d+[.,]\d{2}\s*€',  # Specific Euro pattern
+                r"(?:[\$\£\€\¥\₹\R])\s*\d+[.,]\d{2}",  # Common currency symbols
+                r"\d+[.,]\d{2}\s*(?:USD|EUR|GBP|JPY|INR|ZAR|AUD|CAD|NZD|BRL)",  # Currency codes
+                r"\d+[.,]\d{2}\s*€",  # Specific Euro pattern
             ]
-            
+
             for line in lines:
                 for pattern in currency_patterns:
                     currency_match = re.search(pattern, line)
                     if currency_match:
                         print(f"Currency line found: {line}")
-                        currency_symbol = re.search(r'[\$\£\€\¥\₹\R]|(?:USD|EUR|GBP|JPY|INR|ZAR|AUD|CAD|NZD|BRL)|€', currency_match.group())
+                        currency_symbol = re.search(
+                            r"[\$\£\€\¥\₹\R]|(?:USD|EUR|GBP|JPY|INR|ZAR|AUD|CAD|NZD|BRL)|€",
+                            currency_match.group(),
+                        )
                         if currency_symbol:
                             result["currency"] = currency_symbol.group()
                             print(f"Found currency: {result['currency']}")
@@ -158,8 +158,12 @@ class ReceiptProcessor:
                         amount_str = total_match.group(1)
                         print(f"Amount string before processing: {amount_str}")
                         # Convert to standard format (period as decimal separator)
-                        amount_str = re.sub(r'[.,](?=\d{3})', '', amount_str)  # Remove thousand separators
-                        amount_str = amount_str.replace(',', '.')  # Convert decimal comma to point
+                        amount_str = re.sub(
+                            r"[.,](?=\d{3})", "", amount_str
+                        )  # Remove thousand separators
+                        amount_str = amount_str.replace(
+                            ",", "."
+                        )  # Convert decimal comma to point
                         try:
                             result["total"] = float(amount_str)
                             print(f"Parsed total amount: {result['total']}")
@@ -189,23 +193,35 @@ class ReceiptProcessor:
                             quantity = int(match.group(1))
                             description = match.group(2).strip()
                             price_str = match.group(3)
-                            
+
                             # Clean up description
-                            description = re.sub(r'\s+', ' ', description)  # Normalize spaces
-                            description = re.sub(r'\.+\s*$', '', description)  # Remove trailing dots
-                            
+                            description = re.sub(
+                                r"\s+", " ", description
+                            )  # Normalize spaces
+                            description = re.sub(
+                                r"\.+\s*$", "", description
+                            )  # Remove trailing dots
+
                             # Handle different price formats
-                            price_str = re.sub(r'[.,](?=\d{3})', '', price_str)  # Remove thousand separators
-                            price_str = price_str.replace(',', '.')  # Convert decimal comma to point
+                            price_str = re.sub(
+                                r"[.,](?=\d{3})", "", price_str
+                            )  # Remove thousand separators
+                            price_str = price_str.replace(
+                                ",", "."
+                            )  # Convert decimal comma to point
                             try:
                                 price = float(price_str)
-                                result["items"].append({
-                                    "quantity": quantity,
-                                    "description": description,
-                                    "price": price,
-                                    "acquisition_type": "purchase"
-                                })
-                                print(f"Added item: {quantity}x {description} @ {price}")
+                                result["items"].append(
+                                    {
+                                        "quantity": quantity,
+                                        "description": description,
+                                        "price": price,
+                                        "acquisition_type": "purchase",
+                                    }
+                                )
+                                print(
+                                    f"Added item: {quantity}x {description} @ {price}"
+                                )
                             except ValueError as e:
                                 print(f"Failed to parse price {price_str}: {e}")
                                 continue
@@ -223,7 +239,11 @@ class ReceiptProcessor:
                 for pattern in payment_patterns:
                     payment_match = re.search(pattern, line, re.IGNORECASE)
                     if payment_match:
-                        result["payment_method"] = payment_match.group(1) if payment_match.groups() else payment_match.group(0)
+                        result["payment_method"] = (
+                            payment_match.group(1)
+                            if payment_match.groups()
+                            else payment_match.group(0)
+                        )
                         result["payment_method"] = result["payment_method"].upper()
                         print(f"Found payment method: {result['payment_method']}")
                         break
@@ -245,17 +265,20 @@ class ReceiptProcessor:
                         tax_rate = tax_match.group(1) if tax_match.group(1) else "N/A"
                         tax_amount_str = tax_match.group(2)
                         if tax_amount_str:
-                            tax_amount_str = re.sub(r'[.,](?=\d{3})', '', tax_amount_str)
-                            tax_amount_str = tax_amount_str.replace(',', '.')
+                            tax_amount_str = re.sub(
+                                r"[.,](?=\d{3})", "", tax_amount_str
+                            )
+                            tax_amount_str = tax_amount_str.replace(",", ".")
                             try:
                                 tax_amount = float(tax_amount_str)
-                                result["tax_details"].append({
-                                    "rate": tax_rate,
-                                    "amount": tax_amount
-                                })
+                                result["tax_details"].append(
+                                    {"rate": tax_rate, "amount": tax_amount}
+                                )
                                 print(f"Added tax detail: {tax_rate} - {tax_amount}")
                             except ValueError as e:
-                                print(f"Failed to parse tax amount {tax_amount_str}: {e}")
+                                print(
+                                    f"Failed to parse tax amount {tax_amount_str}: {e}"
+                                )
                                 continue
 
             print("Final result:", result)
@@ -263,10 +286,11 @@ class ReceiptProcessor:
                 print("Warning: No items found in receipt")
             if not result["total"]:
                 print("Warning: No total amount found in receipt")
-            
+
             return result
         except Exception as e:
             print(f"Error parsing receipt: {e}")
             import traceback
+
             traceback.print_exc()
             return None
