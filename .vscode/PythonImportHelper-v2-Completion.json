@@ -493,7 +493,16 @@
         "kind": 6,
         "importPath": "ai.ocr_processor",
         "description": "ai.ocr_processor",
-        "peekOfCode": "class ReceiptProcessor:\n    def __init__(self):\n        # Configure Tesseract path if needed\n        # pytesseract.pytesseract.tesseract_cmd = r'C:\\Program Files\\Tesseract-OCR\\tesseract.exe'\n        pass\n    def preprocess_image(self, image_path):\n        \"\"\"Preprocess the receipt image for better OCR results\"\"\"\n        try:\n            # Load image\n            img = cv2.imread(image_path)",
+        "peekOfCode": "class ReceiptProcessor:\n    def __init__(self):\n        pass\n    def preprocess_image(self, image_path):\n        \"\"\"Preprocess the receipt image for better OCR results\"\"\"\n        try:\n            # Load image\n            img = cv2.imread(image_path)\n            # Convert to grayscale\n            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)",
+        "detail": "ai.ocr_processor",
+        "documentation": {}
+    },
+    {
+        "label": "extract_text",
+        "kind": 2,
+        "importPath": "ai.ocr_processor",
+        "description": "ai.ocr_processor",
+        "peekOfCode": "def extract_text(self, image):\n    \"\"\"Extract text from receipt image using OCR\"\"\"\n    try:\n        # If input is a file path, load the image\n        if isinstance(image, str) and os.path.isfile(image):\n            image = cv2.imread(image)\n        # Preprocess the image for better OCR results\n        processed_image = self.preprocess_image(image)\n        if processed_image is None:\n            print(\"Error: Image preprocessing failed.\")",
         "detail": "ai.ocr_processor",
         "documentation": {}
     },

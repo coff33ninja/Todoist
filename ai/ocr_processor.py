@@ -3,13 +3,12 @@ import pytesseract
 from PIL import Image
 import numpy as np
 import re
+import os
 from datetime import datetime
 
-
 class ReceiptProcessor:
+
     def __init__(self):
-        # Configure Tesseract path if needed
-        # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
         pass
 
     def preprocess_image(self, image_path):
@@ -57,7 +56,27 @@ class ReceiptProcessor:
         )
         return rotated
 
-    def extract_text(self, text):
+def extract_text(self, image):
+    """Extract text from receipt image using OCR"""
+    try:
+        # If input is a file path, load the image
+        if isinstance(image, str) and os.path.isfile(image):
+            image = cv2.imread(image)
+
+        # Preprocess the image for better OCR results
+        processed_image = self.preprocess_image(image)
+        if processed_image is None:
+            print("Error: Image preprocessing failed.")
+            return None
+
+        # Use pytesseract to extract text from the processed image
+        text = pytesseract.image_to_string(processed_image)
+        return text.strip()
+    except Exception as e:
+        print(f"Error extracting text: {e}")
+        return None
+
+
         """Extract text from receipt input"""
         try:
             # Directly use the text input for parsing
@@ -72,17 +91,28 @@ class ReceiptProcessor:
             print(f"Error extracting text: {e}")
             return None
 
-    def parse_receipt(self, text):
-        """Parse extracted text to extract relevant information"""
+    def parse_receipt(self, input_data):
+        """Parse extracted text or image to extract receipt information"""
         try:
             print("Starting receipt parsing...")
-            # If text is a file path, read it
-            if isinstance(text, str) and os.path.isfile(text):
-                with open(text, 'r', encoding='utf-8') as f:
-                    text = f.read()
 
-            print(f"Input text:\n{text}")
+            # Handle both text and image inputs
+            if isinstance(input_data, str) and os.path.isfile(input_data):
+                # If it's an image file, extract text first
+                if input_data.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
+                    text = self.extract_text(input_data)
+                else:
+                    # If it's a text file, read it
+                    with open(input_data, 'r', encoding='utf-8') as f:
+                        text = f.read()
+            else:
+                # Assume it's either text or an image array
+                if isinstance(input_data, np.ndarray):
+                    text = self.extract_text(input_data)
+                else:
+                    text = str(input_data)
 
+            print(f"Input text:\n{image}")
             result = {
                 "items": [],
                 "total": None,
@@ -101,11 +131,12 @@ class ReceiptProcessor:
             # Extract store name (first non-empty line)
             if lines:
                 result["store_name"] = lines[0].strip()
-                print(f"Found store name: {result['store_name']}")
+            print(f"Found store name: {result['store_name']}")
 
             # Detect currency symbol/code
             currency_patterns = [
-                r"(?:[\$\£\€\¥\₹\R])\s*\d+[.,]\d{2}",  # Common currency symbols
+                r"(?:[\$\£\€\¥\₹])\s*\d+[.,]\d{2}",  # Common currency symbols
+
                 r"\d+[.,]\d{2}\s*(?:USD|EUR|GBP|JPY|INR|ZAR|AUD|CAD|NZD|BRL)",  # Currency codes
                 r"\d+[.,]\d{2}\s*€",  # Specific Euro pattern
             ]
@@ -115,13 +146,17 @@ class ReceiptProcessor:
                     currency_match = re.search(pattern, line)
                     if currency_match:
                         print(f"Currency line found: {line}")
+
+
                         currency_symbol = re.search(
-                            r"[\$\£\€\¥\₹\R]|(?:USD|EUR|GBP|JPY|INR|ZAR|AUD|CAD|NZD|BRL)|€",
+                            r"[\$\£\€\¥\₹]|(?:USD|EUR|GBP|JPY|INR|ZAR|AUD|CAD|NZD|BRL)|€",
                             currency_match.group(),
                         )
+
                         if currency_symbol:
                             result["currency"] = currency_symbol.group()
                             print(f"Found currency: {result['currency']}")
+
                             break
                 if result["currency"]:
                     break
@@ -139,8 +174,8 @@ class ReceiptProcessor:
                     date_match = re.search(pattern, line, re.IGNORECASE)
                     if date_match:
                         result["date"] = date_match.group(1)
-                        print(f"Found date: {result['date']}")
-                        break
+            print(f"Found date: {result['date']}")
+                break
                 if result["date"]:
                     break
 
@@ -159,9 +194,13 @@ class ReceiptProcessor:
                     total_match = re.search(pattern, line, re.IGNORECASE)
                     if total_match:
                         print(f"Total match found: {total_match.group()}")
+
+
                         # Handle different decimal separators
                         amount_str = total_match.group(1)
                         print(f"Amount string before processing: {amount_str}")
+
+
                         # Convert to standard format (period as decimal separator)
                         amount_str = re.sub(
                             r"[.,](?=\d{3})", "", amount_str
@@ -172,6 +211,8 @@ class ReceiptProcessor:
                         try:
                             result["total"] = float(amount_str)
                             print(f"Parsed total amount: {result['total']}")
+
+
                             break
                         except ValueError as e:
                             print(f"Failed to parse amount {amount_str}: {e}")
@@ -194,6 +235,8 @@ class ReceiptProcessor:
                     matches = re.finditer(pattern, line)
                     for match in matches:
                         print(f"Item match found: {match.group()}")
+
+
                         if len(match.groups()) == 3:
                             quantity = int(match.group(1))
                             description = match.group(2).strip()
@@ -251,6 +294,7 @@ class ReceiptProcessor:
                         )
                         result["payment_method"] = result["payment_method"].upper()
                         print(f"Found payment method: {result['payment_method']}")
+
                         break
                 if result["payment_method"]:
                     break
@@ -267,6 +311,7 @@ class ReceiptProcessor:
                     tax_match = re.search(pattern, line, re.IGNORECASE)
                     if tax_match:
                         print(f"Tax match found: {tax_match.group()}")
+
                         tax_rate = tax_match.group(1) if tax_match.group(1) else "N/A"
                         tax_amount_str = tax_match.group(2)
                         if tax_amount_str:
@@ -280,6 +325,7 @@ class ReceiptProcessor:
                                     {"rate": tax_rate, "amount": tax_amount}
                                 )
                                 print(f"Added tax detail: {tax_rate} - {tax_amount}")
+
                             except ValueError as e:
                                 print(
                                     f"Failed to parse tax amount {tax_amount_str}: {e}"
@@ -295,6 +341,7 @@ class ReceiptProcessor:
             return result
         except Exception as e:
             print(f"Error parsing receipt: {e}")
+
             import traceback
 
             traceback.print_exc()
