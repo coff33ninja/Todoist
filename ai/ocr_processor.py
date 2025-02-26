@@ -76,6 +76,11 @@ class ReceiptProcessor:
         """Parse extracted text to extract relevant information"""
         try:
             print("Starting receipt parsing...")
+            # If text is a file path, read it
+            if isinstance(text, str) and os.path.isfile(text):
+                with open(text, 'r', encoding='utf-8') as f:
+                    text = f.read()
+
             print(f"Input text:\n{text}")
 
             result = {
