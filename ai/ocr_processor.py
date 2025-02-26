@@ -1,13 +1,11 @@
 import cv2
 import pytesseract
-from PIL import Image
 import numpy as np
 import re
 import os
-from datetime import datetime
+
 
 class ReceiptProcessor:
-
     def __init__(self):
         pass
 
@@ -84,11 +82,13 @@ class ReceiptProcessor:
             # Handle both text and image inputs
             if isinstance(input_data, str) and os.path.isfile(input_data):
                 # If it's an image file, extract text first
-                if input_data.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
+                if input_data.lower().endswith(
+                    (".png", ".jpg", ".jpeg", ".tiff", ".bmp", ".gif")
+                ):
                     text = self.extract_text(input_data)
                 else:
                     # If it's a text file, read it
-                    with open(input_data, 'r', encoding='utf-8') as f:
+                    with open(input_data, "r", encoding="utf-8") as f:
                         text = f.read()
             else:
                 # Assume it's either text or an image array
@@ -155,9 +155,8 @@ class ReceiptProcessor:
                     date_match = re.search(pattern, line, re.IGNORECASE)
                     if date_match:
                         result["date"] = date_match.group(1)
+                        break
             print(f"Found date: {result['date']}")
-            if result["date"]:
-                break
 
             # Extract total amount with international number formats
             total_patterns = [
@@ -311,9 +310,7 @@ class ReceiptProcessor:
             return result
         except Exception as e:
             print(f"Error parsing receipt: {e}")
-
             import traceback
 
             traceback.print_exc()
             return None
-</create_file>

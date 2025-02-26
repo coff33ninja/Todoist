@@ -25,19 +25,21 @@ class ReceiptProcessor:
     def parse_receipt(self, image_path):
         """Parse receipt text into structured data"""
         text = self.extract_text(image_path)
-        
+
         # Extract date
         date_pattern = r'\d{1,2}[/-]\d{1,2}[/-]\d{2,4}'
         dates = re.findall(date_pattern, text)
         purchase_date = dates[0] if dates else datetime.now().strftime('%Y-%m-%d')
-        
+
         # Extract items and prices
         item_pattern = r'([A-Za-z\s]+)\s+(\d+\.\d{2})'
         items = re.findall(item_pattern, text)
-        
+
         parsed_data = {
             'date': purchase_date,
-            'items': [{'name': item[0].strip(), 'price': float(item[1])} 
-                     for item in items]
+            'items': [
+                {'name': item[0].strip(), 'price': float(item[1])}
+                for item in items
+            ]
         }
         return parsed_data
