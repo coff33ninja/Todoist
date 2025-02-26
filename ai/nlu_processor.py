@@ -136,7 +136,7 @@ class NLUProcessor:
         else:
             return {"message": "I'm not sure how to handle that request."}
 
-    def _handle_search(self, cursor, filters):
+    def handle_search(self, cursor, filters):
         """Build a SQL query using any filters provided."""
         sql = "SELECT * FROM items WHERE 1=1"
         params = []

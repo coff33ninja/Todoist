@@ -4,9 +4,9 @@ import numpy as np
 import re
 import os
 
-
 class ReceiptProcessor:
     def __init__(self):
+
         pass
 
     def preprocess_image(self, image_path):
@@ -162,9 +162,13 @@ class ReceiptProcessor:
             total_patterns = [
                 r"Total:\s*(\d+[.,]\d{2})\s*€",  # Specific Euro format
                 r"Total:\s*€\s*(\d+[.,]\d{2})",  # Alternative Euro format
-                r"(?:Total|Totaal|Total|Gesamt|合計|कुल):\s*(?:[\$\£\€\¥\₹\R])?\s*([\d.,]+)",
-                r"(?:Sum|Summe|Suma|総額|राशि):\s*(?:[\$\£\€\¥\₹\R])?\s*([\d.,]+)",
-                r"(?:Amount|Bedrag|Monto|Betrag|金額|रकम):\s*(?:[\$\£\€\¥\₹\R])?\s*([\d.,]+)",
+                r"(?:Total|Totaal|Total|Gesamt|合計|कुल):\s*(?:[\$\£\€\¥\₹])?\s*([\d.,]+)",
+
+                r"(?:Sum|Summe|Suma|総額|राशि):\s*(?:[\$\£\€\¥\₹])?\s*([\d.,]+)",
+
+                r"(?:Amount|Bedrag|Monto|Betrag|金額|रकम):\s*(?:[\$\£\€\¥\₹])?\s*([\d.,]+)",
+                r"(?:Total|Totaal|Total|Gesamt|合計|कुल):\s*(?:[\$\£\€\¥\₹])?\s*([\d.,]+)",  # Added for better matching
+
             ]
 
             for line in lines:
@@ -197,8 +201,8 @@ class ReceiptProcessor:
             item_patterns = [
                 r"(\d+)\s*x\s*(.*?)\s+(\d+[.,]\d{2})€",  # "2 x Item 7,98€"
                 r"(\d+)\s*x\s*(.*?)\s+€\s*(\d+[.,]\d{2})",  # "2 x Item €7,98"
-                r"(\d+)\s*(?:x|×|х|\*)\s*(.*?)\s*(?:[\$\£\€\¥\₹\R])?\s*([\d.,]+)",
-                r"(\d+)\s*(.*?)\s*(?:@|at|á)?\s*(?:[\$\£\€\¥\₹\R])?\s*([\d.,]+)",
+                r"(\d+)\s*(?:x|×|х|\*)\s*(.*?)\s*(?:[\$\£\€\¥\₹])?\s*([\d.,]+)",  # Updated to remove invalid escape
+                r"(\d+)\s*(.*?)\s*(?:@|at|á)?\s*(?:[\$\£\€\¥\₹])?\s*([\d.,]+)",  # Updated to remove invalid escape
             ]
 
             print("Searching for items...")

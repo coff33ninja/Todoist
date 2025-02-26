@@ -1,0 +1,28 @@
+CARREFOUR
+Avenue des Champs-Élysées
+75008 Paris, France
+
+Date: 15/02/2024
+Heure: 15:45
+
+--------------------------------
+Articles:
+--------------------------------
+2 x Pain de campagne     3,50€
+1 x Fromage             12,99€
+3 x Yaourt              4,50€
+1 x Eau minérale        1,20€
+2 x Chocolat            4,80€
+
+--------------------------------
+Sous-total:            27,99€
+TVA (20%):             5,60€
+--------------------------------
+Total:                 33,59€
+
+Paiement: CARTE VISA
+Numéro: ****5678
+
+Merci d'avoir choisi Carrefour!
+Ticket #: 5678-1234-9012
+--------------------------------
