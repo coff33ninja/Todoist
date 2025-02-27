@@ -272,7 +272,12 @@ def init_db():
     if cursor.fetchone()[0] == 0:
         # Get item IDs for our sample items
         cursor.execute("SELECT id FROM items WHERE name = 'Broken Lamp'")
-        broken_lamp_id = cursor.fetchone()[0]
+        broken_lamp_result = cursor.fetchone()
+        if broken_lamp_result is not None:
+            broken_lamp_id = broken_lamp_result[0]
+        else:
+            print("[⚠️] 'Broken Lamp' not found in items table.")
+            broken_lamp_id = None
         
         cursor.execute("SELECT id FROM items WHERE name = 'Laptop'")
         laptop_id = cursor.fetchone()[0]
@@ -281,7 +286,11 @@ def init_db():
         coffee_maker_id = cursor.fetchone()[0]
         
         # Insert sample repairs
-        sample_repairs = [
+        sample_repairs = []
+        if broken_lamp_id is not None:
+            sample_repairs.append((broken_lamp_id, '2023-03-15', 'Fix broken switch', 25.00, None, 'in_progress'))
+
+
             (broken_lamp_id, '2023-03-15', 'Fix broken switch', 25.00, None, 'in_progress'),
             (laptop_id, '2023-09-01', 'Replace battery', 75.00, None, 'completed'),
             (coffee_maker_id, '2023-08-15', 'Clean internal components', 0.00, '2024-02-15', 'completed')

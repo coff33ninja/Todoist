@@ -106,6 +106,15 @@ python -m pytest tests/
 "List all items that need repair"
 ```
 
+## ⚙️ AI Configurations
+
+This project allows for various configurations to enhance user experience and AI interaction:
+
+- **User Preferences**: Set preferences for notifications, item categories, and more.
+- **Frequently Asked Questions**: AI can remember and prioritize common queries.
+- **Common Item Locations**: Learns and suggests typical storage locations for items.
+- **Notification Settings**: Configure how and when you receive alerts about inventory changes or budget updates.
+
 ## 🤖 AI Integration
 
 This project is designed to work with various AI models to enhance its capabilities:

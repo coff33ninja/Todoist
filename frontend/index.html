@@ -7,6 +7,42 @@
     <title>Todoist AI Assistant</title>
     <style>
         body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background-color: #fff0f5;
+            color: #333;
+        }
+
+        .container {
+            background-color: #ffe4e1;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button {
+            background-color: #ff69b4;
+            border-radius: 12px;
+        }
+
+        button:hover {
+            background-color: #ff1493;
+        }
+
+        .tab {
+            background-color: #ffb6c1;
+        }
+
+        .tab.active {
+            background-color: #ff69b4;
+        }
+
+        .form-group label {
+            color: #d2691e;
+        }
+
+        .examples {
+            background-color: #ffe4e1;
+        }
+        body {
             font-family: Arial, sans-serif;
             max-width: 800px;
             margin: 0 auto;
@@ -253,6 +289,27 @@
                 </div>
                 <button type="submit">Add Item</button>
                 <div id="addItemMessage"></div>
+            </form>
+        </div>
+    </div>
+
+    <div id="settings-tab" class="tab-content">
+        <div class="container">
+            <h2>User Settings</h2>
+            <form id="settingsForm">
+                <div class="form-group">
+                    <label for="notification">Notification Preferences</label>
+                    <select id="notification">
+                        <option value="email">Email</option>
+                        <option value="sms">SMS</option>
+                        <option value="push">Push Notifications</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="defaultLocation">Default Item Location</label>
+                    <input type="text" id="defaultLocation" placeholder="e.g., Kitchen" />
+                </div>
+                <button type="submit">Save Settings</button>
             </form>
         </div>
     </div>
