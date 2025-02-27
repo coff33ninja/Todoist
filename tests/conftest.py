@@ -39,33 +39,12 @@ def test_db():
 
     conn.row_factory = dict_factory
 
-    # Initialize the database schema for the test database
+    # Import and use our test database initialization function
+    from tests.init_test_db import init_test_db
+    init_test_db(conn)
+    
+    # Create additional tables needed for tests
     cursor = conn.cursor()
-    # Create tables
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS items (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            name TEXT NOT NULL,
-            description TEXT,
-            quantity INTEGER DEFAULT 1,
-            purchase_date TEXT,
-            price REAL,
-            warranty_expiry TEXT,
-            acquisition_type TEXT CHECK(acquisition_type IN ('purchase', 'trade', 'gift')),
-            location TEXT,
-            condition TEXT,
-            notes TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            category TEXT,
-            tags TEXT,
-            is_gift BOOLEAN DEFAULT 0,
-            storage_location TEXT,
-            usage_location TEXT,
-            needs_repair BOOLEAN DEFAULT 0
-        )
-    """
-    )
     cursor.execute(
         """
         CREATE TABLE IF NOT EXISTS transactions (
@@ -76,21 +55,6 @@ def test_db():
             source TEXT,
             date TEXT,
             details TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY(item_id) REFERENCES items(id)
-        )
-    """
-    )
-    cursor.execute(
-        """
-        CREATE TABLE IF NOT EXISTS repairs (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            item_id INTEGER,
-            repair_date TEXT,
-            description TEXT,
-            cost REAL,
-            next_due_date TEXT,
-            status TEXT CHECK(status IN ('scheduled', 'in_progress', 'completed', 'cancelled')),
             created_at TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY(item_id) REFERENCES items(id)
         )
@@ -151,15 +115,19 @@ def sample_data(test_db):
     cursor.execute("""
         INSERT INTO items (
             name, description, quantity, price, location, category, 
-            tags, purchase_date, is_gift, storage_location, usage_location, needs_repair
+            tags, purchase_date, is_gift, storage_location, usage_location, needs_repair,
+            warranty_expiry, acquisition_type, condition, notes
         )
         VALUES
             ('Test Item 1', 'Description 1', 1, 100.00, 'Kitchen', 'Electronics', 
-             'test,kitchen', '2023-01-01', 0, 'Kitchen Cabinet', 'Kitchen Counter', 0),
+             'test,kitchen', '2023-01-01', 0, 'Kitchen Cabinet', 'Kitchen Counter', 0,
+             '2024-01-01', 'purchase', 'new', 'Test notes 1'),
             ('Test Item 2', 'Description 2', 2, 200.00, 'Office', 'Furniture', 
-             'test,office', '2023-02-01', 0, 'Office', 'Office Desk', 0),
+             'test,office', '2023-02-01', 0, 'Office', 'Office Desk', 0,
+             '2024-02-01', 'purchase', 'new', 'Test notes 2'),
             ('Broken Lamp', 'Needs fixing', 1, 50.00, 'Living Room', 'Lighting', 
-             'broken,repair', '2023-03-01', 0, 'Storage', 'Living Room', 1)
+             'broken,repair', '2023-03-01', 0, 'Storage', 'Living Room', 1,
+             '2024-03-01', 'purchase', 'damaged', 'Needs repair')
     """)
 
     # Insert sample repairs

@@ -931,8 +931,17 @@
         "kind": 2,
         "importPath": "tests.conftest",
         "description": "tests.conftest",
-        "peekOfCode": "def sample_data(test_db):\n    \"\"\"Insert sample data into the test database\"\"\"\n    cursor = test_db.cursor()\n    # Insert sample items with all necessary fields\n    cursor.execute(\"\"\"\n        INSERT INTO items (\n            name, description, quantity, price, location, category, \n            tags, purchase_date, is_gift, storage_location, usage_location, needs_repair\n        )\n        VALUES",
+        "peekOfCode": "def sample_data(test_db):\n    \"\"\"Insert sample data into the test database\"\"\"\n    cursor = test_db.cursor()\n    # Insert sample items with all necessary fields\n    cursor.execute(\"\"\"\n        INSERT INTO items (\n            name, description, quantity, price, location, category, \n            tags, purchase_date, is_gift, storage_location, usage_location, needs_repair,\n            warranty_expiry, acquisition_type, condition, notes\n        )",
         "detail": "tests.conftest",
+        "documentation": {}
+    },
+    {
+        "label": "init_test_db",
+        "kind": 2,
+        "importPath": "tests.init_test_db",
+        "description": "tests.init_test_db",
+        "peekOfCode": "def init_test_db(db_conn):\n    \"\"\"Initialize the test database with required tables.\"\"\"\n    cursor = db_conn.cursor()\n    # Create items table with additional fields\n    cursor.execute(\n        \"\"\"\n    CREATE TABLE IF NOT EXISTS items (\n        id INTEGER PRIMARY KEY AUTOINCREMENT,\n        name TEXT NOT NULL,\n        description TEXT,",
+        "detail": "tests.init_test_db",
         "documentation": {}
     },
     {
