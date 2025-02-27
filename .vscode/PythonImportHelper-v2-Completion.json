@@ -953,7 +953,7 @@
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_response_format():\n    \"\"\"Test the response format for different intents\"\"\"\n    processor = NLUProcessor()\n    # Mock database function\n    def mock_db():\n        class MockCursor:\n            def execute(self, query, params):\n                pass\n            def fetchall(self):\n                return [{\"name\": \"Test Item\", \"price\": 10.0}]",
+        "peekOfCode": "def test_response_format():\n    \"\"\"Test the response format for different intents\"\"\"\n    processor = NLUProcessor()\n    # Mock database cursor directly\n    class MockCursor:\n        def __init__(self):\n            self.query = \"\"\n        def execute(self, query, params=None):\n            self.query = query\n            return self",
         "detail": "tests.test_nlu_processor",
         "documentation": {}
     },
@@ -962,7 +962,7 @@
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_performance():\n    \"\"\"Test the performance of the NLU processor\"\"\"\n    processor = NLUProcessor()\n    # Warm up\n    for _ in range(5):\n        processor.process_natural_language_query(\"test query\", lambda: None)\n    # Measure performance\n    start_time = time.time()\n    for _ in range(100):\n        processor.process_natural_language_query(\"show me all items\", lambda: None)",
+        "peekOfCode": "def test_performance():\n    \"\"\"Test the performance of the NLU processor\"\"\"\n    processor = NLUProcessor()\n    # Mock cursor for testing\n    class MockCursor:\n        def execute(self, query, params=None):\n            return self\n        def fetchall(self):\n            return [{\"name\": \"Test Item\", \"price\": 10.0}]\n        def fetchone(self):",
         "detail": "tests.test_nlu_processor",
         "documentation": {}
     },
@@ -971,7 +971,7 @@
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_error_handling():\n    \"\"\"Test error handling in the NLU processor\"\"\"\n    processor = NLUProcessor()\n    # Test database error\n    def failing_db():\n        raise Exception(\"Database connection failed\")\n    result = processor.process_natural_language_query(\"show me all items\", failing_db)\n    assert result.get(\"error\") == \"Database connection failed\"\n    # Test invalid query\n    result = processor.process_natural_language_query(\"invalid query\", lambda: None)",
+        "peekOfCode": "def test_error_handling():\n    \"\"\"Test error handling in the NLU processor\"\"\"\n    processor = NLUProcessor()\n    # Test database error\n    def failing_db():\n        raise Exception(\"Database connection failed\")\n    result = processor.process_natural_language_query(\"show me all items\", failing_db)\n    assert result.get(\"error\") == \"Database connection failed\"\n    # Mock cursor for testing\n    class MockCursor:",
         "detail": "tests.test_nlu_processor",
         "documentation": {}
     },
@@ -980,7 +980,7 @@
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_various_phrasings(query, expected_intent):\n    \"\"\"Test various phrasings for each intent\"\"\"\n    processor = NLUProcessor()\n    result = processor.process_natural_language_query(query, lambda: None)\n    assert result.get(\"intent\") == expected_intent, \\\n        f\"Expected {expected_intent} for query: {query}\"",
+        "peekOfCode": "def test_various_phrasings(query, expected_intent):\n    \"\"\"Test various phrasings for each intent\"\"\"\n    processor = NLUProcessor()\n    # Mock cursor for testing\n    class MockCursor:\n        def execute(self, query, params=None):\n            return self\n        def fetchall(self):\n            return [{\"name\": \"Test Item\", \"price\": 10.0}]\n        def fetchone(self):",
         "detail": "tests.test_nlu_processor",
         "documentation": {}
     },

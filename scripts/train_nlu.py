@@ -174,13 +174,13 @@ def main():
     }
 
     queries, labels = load_and_prepare_data(args.data, label_mapping)
-    print(f"[ℹ️] Loaded {len(queries)} training examples")
+    print(f"[INFO] Loaded {len(queries)} training examples")
 
     queries_train, queries_val, labels_train, labels_val = train_test_split(
         queries, labels, test_size=0.2, random_state=42
     )
     print(
-        f"[ℹ️] Training on {len(queries_train)}, validating on {len(queries_val)} examples"
+        f"[INFO] Training on {len(queries_train)}, validating on {len(queries_val)} examples"
     )
 
     tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
@@ -196,36 +196,31 @@ def main():
         output_dir="ai_models/temp_nlu_model",
     )
 
-    print(f"[✅] NLU model trained and saved to {args.model_dir}")
+    print(f"[SUCCESS] NLU model trained and saved to {args.model_dir}")
 
+    # Test the model with some sample queries
     test_queries = [
         "Where's my jacket?",
         "How many tools in the garage?",
         "What needs fixing?",
+        "Show me items over $50"
     ]
-    conn = mock_db_connection()  # Create the database connection
-    nlu.db_conn = conn  # Set the database connection in the NLUProcessor
     
-    # Print the predicted intent for each query to help with debugging
+    # Create a mock database connection for testing
+    conn = mock_db_connection()
+    cursor = conn.cursor()
+    
+    # Test each query
     for q in test_queries:
-        # Get the intent prediction
-        inputs = nlu.tokenizer(q, return_tensors="pt", truncation=True, padding=True)
-        with torch.no_grad():
-            logits = nlu.model(**inputs).logits
-        probabilities = torch.nn.functional.softmax(logits, dim=1)
-        predicted_label = int(torch.argmax(probabilities, dim=1).item())
-        predicted_intent = nlu.intents[predicted_label]
-        
-        # Extract filters
-        filters = nlu.extract_filters(q)
-        
         print(f"Query: {q}")
-        print(f"Predicted intent: {predicted_intent}")
-        print(f"Extracted filters: {filters}")
         
-        # Process the query
-        result = nlu.process_natural_language_query(q)
-        print(f"Result: {result}")
+        # Process the query using our NLU processor
+        try:
+            result = nlu.process_natural_language_query(q, cursor)
+            print(f"Result: {result}")
+        except Exception as e:
+            print(f"Error processing query: {str(e)}")
+        
         print("-" * 50)
 
 
