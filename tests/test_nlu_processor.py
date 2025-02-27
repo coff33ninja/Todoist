@@ -23,6 +23,8 @@ def test_intent_classification():
     class MockCursor:
         def __init__(self):
             self.query = ""
+            self.description = [("name", None, None, None, None, None, None), 
+                               ("price", None, None, None, None, None, None)]
             
         def execute(self, query, params=None):
             self.query = query
@@ -51,6 +53,8 @@ def test_response_format():
     class MockCursor:
         def __init__(self):
             self.query = ""
+            self.description = [("name", None, None, None, None, None, None), 
+                               ("price", None, None, None, None, None, None)]
             
         def execute(self, query, params=None):
             self.query = query
@@ -92,6 +96,10 @@ def test_performance():
 
     # Mock cursor for testing
     class MockCursor:
+        def __init__(self):
+            self.description = [("name", None, None, None, None, None, None), 
+                               ("price", None, None, None, None, None, None)]
+            
         def execute(self, query, params=None):
             return self
         def fetchall(self):
@@ -126,6 +134,10 @@ def test_error_handling():
 
     # Mock cursor for testing
     class MockCursor:
+        def __init__(self):
+            self.description = [("name", None, None, None, None, None, None), 
+                               ("price", None, None, None, None, None, None)]
+            
         def execute(self, query, params=None):
             return self
         def fetchall(self):
@@ -152,6 +164,10 @@ def test_various_phrasings(query, expected_intent):
     
     # Mock cursor for testing
     class MockCursor:
+        def __init__(self):
+            self.description = [("name", None, None, None, None, None, None), 
+                               ("price", None, None, None, None, None, None)]
+            
         def execute(self, query, params=None):
             return self
         def fetchall(self):

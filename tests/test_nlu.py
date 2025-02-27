@@ -48,7 +48,7 @@ def setup_database():
     return conn
 
 
-def test_queries(conn):
+def test_queries(test_db):
     """Run test queries against the NLUProcessor with the provided database connection."""
     nlu = NLUProcessor()
 
@@ -68,7 +68,7 @@ def test_queries(conn):
     for query in test_cases:
         print(f"\nQuery: {query}")
         try:
-            result = nlu.process_natural_language_query(query, lambda: conn)
+            result = nlu.process_natural_language_query(query, lambda: test_db)
             print("Result:", result)
         except Exception as e:
             print(f"Error processing query: {e}")

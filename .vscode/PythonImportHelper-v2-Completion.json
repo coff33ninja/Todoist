@@ -760,7 +760,7 @@
         "kind": 2,
         "importPath": "core.main",
         "description": "core.main",
-        "peekOfCode": "def handle_query():\n    data = request.get_json()\n    query_text = data.get(\"query\", \"\")\n    if not query_text:\n        return jsonify({\"error\": \"No query provided\"}), 400\n    try:\n        # Import NLUProcessor only when needed to avoid circular imports\n        from ai.nlu_processor import NLUProcessor\n        nlu_processor = NLUProcessor()\n        response = nlu_processor.process_natural_language_query(",
+        "peekOfCode": "def handle_query():\n    data = request.get_json()\n    query_text = data.get(\"query\", \"\")\n    if not query_text:\n        return jsonify({\"error\": \"No query provided\"}), 400\n    try:\n        # Import NLUProcessor only when needed to avoid circular imports\n        from ai.nlu_processor import NLUProcessor\n        nlu_processor = NLUProcessor()\n        result = nlu_processor.process_natural_language_query(",
         "detail": "core.main",
         "documentation": {}
     },
@@ -985,7 +985,7 @@
         "kind": 2,
         "importPath": "tests.test_nlu",
         "description": "tests.test_nlu",
-        "peekOfCode": "def test_queries(conn):\n    \"\"\"Run test queries against the NLUProcessor with the provided database connection.\"\"\"\n    nlu = NLUProcessor()\n    test_cases = [\n        \"show me all items in the kitchen\",  # Search by location\n        \"how many products do I have\",  # Count total items\n        \"what is the total value of my inventory\",  # Total value\n        \"list items that cost more than 100 dollars\",  # Price range (high)\n        \"count all things in storage\",  # Count by location\n        \"what items are in the living room\",  # Search by location",
+        "peekOfCode": "def test_queries(test_db):\n    \"\"\"Run test queries against the NLUProcessor with the provided database connection.\"\"\"\n    nlu = NLUProcessor()\n    test_cases = [\n        \"show me all items in the kitchen\",  # Search by location\n        \"how many products do I have\",  # Count total items\n        \"what is the total value of my inventory\",  # Total value\n        \"list items that cost more than 100 dollars\",  # Price range (high)\n        \"count all things in storage\",  # Count by location\n        \"what items are in the living room\",  # Search by location",
         "detail": "tests.test_nlu",
         "documentation": {}
     },
@@ -1003,7 +1003,7 @@
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_response_format():\n    \"\"\"Test the response format for different intents\"\"\"\n    processor = NLUProcessor()\n    # Mock database cursor directly\n    class MockCursor:\n        def __init__(self):\n            self.query = \"\"\n        def execute(self, query, params=None):\n            self.query = query\n            return self",
+        "peekOfCode": "def test_response_format():\n    \"\"\"Test the response format for different intents\"\"\"\n    processor = NLUProcessor()\n    # Mock database cursor directly\n    class MockCursor:\n        def __init__(self):\n            self.query = \"\"\n            self.description = [(\"name\", None, None, None, None, None, None), \n                               (\"price\", None, None, None, None, None, None)]\n        def execute(self, query, params=None):",
         "detail": "tests.test_nlu_processor",
         "documentation": {}
     },
@@ -1012,7 +1012,7 @@
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_performance():\n    \"\"\"Test the performance of the NLU processor\"\"\"\n    processor = NLUProcessor()\n    # Mock cursor for testing\n    class MockCursor:\n        def execute(self, query, params=None):\n            return self\n        def fetchall(self):\n            return [{\"name\": \"Test Item\", \"price\": 10.0}]\n        def fetchone(self):",
+        "peekOfCode": "def test_performance():\n    \"\"\"Test the performance of the NLU processor\"\"\"\n    processor = NLUProcessor()\n    # Mock cursor for testing\n    class MockCursor:\n        def __init__(self):\n            self.description = [(\"name\", None, None, None, None, None, None), \n                               (\"price\", None, None, None, None, None, None)]\n        def execute(self, query, params=None):\n            return self",
         "detail": "tests.test_nlu_processor",
         "documentation": {}
     },
@@ -1030,8 +1030,17 @@
         "kind": 2,
         "importPath": "tests.test_nlu_processor",
         "description": "tests.test_nlu_processor",
-        "peekOfCode": "def test_various_phrasings(query, expected_intent):\n    \"\"\"Test various phrasings for each intent\"\"\"\n    processor = NLUProcessor()\n    # Mock cursor for testing\n    class MockCursor:\n        def execute(self, query, params=None):\n            return self\n        def fetchall(self):\n            return [{\"name\": \"Test Item\", \"price\": 10.0}]\n        def fetchone(self):",
+        "peekOfCode": "def test_various_phrasings(query, expected_intent):\n    \"\"\"Test various phrasings for each intent\"\"\"\n    processor = NLUProcessor()\n    # Mock cursor for testing\n    class MockCursor:\n        def __init__(self):\n            self.description = [(\"name\", None, None, None, None, None, None), \n                               (\"price\", None, None, None, None, None, None)]\n        def execute(self, query, params=None):\n            return self",
         "detail": "tests.test_nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "MockReceiptProcessor",
+        "kind": 6,
+        "importPath": "tests.test_ocr",
+        "description": "tests.test_ocr",
+        "peekOfCode": "class MockReceiptProcessor(ReceiptProcessor):\n    \"\"\"A modified version of ReceiptProcessor for testing purposes.\"\"\"\n    def preprocess_image(self, image_path_or_array):\n        \"\"\"Modified preprocessing for testing.\"\"\"\n        try:\n            # Handle both file paths and numpy arrays\n            if isinstance(image_path_or_array, str):\n                # Convert path to absolute path\n                abs_path = os.path.abspath(image_path_or_array)\n                print(f\"Loading image from path: {abs_path}\")",
+        "detail": "tests.test_ocr",
         "documentation": {}
     },
     {
@@ -1039,7 +1048,7 @@
         "kind": 6,
         "importPath": "tests.test_ocr",
         "description": "tests.test_ocr",
-        "peekOfCode": "class TestOCRProcessor(unittest.TestCase):\n    \"\"\"Test cases for OCR processor functionality.\"\"\"\n    def setUp(self):\n        \"\"\"Set up test environment.\"\"\"\n        self.processor = ReceiptProcessor()\n        self.test_dir = tempfile.mkdtemp()\n    def tearDown(self):\n        \"\"\"Clean up test environment.\"\"\"\n        # Remove temporary files\n        for file in os.listdir(self.test_dir):",
+        "peekOfCode": "class TestOCRProcessor(unittest.TestCase):\n    \"\"\"Test cases for OCR processor functionality.\"\"\"\n    def setUp(self):\n        \"\"\"Set up test environment.\"\"\"\n        # Use the mock processor for testing\n        self.processor = MockReceiptProcessor()\n        self.test_dir = tempfile.mkdtemp()\n    def tearDown(self):\n        \"\"\"Clean up test environment.\"\"\"\n        # Remove temporary files",
         "detail": "tests.test_ocr",
         "documentation": {}
     },

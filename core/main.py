@@ -196,11 +196,31 @@ def handle_query():
         # Import NLUProcessor only when needed to avoid circular imports
         from ai.nlu_processor import NLUProcessor
         nlu_processor = NLUProcessor()
-        response = nlu_processor.process_natural_language_query(
+        result = nlu_processor.process_natural_language_query(
             query_text,
             get_db
         )
-        return jsonify({"response": response})
+        
+        # Format the response for the API
+        response = {}
+        
+        # Check if there's an error
+        if "error" in result:
+            response["error"] = result["error"]
+        
+        # Include the intent for debugging
+        if "intent" in result:
+            response["intent"] = result["intent"]
+        
+        # Include the message if available
+        if "message" in result:
+            response["response"] = result["message"]
+        # If no message but items are available, create a response about items
+        elif "items" in result:
+            response["response"] = f"Found {len(result['items'])} items in inventory"
+            response["items"] = result["items"]
+        
+        return jsonify(response)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
