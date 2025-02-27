@@ -836,7 +836,7 @@
         "kind": 2,
         "importPath": "scripts.train_nlu",
         "description": "scripts.train_nlu",
-        "peekOfCode": "def mock_db_connection():\n    \"\"\"Create an in-memory SQLite database with the 'items' table and sample data.\"\"\"\n    conn = sqlite3.connect(\":memory:\")\n    cursor = conn.cursor()\n    # Create the 'items' table\n    cursor.execute(\n        \"\"\"\n        CREATE TABLE items (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            name TEXT,",
+        "peekOfCode": "def mock_db_connection():\n    \"\"\"Create an in-memory SQLite database with the 'items' table and sample data.\"\"\"\n    conn = sqlite3.connect(\":memory:\")\n    conn.row_factory = sqlite3.Row\n    cursor = conn.cursor()\n    # Create the 'items' table\n    cursor.execute(\n        \"\"\"\n        CREATE TABLE items (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,",
         "detail": "scripts.train_nlu",
         "documentation": {}
     },

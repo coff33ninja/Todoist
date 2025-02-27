@@ -10,6 +10,7 @@ import pandas as pd
 from datasets import Dataset
 from transformers import DistilBertTokenizerFast
 from sklearn.model_selection import train_test_split
+import torch
 
 # Ensure the repository is in the path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -106,6 +107,7 @@ def create_dataset(queries, labels, tokenizer):
 def mock_db_connection():
     """Create an in-memory SQLite database with the 'items' table and sample data."""
     conn = sqlite3.connect(":memory:")
+    conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
 
     # Create the 'items' table
@@ -191,19 +193,40 @@ def main():
         eval_dataset=val_dataset,
         epochs=args.epochs,
         batch_size=args.batch_size,
-        output_dir=args.model_dir,
+        output_dir="ai_models/temp_nlu_model",
     )
 
     print(f"[✅] NLU model trained and saved to {args.model_dir}")
 
     test_queries = [
-        "Where’s my jacket?",
+        "Where's my jacket?",
         "How many tools in the garage?",
         "What needs fixing?",
     ]
+    conn = mock_db_connection()  # Create the database connection
+    nlu.db_conn = conn  # Set the database connection in the NLUProcessor
+    
+    # Print the predicted intent for each query to help with debugging
     for q in test_queries:
-        result = nlu.process_natural_language_query(q, mock_db_connection)
-        print(f"Query: {q}, Result: {result}")
+        # Get the intent prediction
+        inputs = nlu.tokenizer(q, return_tensors="pt", truncation=True, padding=True)
+        with torch.no_grad():
+            logits = nlu.model(**inputs).logits
+        probabilities = torch.nn.functional.softmax(logits, dim=1)
+        predicted_label = int(torch.argmax(probabilities, dim=1).item())
+        predicted_intent = nlu.intents[predicted_label]
+        
+        # Extract filters
+        filters = nlu.extract_filters(q)
+        
+        print(f"Query: {q}")
+        print(f"Predicted intent: {predicted_intent}")
+        print(f"Extracted filters: {filters}")
+        
+        # Process the query
+        result = nlu.process_natural_language_query(q)
+        print(f"Result: {result}")
+        print("-" * 50)
 
 
 if __name__ == "__main__":

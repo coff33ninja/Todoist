@@ -118,35 +118,60 @@ class NLUProcessor:
                 filters["price"] = ent.text
 
         # Regex-based filter extraction
-        m = re.search(r"in\s+([\w\s]+)", query, re.IGNORECASE)
+        m = re.search(r"in\s+(?:the\s+)?([\w\s]+)", query, re.IGNORECASE)
         if m:
             filters["location"] = m.group(1).strip()
+        
+        # Look for specific locations mentioned
+        if re.search(r"\b(?:garage|kitchen|closet|living\s*room)\b", query, re.IGNORECASE):
+            for loc in ["garage", "kitchen", "closet", "living room"]:
+                if re.search(r"\b" + loc + r"\b", query, re.IGNORECASE):
+                    filters["location"] = loc
+        
+        # Look for specific categories
+        if re.search(r"\b(?:tools|clothing|electronics|appliances)\b", query, re.IGNORECASE):
+            for cat in ["tools", "clothing", "electronics", "appliances"]:
+                if re.search(r"\b" + cat + r"\b", query, re.IGNORECASE):
+                    filters["category"] = cat
+        
         m = re.search(r"category\s+([\w\s]+)", query, re.IGNORECASE)
         if m:
             filters["category"] = m.group(1).strip()
+        
         m = re.search(r"tag[s]?\s+([\w\s,]+)", query, re.IGNORECASE)
         if m:
             filters["tags"] = m.group(1).strip()
+        
         m = re.search(r"purchased\s+on\s+([\d/-]+)", query, re.IGNORECASE)
         if m:
             filters["purchase_date"] = m.group(1).strip()
+        
         if re.search(r"\b(gifts?|free)\b", query, re.IGNORECASE):
             filters["is_gift"] = True
+        
         m = re.search(r"stored\s+in\s+([\w\s]+)", query, re.IGNORECASE)
         if m:
             filters["storage_location"] = m.group(1).strip()
+        
         m = re.search(r"used\s+in\s+([\w\s]+)", query, re.IGNORECASE)
         if m:
             filters["usage_location"] = m.group(1).strip()
+        
         m = re.search(
             r"cost\s+(more|less)\s+than\s+(\d+(?:\.\d{2})?)", query, re.IGNORECASE
         )
         if m:
             filters["comparison"] = m.group(1)
             filters["price"] = m.group(2)
+        
         m = re.search(r"last\s+(\w+)", query, re.IGNORECASE)
         if m:
             filters["time_period"] = m.group(1)
+        
+        # Check for repair-related terms
+        if re.search(r"\b(?:fix|repair|broken|needs?\s+fixing|needs?\s+repair)\b", query, re.IGNORECASE):
+            filters["needs_repair"] = True
+            
         return filters
 
     def process_natural_language_query(self, query):
@@ -193,6 +218,9 @@ class NLUProcessor:
         """Handle search intent."""
         sql = "SELECT * FROM items WHERE 1=1"
         params = []
+        if "name" in filters:
+            sql += " AND name LIKE ?"
+            params.append(f"%{filters['name']}%")
         if "location" in filters:
             sql += " AND location LIKE ?"
             params.append(f"%{filters['location']}%")
@@ -205,10 +233,12 @@ class NLUProcessor:
         if "purchase_date" in filters:
             sql += " AND purchase_date = ?"
             params.append(filters["purchase_date"])
+        if "needs_repair" in filters and filters["needs_repair"]:
+            sql += " AND needs_repair = 1"
         sql += " ORDER BY name"
         try:
             cursor.execute(sql, params)
-            items = [dict(row) for row in cursor.fetchall()]
+            items = [{k: row[k] for k in row.keys()} for row in cursor.fetchall()]
             return {"items": items} if items else {"message": "No items found."}
         except sqlite3.Error as e:
             return {"error": f"Database error: {e}"}
@@ -281,9 +311,12 @@ class NLUProcessor:
         if "location" in filters:
             sql += " AND location LIKE ?"
             params.append(f"%{filters['location']}%")
+        if "category" in filters:
+            sql += " AND category LIKE ?"
+            params.append(f"%{filters['category']}%")
         try:
             cursor.execute(sql, params)
-            items = [dict(row) for row in cursor.fetchall()]
+            items = [{k: row[k] for k in row.keys()} for row in cursor.fetchall()]
             return (
                 {"items": items}
                 if items

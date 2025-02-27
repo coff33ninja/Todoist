@@ -65,6 +65,7 @@ if "%choice%"=="1" (
 
     REM Install dependencies if needed
     pip install -r requirements.txt
+    python -m spacy download en_core_web_sm
 
     REM Initialize database
     python scripts/init_db.py
