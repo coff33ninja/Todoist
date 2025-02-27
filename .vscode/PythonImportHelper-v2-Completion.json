@@ -133,6 +133,15 @@
         "documentation": {}
     },
     {
+        "label": "spacy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "spacy",
+        "description": "spacy",
+        "detail": "spacy",
+        "documentation": {}
+    },
+    {
         "label": "softmax",
         "importPath": "torch.nn.functional",
         "description": "torch.nn.functional",
@@ -159,28 +168,12 @@
         "documentation": {}
     },
     {
-        "label": "Image",
-        "importPath": "PIL",
-        "description": "PIL",
-        "isExtraImport": true,
-        "detail": "PIL",
-        "documentation": {}
-    },
-    {
         "label": "numpy",
         "kind": 6,
         "isExtraImport": true,
         "importPath": "numpy",
         "description": "numpy",
         "detail": "numpy",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
         "documentation": {}
     },
     {
@@ -446,6 +439,14 @@
         "documentation": {}
     },
     {
+        "label": "train_test_split",
+        "importPath": "sklearn.model_selection",
+        "description": "sklearn.model_selection",
+        "isExtraImport": true,
+        "detail": "sklearn.model_selection",
+        "documentation": {}
+    },
+    {
         "label": "pytest",
         "kind": 6,
         "isExtraImport": true,
@@ -484,7 +485,7 @@
         "kind": 6,
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
-        "peekOfCode": "class NLUProcessor:\n    def __init__(self, model_path='ai_models/nlu_model.pkl'):\n        # Basic patterns still exist (they can be extended later)\n        self.patterns = {\n            'search': [\n                r'show\\s+(?:me\\s+)?(?:all\\s+)?(?:the\\s+)?(?:items?|products?|things?)(?:\\s+in\\s+(.+))?'\n            ],\n            'count': [\n                r'how\\s+many\\s+(?:items?|products?|things?)(?:\\s+in\\s+(.+))?'\n            ],",
+        "peekOfCode": "class NLUProcessor:\n    def __init__(self, model_path=\"ai_models/nlu_model\", db_path=\"inventory.db\"):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\"\"\"\n        # Define supported intents as a class attribute for easy modification\n        self.intents = [\n            \"search\",\n            \"count\",\n            \"value\",\n            \"price_range\",\n            \"repair\",",
         "detail": "ai.nlu_processor",
         "documentation": {}
     },
@@ -494,15 +495,6 @@
         "importPath": "ai.ocr_processor",
         "description": "ai.ocr_processor",
         "peekOfCode": "class ReceiptProcessor:\n    def __init__(self):\n        pass\n    def preprocess_image(self, image_path):\n        \"\"\"Preprocess the receipt image for better OCR results\"\"\"\n        try:\n            # Load image\n            img = cv2.imread(image_path)\n            # Convert to grayscale\n            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)",
-        "detail": "ai.ocr_processor",
-        "documentation": {}
-    },
-    {
-        "label": "extract_text",
-        "kind": 2,
-        "importPath": "ai.ocr_processor",
-        "description": "ai.ocr_processor",
-        "peekOfCode": "def extract_text(self, image):\n    \"\"\"Extract text from receipt image using OCR\"\"\"\n    try:\n        # If input is a file path, load the image\n        if isinstance(image, str) and os.path.isfile(image):\n            image = cv2.imread(image)\n        # Preprocess the image for better OCR results\n        processed_image = self.preprocess_image(image)\n        if processed_image is None:\n            print(\"Error: Image preprocessing failed.\")",
         "detail": "ai.ocr_processor",
         "documentation": {}
     },
@@ -520,7 +512,7 @@
         "kind": 2,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "def get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    conn = sqlite3.connect(db_path)\n    conn.row_factory = sqlite3.Row\n    return conn\n@app.route(\"/api/query\", methods=[\"POST\"])\ndef process_query():\n    \"\"\"Process natural language queries.\"\"\"\n    try:",
+        "peekOfCode": "def get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    try:\n        conn = sqlite3.connect(db_path)\n    except Exception as e:\n        print(f\"Database connection error: {e}\")\n        return None\n    conn.row_factory = sqlite3.Row\n    return conn",
         "detail": "backend.app",
         "documentation": {}
     },
@@ -610,7 +602,7 @@
         "kind": 5,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    conn = sqlite3.connect(db_path)\n    conn.row_factory = sqlite3.Row",
+        "peekOfCode": "uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    try:\n        conn = sqlite3.connect(db_path)",
         "detail": "backend.app",
         "documentation": {}
     },
@@ -619,7 +611,7 @@
         "kind": 5,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    conn = sqlite3.connect(db_path)\n    conn.row_factory = sqlite3.Row\n    return conn\n@app.route(\"/api/query\", methods=[\"POST\"])\ndef process_query():",
+        "peekOfCode": "db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    try:\n        conn = sqlite3.connect(db_path)\n    except Exception as e:\n        print(f\"Database connection error: {e}\")\n        return None",
         "detail": "backend.app",
         "documentation": {}
     },
@@ -826,7 +818,7 @@
         "kind": 2,
         "importPath": "scripts.train_nlu",
         "description": "scripts.train_nlu",
-        "peekOfCode": "def load_and_prepare_data(data_path=None, label_mapping=None):\n    \"\"\"Load training data from file or use default examples if no file provided.\"\"\"\n    if data_path and os.path.exists(data_path):\n        # Read from CSV file if it exists\n        df = pd.read_csv(data_path)\n        df[\"label\"] = df[\"intent\"].map(label_mapping)\n        df = df.dropna(subset=[\"label\"])\n        return df[\"query\"].tolist(), df[\"label\"].tolist()\n    # Default training examples if no file provided\n    X = [",
+        "peekOfCode": "def load_and_prepare_data(data_path=None, label_mapping=None):\n    \"\"\"Load training data from file or use default examples if no file provided.\"\"\"\n    if data_path and os.path.exists(data_path):\n        df = pd.read_csv(data_path)\n        df[\"label\"] = df[\"intent\"].map(label_mapping)\n        df = df.dropna(subset=[\"label\"])\n        return df[\"query\"].tolist(), df[\"label\"].tolist()\n    X = [\n        \"show me all items in the kitchen\",\n        \"how many items do I have in the garage\",",
         "detail": "scripts.train_nlu",
         "documentation": {}
     },
@@ -835,7 +827,16 @@
         "kind": 2,
         "importPath": "scripts.train_nlu",
         "description": "scripts.train_nlu",
-        "peekOfCode": "def create_dataset(queries, labels, tokenizer):\n    \"\"\"Create a Dataset object from queries and labels.\"\"\"\n    tokenized_inputs = tokenizer(\n        queries,\n        padding=True,\n        truncation=True,\n        return_tensors=\"pt\"\n    )\n    return Dataset.from_dict({\n        'input_ids': tokenized_inputs['input_ids'].tolist(),",
+        "peekOfCode": "def create_dataset(queries, labels, tokenizer):\n    \"\"\"Create a Dataset object from queries and labels.\"\"\"\n    tokenized_inputs = tokenizer(\n        queries, padding=True, truncation=True, return_tensors=\"pt\"\n    )\n    return Dataset.from_dict(\n        {\n            \"input_ids\": tokenized_inputs[\"input_ids\"].tolist(),\n            \"attention_mask\": tokenized_inputs[\"attention_mask\"].tolist(),\n            \"labels\": [int(label) for label in labels],",
+        "detail": "scripts.train_nlu",
+        "documentation": {}
+    },
+    {
+        "label": "mock_db_connection",
+        "kind": 2,
+        "importPath": "scripts.train_nlu",
+        "description": "scripts.train_nlu",
+        "peekOfCode": "def mock_db_connection():\n    \"\"\"Create an in-memory SQLite database with the 'items' table and sample data.\"\"\"\n    conn = sqlite3.connect(\":memory:\")\n    cursor = conn.cursor()\n    # Create the 'items' table\n    cursor.execute(\n        \"\"\"\n        CREATE TABLE items (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            name TEXT,",
         "detail": "scripts.train_nlu",
         "documentation": {}
     },
@@ -844,7 +845,7 @@
         "kind": 2,
         "importPath": "scripts.train_nlu",
         "description": "scripts.train_nlu",
-        "peekOfCode": "def main():\n    parser = argparse.ArgumentParser(description=\"Train an enhanced NLU model.\")\n    parser.add_argument(\n        \"--data\",\n        type=str,\n        help=\"Path to CSV training data (optional)\"\n    )\n    parser.add_argument(\n        \"--epochs\",\n        type=int,",
+        "peekOfCode": "def main():\n    parser = argparse.ArgumentParser(description=\"Train an enhanced NLU model.\")\n    parser.add_argument(\"--data\", type=str, help=\"Path to CSV training data (optional)\")\n    parser.add_argument(\n        \"--epochs\", type=int, default=3, help=\"Number of training epochs\"\n    )\n    parser.add_argument(\n        \"--batch_size\", type=int, default=16, help=\"Training batch size\"\n    )\n    parser.add_argument(",
         "detail": "scripts.train_nlu",
         "documentation": {}
     },
@@ -921,11 +922,11 @@
         "documentation": {}
     },
     {
-        "label": "get_db",
+        "label": "setup_database",
         "kind": 2,
         "importPath": "tests.test_nlu",
         "description": "tests.test_nlu",
-        "peekOfCode": "def get_db():\n    \"\"\"Mock database connection function\"\"\"\n    conn = sqlite3.connect('db/inventory.db')\n    conn.row_factory = sqlite3.Row\n    return conn\ndef test_queries():\n    nlu = NLUProcessor()\n    test_cases = [\n        \"show me all items in the kitchen\",\n        \"how many products do I have\",",
+        "peekOfCode": "def setup_database():\n    \"\"\"Set up an in-memory SQLite database with the 'items' table and sample data.\"\"\"\n    conn = sqlite3.connect(\":memory:\")  # In-memory database for testing\n    conn.row_factory = sqlite3.Row\n    cursor = conn.cursor()\n    # Create the 'items' table\n    cursor.execute(\n        \"\"\"\n        CREATE TABLE items (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,",
         "detail": "tests.test_nlu",
         "documentation": {}
     },
@@ -934,7 +935,7 @@
         "kind": 2,
         "importPath": "tests.test_nlu",
         "description": "tests.test_nlu",
-        "peekOfCode": "def test_queries():\n    nlu = NLUProcessor()\n    test_cases = [\n        \"show me all items in the kitchen\",\n        \"how many products do I have\",\n        \"what is the total value of my inventory\",\n        \"list items that cost more than 100 dollars\",\n        \"count all things in storage\",\n        \"what items are in the living room\",\n        \"how much are my things worth\",",
+        "peekOfCode": "def test_queries(conn):\n    \"\"\"Run test queries against the NLUProcessor with the provided database connection.\"\"\"\n    nlu = NLUProcessor()\n    test_cases = [\n        \"show me all items in the kitchen\",  # Search by location\n        \"how many products do I have\",  # Count total items\n        \"what is the total value of my inventory\",  # Total value\n        \"list items that cost more than 100 dollars\",  # Price range (high)\n        \"count all things in storage\",  # Count by location\n        \"what items are in the living room\",  # Search by location",
         "detail": "tests.test_nlu",
         "documentation": {}
     },

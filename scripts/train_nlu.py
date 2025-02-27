@@ -1,28 +1,29 @@
 #!/usr/bin/env python
 """
-Enhanced NLU Training Script with improved data handling and training process.
+Enhanced NLU Training Script with improved data handling, validation, and testing.
 """
 import os
 import sys
 import argparse
+import sqlite3
 import pandas as pd
 from datasets import Dataset
 from transformers import DistilBertTokenizerFast
+from sklearn.model_selection import train_test_split
 
 # Ensure the repository is in the path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from ai.nlu_processor import NLUProcessor
+
 
 def load_and_prepare_data(data_path=None, label_mapping=None):
     """Load training data from file or use default examples if no file provided."""
     if data_path and os.path.exists(data_path):
-        # Read from CSV file if it exists
         df = pd.read_csv(data_path)
         df["label"] = df["intent"].map(label_mapping)
         df = df.dropna(subset=["label"])
         return df["query"].tolist(), df["label"].tolist()
-    
-    # Default training examples if no file provided
+
     X = [
         "show me all items in the kitchen",
         "how many items do I have in the garage",
@@ -54,107 +55,156 @@ def load_and_prepare_data(data_path=None, label_mapping=None):
         "Where are my tools?",
     ]
 
-    # Default labels
     y = [
-        0,  # search
-        1,  # count
-        2,  # value
-        3,  # price_range
-        1,  # count
-        0,  # search
-        2,  # value
-        3,  # price_range
-        0,  # search
-        1,  # count
-        2,  # value
-        1,  # count
-        0,  # search
-        3,  # price_range
-        0,  # search
-        1,  # count
-        0,  # search
-        2,  # value
-        0,  # search
-        2,  # value
-        0,  # search
-        1,  # count
-        0,  # search
-        0,  # search
-        1,  # count
-        0,  # search
-        0,  # search
-        0,  # search
+        0,
+        1,
+        2,
+        3,
+        1,
+        0,
+        2,
+        3,
+        0,
+        0,
+        2,
+        4,
+        0,
+        3,
+        5,
+        1,
+        0,
+        2,
+        0,
+        2,
+        0,
+        4,
+        0,
+        4,
+        1,
+        4,
+        5,
+        0,
     ]
-    
+
     return X, y
+
 
 def create_dataset(queries, labels, tokenizer):
     """Create a Dataset object from queries and labels."""
     tokenized_inputs = tokenizer(
-        queries,
-        padding=True,
-        truncation=True,
-        return_tensors="pt"
+        queries, padding=True, truncation=True, return_tensors="pt"
     )
-    
-    return Dataset.from_dict({
-        'input_ids': tokenized_inputs['input_ids'].tolist(),
-        'attention_mask': tokenized_inputs['attention_mask'].tolist(),
-        'labels': [int(label) for label in labels]
-    })
+    return Dataset.from_dict(
+        {
+            "input_ids": tokenized_inputs["input_ids"].tolist(),
+            "attention_mask": tokenized_inputs["attention_mask"].tolist(),
+            "labels": [int(label) for label in labels],
+        }
+    )
+
+
+def mock_db_connection():
+    """Create an in-memory SQLite database with the 'items' table and sample data."""
+    conn = sqlite3.connect(":memory:")
+    cursor = conn.cursor()
+
+    # Create the 'items' table
+    cursor.execute(
+        """
+        CREATE TABLE items (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT,
+            price REAL,
+            quantity INTEGER,
+            location TEXT,
+            category TEXT,
+            tags TEXT,
+            purchase_date TEXT,
+            needs_repair INTEGER
+        )
+    """
+    )
+
+    # Optional: Insert sample data for testing
+    sample_items = [
+        ("jacket", 50.0, 1, "closet", "clothing", "winter", "2023-01-15", 0),
+        ("hammer", 15.0, 2, "garage", "tools", "hand tool", "2022-06-10", 0),
+        ("lawnmower", 200.0, 1, "garage", "tools", "power tool", "2021-05-20", 1),
+    ]
+    cursor.executemany(
+        """
+        INSERT INTO items (name, price, quantity, location, category, tags, purchase_date, needs_repair)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """,
+        sample_items,
+    )
+
+    conn.commit()
+    return conn
+
 
 def main():
     parser = argparse.ArgumentParser(description="Train an enhanced NLU model.")
+    parser.add_argument("--data", type=str, help="Path to CSV training data (optional)")
     parser.add_argument(
-        "--data",
-        type=str,
-        help="Path to CSV training data (optional)"
+        "--epochs", type=int, default=3, help="Number of training epochs"
     )
     parser.add_argument(
-        "--epochs",
-        type=int,
-        default=3,
-        help="Number of training epochs"
-    )
-    parser.add_argument(
-        "--batch_size",
-        type=int,
-        default=16,
-        help="Training batch size"
+        "--batch_size", type=int, default=16, help="Training batch size"
     )
     parser.add_argument(
         "--model_dir",
         type=str,
-        default="ai_models",
-        help="Directory to save the trained model"
+        default="ai_models/nlu_model",
+        help="Directory to save the trained model",
     )
     args = parser.parse_args()
 
-    # Ensure model directory exists
-    os.makedirs(args.model_dir, exist_ok=True)
+    # os.makedirs(os.path.dirname(args.model_dir), exist_ok=True)
 
-    # Define intent to label mapping
     label_mapping = {
-        'search': 0,
-        'count': 1,
-        'value': 2,
-        'price_range': 3
+        "search": 0,
+        "count": 1,
+        "value": 2,
+        "price_range": 3,
+        "repair": 4,
+        "purchase_history": 5,
     }
 
-    # Load and prepare training data
     queries, labels = load_and_prepare_data(args.data, label_mapping)
     print(f"[ℹ️] Loaded {len(queries)} training examples")
 
-    # Initialize tokenizer and create dataset
-    tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
-    train_dataset = create_dataset(queries, labels, tokenizer)
+    queries_train, queries_val, labels_train, labels_val = train_test_split(
+        queries, labels, test_size=0.2, random_state=42
+    )
+    print(
+        f"[ℹ️] Training on {len(queries_train)}, validating on {len(queries_val)} examples"
+    )
 
-    # Initialize and train the model
-    model_path = os.path.join(args.model_dir, "nlu_model.pkl")
-    nlu = NLUProcessor(model_path=model_path)
-    nlu.train_model(train_dataset)
-    
-    print(f"[✅] NLU model trained and saved to {model_path}")
+    tokenizer = DistilBertTokenizerFast.from_pretrained("distilbert-base-uncased")
+    train_dataset = create_dataset(queries_train, labels_train, tokenizer)
+    val_dataset = create_dataset(queries_val, labels_val, tokenizer)
+
+    nlu = NLUProcessor(model_path=args.model_dir)
+    nlu.train_model(
+        train_dataset,
+        eval_dataset=val_dataset,
+        epochs=args.epochs,
+        batch_size=args.batch_size,
+        output_dir=args.model_dir,
+    )
+
+    print(f"[✅] NLU model trained and saved to {args.model_dir}")
+
+    test_queries = [
+        "Where’s my jacket?",
+        "How many tools in the garage?",
+        "What needs fixing?",
+    ]
+    for q in test_queries:
+        result = nlu.process_natural_language_query(q, mock_db_connection)
+        print(f"Query: {q}, Result: {result}")
+
 
 if __name__ == "__main__":
     main()

@@ -32,7 +32,11 @@ os.makedirs(db_dir, exist_ok=True)
 def get_db():
     """Get database connection with row factory."""
     db_path = os.path.join(db_dir, 'inventory.db')
-    conn = sqlite3.connect(db_path)
+    try:
+        conn = sqlite3.connect(db_path)
+    except Exception as e:
+        print(f"Database connection error: {e}")
+        return None
     conn.row_factory = sqlite3.Row
     return conn
 
