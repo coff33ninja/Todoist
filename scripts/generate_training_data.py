@@ -2,17 +2,18 @@ from core.inventory_manager import InventoryManager
 import random
 
 # Function to generate variants of given away items
-
-def generate_variants(item, num_variants=5):
+def generate_variants(item, num_variants=10):  # Increased default number of variants
     variants = []
     for _ in range(num_variants):
         variant = item.copy()
         # Randomly modify the name and description
         variant['name'] = variant['name'] + ' Variant ' + str(random.randint(1, 100))
         variant['description'] = variant['description'] + ' - Modified'
+        # Additional random modifications
+        variant['price'] = round(random.uniform(1.0, 100.0), 2)  # Random price
+        variant['category'] = random.choice(['Electronics', 'Clothing', 'Food', 'Books'])  # Random category
         variants.append(variant)
     return variants
-
 
 def main():
     inventory_manager = InventoryManager(db_path='inventory.db')
@@ -25,7 +26,6 @@ def main():
     # Print or save the variants for training
     for variant in all_variants:
         print(variant)
-
 
 if __name__ == "__main__":
     main()

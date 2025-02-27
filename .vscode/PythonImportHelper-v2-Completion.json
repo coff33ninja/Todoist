@@ -848,7 +848,7 @@
         "kind": 2,
         "importPath": "scripts.generate_training_data",
         "description": "scripts.generate_training_data",
-        "peekOfCode": "def generate_variants(item, num_variants=5):\n    variants = []\n    for _ in range(num_variants):\n        variant = item.copy()\n        # Randomly modify the name and description\n        variant['name'] = variant['name'] + ' Variant ' + str(random.randint(1, 100))\n        variant['description'] = variant['description'] + ' - Modified'\n        variants.append(variant)\n    return variants\ndef main():",
+        "peekOfCode": "def generate_variants(item, num_variants=10):  # Increased default number of variants\n    variants = []\n    for _ in range(num_variants):\n        variant = item.copy()\n        # Randomly modify the name and description\n        variant['name'] = variant['name'] + ' Variant ' + str(random.randint(1, 100))\n        variant['description'] = variant['description'] + ' - Modified'\n        # Additional random modifications\n        variant['price'] = round(random.uniform(1.0, 100.0), 2)  # Random price\n        variant['category'] = random.choice(['Electronics', 'Clothing', 'Food', 'Books'])  # Random category",
         "detail": "scripts.generate_training_data",
         "documentation": {}
     },
