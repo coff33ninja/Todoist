@@ -342,7 +342,15 @@ class NLUProcessor:
         sql += " ORDER BY name"
         try:
             cursor.execute(sql, params)
-            items = [dict(row) for row in cursor.fetchall()]
+            # Get column names from cursor description
+            columns = [column[0] for column in cursor.description]
+            # Convert rows to dictionaries using column names
+            items = []
+            for row in cursor.fetchall():
+                item = {}
+                for i, column in enumerate(columns):
+                    item[column] = row[i]
+                items.append(item)
             return {"items": items} if items else {"message": "No items found."}
         except Exception as e:
             return {"error": f"Database error: {str(e)}"}
@@ -417,7 +425,15 @@ class NLUProcessor:
         sql = f"SELECT * FROM items WHERE price {'>' if comparison == 'more' else '<'} ? ORDER BY price {'DESC' if comparison == 'more' else 'ASC'}"
         try:
             cursor.execute(sql, (price,))
-            items = [dict(row) for row in cursor.fetchall()]
+            # Get column names from cursor description
+            columns = [column[0] for column in cursor.description]
+            # Convert rows to dictionaries using column names
+            items = []
+            for row in cursor.fetchall():
+                item = {}
+                for i, column in enumerate(columns):
+                    item[column] = row[i]
+                items.append(item)
             return (
                 {"items": items}
                 if items
@@ -438,7 +454,15 @@ class NLUProcessor:
             params.append(f"%{filters['category']}%")
         try:
             cursor.execute(sql, params)
-            items = [dict(row) for row in cursor.fetchall()]
+            # Get column names from cursor description
+            columns = [column[0] for column in cursor.description]
+            # Convert rows to dictionaries using column names
+            items = []
+            for row in cursor.fetchall():
+                item = {}
+                for i, column in enumerate(columns):
+                    item[column] = row[i]
+                items.append(item)
             return (
                 {"items": items}
                 if items
@@ -457,7 +481,15 @@ class NLUProcessor:
         sql += " ORDER BY purchase_date DESC"
         try:
             cursor.execute(sql, params)
-            items = [dict(row) for row in cursor.fetchall()]
+            # Get column names from cursor description
+            columns = [column[0] for column in cursor.description]
+            # Convert rows to dictionaries using column names
+            items = []
+            for row in cursor.fetchall():
+                item = {}
+                for i, column in enumerate(columns):
+                    item[column] = row[i]
+                items.append(item)
             return (
                 {"items": items} if items else {"message": "No purchase history found."}
             )
