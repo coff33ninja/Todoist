@@ -346,6 +346,14 @@
         "documentation": {}
     },
     {
+        "label": "ReceiptProcessor",
+        "importPath": "ai.ocr_processor",
+        "description": "ai.ocr_processor",
+        "isExtraImport": true,
+        "detail": "ai.ocr_processor",
+        "documentation": {}
+    },
+    {
         "label": "threading",
         "kind": 6,
         "isExtraImport": true,
@@ -469,6 +477,48 @@
         "description": "core.main",
         "isExtraImport": true,
         "detail": "core.main",
+        "documentation": {}
+    },
+    {
+        "label": "unittest",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "unittest",
+        "description": "unittest",
+        "detail": "unittest",
+        "documentation": {}
+    },
+    {
+        "label": "tempfile",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "tempfile",
+        "description": "tempfile",
+        "detail": "tempfile",
+        "documentation": {}
+    },
+    {
+        "label": "Image",
+        "importPath": "PIL",
+        "description": "PIL",
+        "isExtraImport": true,
+        "detail": "PIL",
+        "documentation": {}
+    },
+    {
+        "label": "ImageDraw",
+        "importPath": "PIL",
+        "description": "PIL",
+        "isExtraImport": true,
+        "detail": "PIL",
+        "documentation": {}
+    },
+    {
+        "label": "ImageFont",
+        "importPath": "PIL",
+        "description": "PIL",
+        "isExtraImport": true,
+        "detail": "PIL",
         "documentation": {}
     },
     {
@@ -982,6 +1032,15 @@
         "description": "tests.test_nlu_processor",
         "peekOfCode": "def test_various_phrasings(query, expected_intent):\n    \"\"\"Test various phrasings for each intent\"\"\"\n    processor = NLUProcessor()\n    # Mock cursor for testing\n    class MockCursor:\n        def execute(self, query, params=None):\n            return self\n        def fetchall(self):\n            return [{\"name\": \"Test Item\", \"price\": 10.0}]\n        def fetchone(self):",
         "detail": "tests.test_nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "TestOCRProcessor",
+        "kind": 6,
+        "importPath": "tests.test_ocr",
+        "description": "tests.test_ocr",
+        "peekOfCode": "class TestOCRProcessor(unittest.TestCase):\n    \"\"\"Test cases for OCR processor functionality.\"\"\"\n    def setUp(self):\n        \"\"\"Set up test environment.\"\"\"\n        self.processor = ReceiptProcessor()\n        self.test_dir = tempfile.mkdtemp()\n    def tearDown(self):\n        \"\"\"Clean up test environment.\"\"\"\n        # Remove temporary files\n        for file in os.listdir(self.test_dir):",
+        "detail": "tests.test_ocr",
         "documentation": {}
     },
     {

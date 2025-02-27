@@ -347,12 +347,29 @@ class NLUProcessor:
             # Convert rows to dictionaries using column names
             items = []
             for row in cursor.fetchall():
-                item = {}
-                for i, column in enumerate(columns):
-                    item[column] = row[i]
-                items.append(item)
+                # Check if row is already a dictionary
+                if isinstance(row, dict):
+                    items.append(row)
+                # Check if row has keys method (sqlite3.Row)
+                elif hasattr(row, 'keys') and callable(row.keys):
+                    items.append(dict(row))
+                # Handle tuple/list case
+                elif isinstance(row, (tuple, list)):
+                    item = {}
+                    for i, column in enumerate(columns):
+                        item[column] = row[i]
+                    items.append(item)
+                else:
+                    # Last resort - try direct conversion
+                    try:
+                        items.append(dict(row))
+                    except (TypeError, ValueError):
+                        # If all else fails, convert to string
+                        items.append({"error": f"Could not convert row: {str(row)}"})
             return {"items": items} if items else {"message": "No items found."}
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return {"error": f"Database error: {str(e)}"}
 
     def _handle_count(self, cursor, filters):
