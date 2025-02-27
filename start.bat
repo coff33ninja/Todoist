@@ -71,7 +71,6 @@ if "%choice%"=="1" (
     python scripts/init_db.py
 
     REM Start the Flask backend
-    REM Start the Flask backend
     start cmd /k python backend/app.py
 
     REM Open the frontend in the default browser
