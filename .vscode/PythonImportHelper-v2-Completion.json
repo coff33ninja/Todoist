@@ -866,8 +866,17 @@
         "kind": 2,
         "importPath": "scripts.init_db",
         "description": "scripts.init_db",
-        "peekOfCode": "def init_db():\n    \"\"\"Initialize the database with required tables.\"\"\"\n    # Ensure db directory exists\n    db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), \"db\")\n    os.makedirs(db_dir, exist_ok=True)\n    db_path = os.path.join(db_dir, \"inventory.db\")\n    # Connect to database (creates it if it doesn't exist)\n    conn = sqlite3.connect(db_path)\n    conn.row_factory = sqlite3.Row\n    cursor = conn.cursor()",
+        "peekOfCode": "def init_db():\n    \"\"\"Initialize the database with required tables.\"\"\"\n    # Ensure the db directory exists\n    base_dir = os.path.dirname(os.path.dirname(__file__))\n    db_dir = os.path.join(base_dir, \"db\")\n    os.makedirs(db_dir, exist_ok=True)\n    db_path = os.path.join(db_dir, \"inventory.db\")\n    # Connect to the database (creates it if it doesn't exist)\n    conn = sqlite3.connect(db_path)\n    conn.row_factory = sqlite3.Row",
         "detail": "scripts.init_db",
+        "documentation": {}
+    },
+    {
+        "label": "init_db",
+        "kind": 2,
+        "importPath": "scripts.init_db_backup",
+        "description": "scripts.init_db_backup",
+        "peekOfCode": "def init_db():\n    \"\"\"Initialize the database with required tables.\"\"\"\n    # Ensure db directory exists\n    db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), \"db\")\n    os.makedirs(db_dir, exist_ok=True)\n    db_path = os.path.join(db_dir, \"inventory.db\")\n    # Connect to database (creates it if it doesn't exist)\n    conn = sqlite3.connect(db_path)\n    conn.row_factory = sqlite3.Row\n    cursor = conn.cursor()",
+        "detail": "scripts.init_db_backup",
         "documentation": {}
     },
     {
