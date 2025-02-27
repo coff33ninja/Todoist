@@ -34,6 +34,18 @@ class InventoryManager:
         """Create database tables if they don't exist"""
         cursor = self.get_connection().cursor()
         cursor.execute('''
+            CREATE TABLE IF NOT EXISTS items_given_away (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                name TEXT NOT NULL,
+                description TEXT,
+                quantity INTEGER DEFAULT 1,
+                notes TEXT,
+                given_away_date TEXT DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        """Create database tables if they don't exist"""
+        cursor = self.get_connection().cursor()
+        cursor.execute('''
             CREATE TABLE IF NOT EXISTS items (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
@@ -100,6 +112,23 @@ class InventoryManager:
               trade_partner, notes, current_time))
         self.get_connection().commit()
         return cursor.lastrowid
+
+    def gave_away(self, name, description=None, quantity=1, notes=None):
+        """Log an item that was given away"""
+        cursor = self.get_connection().cursor()
+        current_time = datetime.now().isoformat()
+        cursor.execute('''
+            INSERT INTO items_given_away (name, description, quantity, notes, given_away_date)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (name, description, quantity, notes, current_time))
+        self.get_connection().commit()
+        return cursor.lastrowid
+
+    def get_items_given_away(self):
+        """Retrieve all items given away"""
+        cursor = self.get_connection().cursor()
+        cursor.execute('SELECT * FROM items_given_away ORDER BY given_away_date DESC')
+        return [dict(row) for row in cursor.fetchall()]
 
     def get_items(self, acquisition_type=None):
         """Get all items, optionally filtered by acquisition type"""
