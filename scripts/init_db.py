@@ -54,16 +54,21 @@ def init_db():
     CREATE TABLE IF NOT EXISTS items (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
-        quantity INTEGER DEFAULT 1,
-        price REAL,
-        location TEXT,
         description TEXT,
+        quantity INTEGER DEFAULT 1,
+        purchase_date TEXT,
+        price REAL,
+        warranty_expiry TEXT,
+        acquisition_type TEXT CHECK(acquisition_type IN ('purchase', 'trade', 'gift')),
+        location TEXT,
+        condition TEXT,
+        notes TEXT,
         category TEXT,
         tags TEXT,
-        purchase_date TEXT,
         is_gift BOOLEAN DEFAULT 0,
         storage_location TEXT,
         usage_location TEXT,
+        needs_repair BOOLEAN DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         FOREIGN KEY (category) REFERENCES categories(name)
     )
@@ -97,85 +102,150 @@ def init_db():
     """
     )
 
+    # Create repairs table
+    cursor.execute(
+        """
+    CREATE TABLE IF NOT EXISTS repairs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        item_id INTEGER,
+        repair_date TEXT,
+        description TEXT,
+        cost REAL,
+        next_due_date TEXT,
+        status TEXT CHECK(status IN ('scheduled', 'in_progress', 'completed', 'cancelled')),
+        created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY(item_id) REFERENCES items(id)
+    )
+    """
+    )
+
     # Add sample data
     sample_items = [
         (
             "Laptop",
-            1,
-            999.99,
-            "Office",
             "Dell XPS 13",
+            1,
+            "2023-08-10",
+            999.99,
+            "2025-08-10",
+            "purchase",
+            "Office",
+            "new",
+            "High-end laptop for work",
             "Electronics",
             "work,portable",
-            "2023-08-10",
             0,
             "Office Drawer",
             "Work Desk",
+            0,
         ),
         (
             "Coffee Maker",
-            1,
-            79.99,
-            "Kitchen",
             "Drip coffee maker",
+            1,
+            "2023-07-01",
+            79.99,
+            "2024-07-01",
+            "purchase",
+            "Kitchen",
+            "new",
+            "Makes great coffee",
             "Appliances",
             "kitchen",
-            "2023-07-01",
             0,
             "Kitchen Counter",
             "Kitchen Counter",
+            0,
         ),
         (
             "Desk Chair",
-            2,
-            199.99,
-            "Office",
             "Ergonomic mesh chair",
+            2,
+            "2023-06-15",
+            199.99,
+            "2025-06-15",
+            "purchase",
+            "Office",
+            "new",
+            "Comfortable office chair",
             "Furniture",
             "",
-            "2023-06-15",
             0,
             "Office",
             "Office",
+            0,
         ),
         (
             "Bookshelf",
-            1,
-            149.99,
-            "Living Room",
             "Wooden 5-shelf bookcase",
+            1,
+            "2023-05-20",
+            149.99,
+            "2025-05-20",
+            "purchase",
+            "Living Room",
+            "new",
+            "For storing books",
             "Furniture",
             "",
-            "2023-05-20",
             0,
             "Living Room",
             "Living Room",
+            0,
         ),
         (
             "Blender",
-            1,
-            59.99,
-            "Kitchen",
             "High-speed blender",
+            1,
+            "2023-07-22",
+            59.99,
+            "2024-07-22",
+            "purchase",
+            "Kitchen",
+            "new",
+            "For making smoothies",
             "Appliances",
             "kitchen,small",
-            "2023-07-22",
             0,
             "Kitchen Cabinet",
             "Kitchen Counter",
+            0,
         ),
         (
             "Photo Frame",
-            1,
-            0,
-            "Living Room",
             "Birthday gift from Mom",
+            1,
+            "2023-08-15",
+            0,
+            "",
+            "gift",
+            "Living Room",
+            "new",
+            "Special gift",
             "Decorations",
             "gift,memories",
-            "2023-08-15",
             1,
             "Living Room Wall",
             "Living Room Wall",
+            0,
+        ),
+        (
+            "Broken Lamp",
+            "Needs fixing",
+            1,
+            "2023-03-01",
+            50.00,
+            "2024-03-01",
+            "purchase",
+            "Living Room",
+            "damaged",
+            "Lamp with broken switch",
+            "Lighting",
+            "broken,repair",
+            0,
+            "Storage",
+            "Living Room",
+            1,
         ),
     ]
 
@@ -185,17 +255,50 @@ def init_db():
         cursor.executemany(
             """
         INSERT INTO items (
-            name, quantity, price, location, description, 
-            category, tags, purchase_date, is_gift, 
-            storage_location, usage_location
+            name, description, quantity, purchase_date, price, 
+            warranty_expiry, acquisition_type, location, condition, notes,
+            category, tags, is_gift, storage_location, usage_location, needs_repair
         )
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """,
             sample_items,
         )
         print("[✅] Sample data inserted successfully")
     else:
         print("[ℹ️] Database already contains data")
+        
+    # Add sample repair data
+    cursor.execute("SELECT COUNT(*) FROM repairs")
+    if cursor.fetchone()[0] == 0:
+        # Get item IDs for our sample items
+        cursor.execute("SELECT id FROM items WHERE name = 'Broken Lamp'")
+        broken_lamp_id = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT id FROM items WHERE name = 'Laptop'")
+        laptop_id = cursor.fetchone()[0]
+        
+        cursor.execute("SELECT id FROM items WHERE name = 'Coffee Maker'")
+        coffee_maker_id = cursor.fetchone()[0]
+        
+        # Insert sample repairs
+        sample_repairs = [
+            (broken_lamp_id, '2023-03-15', 'Fix broken switch', 25.00, None, 'in_progress'),
+            (laptop_id, '2023-09-01', 'Replace battery', 75.00, None, 'completed'),
+            (coffee_maker_id, '2023-08-15', 'Clean internal components', 0.00, '2024-02-15', 'completed')
+        ]
+        
+        cursor.executemany(
+            """
+        INSERT INTO repairs (
+            item_id, repair_date, description, cost, next_due_date, status
+        )
+        VALUES (?, ?, ?, ?, ?, ?)
+        """,
+            sample_repairs,
+        )
+        print("[✅] Sample repair data inserted successfully")
+    else:
+        print("[ℹ️] Repair data already exists")
 
     conn.commit()
     conn.close()

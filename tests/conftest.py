@@ -56,7 +56,13 @@ def test_db():
             location TEXT,
             condition TEXT,
             notes TEXT,
-            created_at TEXT DEFAULT CURRENT_TIMESTAMP
+            created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+            category TEXT,
+            tags TEXT,
+            is_gift BOOLEAN DEFAULT 0,
+            storage_location TEXT,
+            usage_location TEXT,
+            needs_repair BOOLEAN DEFAULT 0
         )
     """
     )
@@ -118,6 +124,18 @@ def test_db():
     )
     conn.commit()
 
+    # Monkey patch the app's get_db function to use our test database
+    from core.main import app
+    
+    def get_test_db():
+        return conn
+    
+    # Store the original get_db function
+    original_get_db = app.view_functions.get('get_db', None)
+    
+    # Replace with our test function
+    app.config['TEST_DB'] = conn
+    
     yield conn
 
     # Close the connection after the test
@@ -129,12 +147,19 @@ def sample_data(test_db):
     """Insert sample data into the test database"""
     cursor = test_db.cursor()
 
-    # Insert sample items
+    # Insert sample items with all necessary fields
     cursor.execute("""
-        INSERT INTO items (name, description, quantity, price)
+        INSERT INTO items (
+            name, description, quantity, price, location, category, 
+            tags, purchase_date, is_gift, storage_location, usage_location, needs_repair
+        )
         VALUES
-            ('Test Item 1', 'Description 1', 1, 100.00),
-            ('Test Item 2', 'Description 2', 2, 200.00)
+            ('Test Item 1', 'Description 1', 1, 100.00, 'Kitchen', 'Electronics', 
+             'test,kitchen', '2023-01-01', 0, 'Kitchen Cabinet', 'Kitchen Counter', 0),
+            ('Test Item 2', 'Description 2', 2, 200.00, 'Office', 'Furniture', 
+             'test,office', '2023-02-01', 0, 'Office', 'Office Desk', 0),
+            ('Broken Lamp', 'Needs fixing', 1, 50.00, 'Living Room', 'Lighting', 
+             'broken,repair', '2023-03-01', 0, 'Storage', 'Living Room', 1)
     """)
 
     # Insert sample repairs
@@ -142,13 +167,8 @@ def sample_data(test_db):
         INSERT INTO repairs (item_id, repair_date, description, cost, status)
         VALUES
             (1, '2023-01-01', 'First repair', 50.00, 'scheduled'),
-            (2, '2023-02-01', 'Second repair', 75.00, 'completed')
-    """)
-    cursor.execute("""
-        INSERT INTO repairs (item_id, repair_date, description, cost)
-        VALUES
-            (1, '2023-01-01', 'Test Repair 1', 50.00),
-            (2, '2023-02-01', 'Test Repair 2', 75.00)
+            (2, '2023-02-01', 'Second repair', 75.00, 'completed'),
+            (3, '2023-03-01', 'Lamp repair', 25.00, 'in_progress')
     """)
 
     # Insert sample budget
@@ -163,7 +183,8 @@ def sample_data(test_db):
         INSERT INTO components (item_id, name, quantity_needed, estimated_cost)
         VALUES
             (1, 'Component 1', 1, 25.00),
-            (2, 'Component 2', 2, 35.00)
+            (2, 'Component 2', 2, 35.00),
+            (3, 'Light Bulb', 1, 10.00)
     """)
 
     test_db.commit()

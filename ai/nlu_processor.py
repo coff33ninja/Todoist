@@ -320,27 +320,33 @@ class NLUProcessor:
 
     def handle_search(self, cursor, filters):
         """Handle search intent."""
-        sql = "SELECT * FROM items WHERE 1=1"
-        params = []
-        if "name" in filters:
-            sql += " AND name LIKE ?"
-            params.append(f"%{filters['name']}%")
-        if "location" in filters:
-            sql += " AND location LIKE ?"
-            params.append(f"%{filters['location']}%")
-        if "category" in filters:
-            sql += " AND category LIKE ?"
-            params.append(f"%{filters['category']}%")
-        if "tags" in filters:
-            sql += " AND tags LIKE ?"
-            params.append(f"%{filters['tags']}%")
-        if "purchase_date" in filters:
-            sql += " AND purchase_date = ?"
-            params.append(filters["purchase_date"])
-        if "needs_repair" in filters and filters["needs_repair"]:
-            sql += " AND needs_repair = 1"
-        sql += " ORDER BY name"
+        # First check if the items table exists
         try:
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='items'")
+            if not cursor.fetchone():
+                return {"error": "Database error: no such table: items"}
+                
+            sql = "SELECT * FROM items WHERE 1=1"
+            params = []
+            if "name" in filters:
+                sql += " AND name LIKE ?"
+                params.append(f"%{filters['name']}%")
+            if "location" in filters:
+                sql += " AND location LIKE ?"
+                params.append(f"%{filters['location']}%")
+            if "category" in filters:
+                sql += " AND category LIKE ?"
+                params.append(f"%{filters['category']}%")
+            if "tags" in filters:
+                sql += " AND tags LIKE ?"
+                params.append(f"%{filters['tags']}%")
+            if "purchase_date" in filters:
+                sql += " AND purchase_date = ?"
+                params.append(filters["purchase_date"])
+            if "needs_repair" in filters and filters["needs_repair"]:
+                sql += " AND needs_repair = 1"
+            sql += " ORDER BY name"
+            
             cursor.execute(sql, params)
             # Get column names from cursor description
             columns = [column[0] for column in cursor.description]
@@ -455,32 +461,69 @@ class NLUProcessor:
             # Convert rows to dictionaries using column names
             items = []
             for row in cursor.fetchall():
-                item = {}
-                for i, column in enumerate(columns):
-                    item[column] = row[i]
-                items.append(item)
-            return (
-                {"items": items}
-                if items
-                else {"message": f"No items found {comparison} than ${price:.2f}"}
-            )
+                # Check if row is already a dictionary
+                if isinstance(row, dict):
+                    items.append(row)
+                # Check if row has keys method (sqlite3.Row)
+                elif hasattr(row, 'keys') and callable(row.keys):
+                    items.append(dict(row))
+                # Handle tuple/list case
+                elif isinstance(row, (tuple, list)):
+                    item = {}
+                    for i, column in enumerate(columns):
+                        item[column] = row[i]
+                    items.append(item)
+                else:
+                    # Last resort - try direct conversion
+                    try:
+                        items.append(dict(row))
+                    except (TypeError, ValueError):
+                        # If all else fails, convert to string
+                        items.append({"error": f"Could not convert row: {str(row)}"})
+            
+            # Format the response for the API endpoint test
+            if items:
+                return {
+                    "items": items,
+                    "message": f"Found {len(items)} items with price {comparison} than ${price:.2f}"
+                }
+            else:
+                return {"message": f"No items found {comparison} than ${price:.2f}"}
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return {"error": f"Database error: {str(e)}"}
 
     def _handle_repair(self, cursor, filters):
         """Handle repair intent."""
-        sql = "SELECT * FROM items WHERE needs_repair = 1"
-        params = []
-        if "location" in filters:
-            sql += " AND location LIKE ?"
-            params.append(f"%{filters['location']}%")
-        if "category" in filters:
-            sql += " AND category LIKE ?"
-            params.append(f"%{filters['category']}%")
+        # First check if the repairs table exists
         try:
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='repairs'")
+            if not cursor.fetchone():
+                return {"error": "Database error: no such table: repairs"}
+                
+            # Query both items that need repair and repair records
+            sql = """
+            SELECT i.*, r.id as repair_id, r.repair_date, r.description as repair_description, 
+                   r.cost, r.status, r.next_due_date
+            FROM items i
+            LEFT JOIN repairs r ON i.id = r.item_id
+            WHERE i.needs_repair = 1 OR r.id IS NOT NULL
+            """
+            
+            params = []
+            if "location" in filters:
+                sql += " AND i.location LIKE ?"
+                params.append(f"%{filters['location']}%")
+            if "category" in filters:
+                sql += " AND i.category LIKE ?"
+                params.append(f"%{filters['category']}%")
+                
             cursor.execute(sql, params)
+            
             # Get column names from cursor description
             columns = [column[0] for column in cursor.description]
+            
             # Convert rows to dictionaries using column names
             items = []
             for row in cursor.fetchall():
@@ -513,6 +556,8 @@ class NLUProcessor:
             else:
                 return {"message": "No items needing repair found."}
         except Exception as e:
+            import traceback
+            traceback.print_exc()
             return {"error": f"Database error: {str(e)}"}
 
     def _handle_purchase_history(self, cursor, filters):

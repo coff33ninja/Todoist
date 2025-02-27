@@ -217,7 +217,10 @@ def handle_query():
             response["response"] = result["message"]
         # If no message but items are available, create a response about items
         elif "items" in result:
-            response["response"] = f"Found {len(result['items'])} items in inventory"
+            if result["intent"] == "repair":
+                response["response"] = f"Found {len(result['items'])} repair records"
+            else:
+                response["response"] = f"Found {len(result['items'])} items in inventory"
             response["items"] = result["items"]
         
         return jsonify(response)

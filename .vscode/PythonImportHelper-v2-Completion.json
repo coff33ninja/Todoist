@@ -931,7 +931,7 @@
         "kind": 2,
         "importPath": "tests.conftest",
         "description": "tests.conftest",
-        "peekOfCode": "def sample_data(test_db):\n    \"\"\"Insert sample data into the test database\"\"\"\n    cursor = test_db.cursor()\n    # Insert sample items\n    cursor.execute(\"\"\"\n        INSERT INTO items (name, description, quantity, price)\n        VALUES\n            ('Test Item 1', 'Description 1', 1, 100.00),\n            ('Test Item 2', 'Description 2', 2, 200.00)\n    \"\"\")",
+        "peekOfCode": "def sample_data(test_db):\n    \"\"\"Insert sample data into the test database\"\"\"\n    cursor = test_db.cursor()\n    # Insert sample items with all necessary fields\n    cursor.execute(\"\"\"\n        INSERT INTO items (\n            name, description, quantity, price, location, category, \n            tags, purchase_date, is_gift, storage_location, usage_location, needs_repair\n        )\n        VALUES",
         "detail": "tests.conftest",
         "documentation": {}
     },
