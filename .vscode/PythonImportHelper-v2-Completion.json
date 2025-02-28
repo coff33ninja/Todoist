@@ -695,7 +695,7 @@
         "kind": 2,
         "importPath": "backend.init_db",
         "description": "backend.init_db",
-        "peekOfCode": "def init_db():\n    # Get the path to the db directory\n    db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\n    os.makedirs(db_dir, exist_ok=True)\n    db_path = os.path.join(db_dir, 'inventory.db')\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    # Create purchases table\n    cursor.execute('''\n    CREATE TABLE IF NOT EXISTS purchases (",
+        "peekOfCode": "def init_db():\n    db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\n    os.makedirs(db_dir, exist_ok=True)\n    db_path = os.path.join(db_dir, 'inventory.db')\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    # Create categories table\n    cursor.execute('''\n    CREATE TABLE IF NOT EXISTS categories (\n        id INTEGER PRIMARY KEY AUTOINCREMENT,",
         "detail": "backend.init_db",
         "documentation": {}
     },

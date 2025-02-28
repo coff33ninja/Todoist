@@ -6,6 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Todoist AI Assistant</title>
     <style>
+        /* Add these styles to your existing CSS */
+        .question-box {
+            background-color: #e3f2fd;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-weight: bold;
+        }
+        
+        #conversation-area {
+            margin-top: 20px;
+        }
+        
+        #conversation-result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        
+        .success-result {
+            background-color: #e8f5e9;
+            border: 1px solid #81c784;
+        }
+        
+        .error-result {
+            background-color: #ffebee;
+            border: 1px solid #e57373;
+        }
+    </style>
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
             background-color: #fff0f5;
@@ -208,6 +237,7 @@
         <button class="tab active" data-tab="query">Ask AI Assistant</button>
         <button class="tab" data-tab="add-item">Add New Item</button>
         <button class="tab" data-tab="upload-receipt">Upload Receipt</button>
+        <button class="tab" data-tab="received-item">Received Item</button>
     </div>
 
     <div id="query-tab" class="tab-content active">
@@ -314,7 +344,32 @@
         </div>
     </div>
 
-    <div id="upload-receipt-tab" class="tab-content">
+    <div id="received-item-tab" class="tab-content">
+        <div class="container">
+            <h2>Tell Me About a Received Item</h2>
+            <div class="input-group">
+                <input type="text" id="received-item-statement" 
+                    placeholder="Tell me what you received, e.g., 'I just got a coke'" />
+                <button id="startConversationBtn">Start</button>
+            </div>
+            <div id="conversation-area" style="display: none;">
+                <div id="conversation-question" class="question-box"></div>
+                <div class="input-group">
+                    <input type="text" id="conversation-answer" />
+                    <button id="answerBtn">Answer</button>
+                </div>
+            </div>
+            <div id="conversation-result"></div>
+
+            <div class="examples">
+                <h3>Example statements:</h3>
+                <div class="example-statement">"I just got a coke"</div>
+                <div class="example-statement">"I received a book"</div>
+                <div class="example-statement">"Someone gave me a watch"</div>
+                <div class="example-statement">"I received a gift"</div>
+            </div>
+        </div>
+    </div>
         <div class="container">
             <h2>Upload Receipt</h2>
             <form id="uploadReceiptForm">
@@ -329,6 +384,123 @@
     </div>
 
     <script>
+        // Add this to your existing JavaScript, before the closing </script> tag
+
+        // Conversation handling
+        let currentConversationState = null;
+
+        document.getElementById('startConversationBtn').addEventListener('click', async () => {
+            const statement = document.getElementById('received-item-statement').value.trim();
+            if (!statement) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/received_item`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ statement })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('conversation-result').className = 'error-result';
+                    document.getElementById('conversation-result').textContent = data.error;
+                    return;
+                }
+
+                // Show conversation area and hide result
+                document.getElementById('conversation-area').style.display = 'block';
+                document.getElementById('conversation-result').textContent = '';
+                
+                // Display question
+                document.getElementById('conversation-question').textContent = data.next_question;
+                
+                // Store conversation state
+                currentConversationState = data.conversation_state;
+                
+                // Clear and focus answer input
+                document.getElementById('conversation-answer').value = '';
+                document.getElementById('conversation-answer').focus();
+
+            } catch (error) {
+                document.getElementById('conversation-result').className = 'error-result';
+                document.getElementById('conversation-result').textContent = 'Error connecting to server';
+            }
+        });
+
+        document.getElementById('answerBtn').addEventListener('click', async () => {
+            if (!currentConversationState) return;
+
+            const answer = document.getElementById('conversation-answer').value.trim();
+            if (!answer) return;
+
+            try {
+                const response = await fetch(`${API_URL}/api/received_item/continue`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        conversation_state: currentConversationState,
+                        answer
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('conversation-result').className = 'error-result';
+                    document.getElementById('conversation-result').textContent = data.error;
+                    return;
+                }
+
+                if (data.status === 'completed') {
+                    // Conversation is complete
+                    document.getElementById('conversation-area').style.display = 'none';
+                    document.getElementById('conversation-result').className = 'success-result';
+                    document.getElementById('conversation-result').textContent = data.message;
+                    
+                    // Reset the form
+                    document.getElementById('received-item-statement').value = '';
+                    currentConversationState = null;
+                } else {
+                    // Continue conversation
+                    document.getElementById('conversation-question').textContent = data.next_question;
+                    currentConversationState = data.conversation_state;
+                    document.getElementById('conversation-answer').value = '';
+                    document.getElementById('conversation-answer').focus();
+                }
+
+            } catch (error) {
+                document.getElementById('conversation-result').className = 'error-result';
+                document.getElementById('conversation-result').textContent = 'Error connecting to server';
+            }
+        });
+
+        // Make example statements clickable
+        document.querySelectorAll('.example-statement').forEach(example => {
+            example.addEventListener('click', () => {
+                const statement = example.textContent.replace(/['"]/g, '');
+                document.getElementById('received-item-statement').value = statement;
+                document.getElementById('startConversationBtn').click();
+            });
+        });
+
+        // Allow Enter key to submit answers
+        document.getElementById('conversation-answer').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('answerBtn').click();
+            }
+        });
+
+        document.getElementById('received-item-statement').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('startConversationBtn').click();
+            }
+        });
+    </script>
         const API_URL = 'http://localhost:5000';
 
         // Load categories for dropdown
