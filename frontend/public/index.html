@@ -14,27 +14,27 @@
             margin: 15px 0;
             font-weight: bold;
         }
-        
+
         #conversation-area {
             margin-top: 20px;
         }
-        
+
         #conversation-result {
             margin-top: 15px;
             padding: 10px;
             border-radius: 4px;
         }
-        
+
         .success-result {
             background-color: #e8f5e9;
             border: 1px solid #81c784;
         }
-        
+
         .error-result {
             background-color: #ffebee;
             border: 1px solid #e57373;
         }
-    </style>
+
         body {
             font-family: 'Comic Sans MS', cursive, sans-serif;
             background-color: #fff0f5;
@@ -348,7 +348,7 @@
         <div class="container">
             <h2>Tell Me About a Received Item</h2>
             <div class="input-group">
-                <input type="text" id="received-item-statement" 
+                <input type="text" id="received-item-statement"
                     placeholder="Tell me what you received, e.g., 'I just got a coke'" />
                 <button id="startConversationBtn">Start</button>
             </div>
@@ -413,13 +413,13 @@
                 // Show conversation area and hide result
                 document.getElementById('conversation-area').style.display = 'block';
                 document.getElementById('conversation-result').textContent = '';
-                
+
                 // Display question
                 document.getElementById('conversation-question').textContent = data.next_question;
-                
+
                 // Store conversation state
                 currentConversationState = data.conversation_state;
-                
+
                 // Clear and focus answer input
                 document.getElementById('conversation-answer').value = '';
                 document.getElementById('conversation-answer').focus();
@@ -461,7 +461,7 @@
                     document.getElementById('conversation-area').style.display = 'none';
                     document.getElementById('conversation-result').className = 'success-result';
                     document.getElementById('conversation-result').textContent = data.message;
-                    
+
                     // Reset the form
                     document.getElementById('received-item-statement').value = '';
                     currentConversationState = null;

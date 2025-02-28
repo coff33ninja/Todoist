@@ -1,3 +1,4 @@
 # Ignore results and ai_models directories
 results/
 ai_models/
+frontend/node_modules
