@@ -217,6 +217,14 @@
         "documentation": {}
     },
     {
+        "label": "DataPreprocessor",
+        "importPath": "ai.data_preprocessing",
+        "description": "ai.data_preprocessing",
+        "isExtraImport": true,
+        "detail": "ai.data_preprocessing",
+        "documentation": {}
+    },
+    {
         "label": "Flask",
         "importPath": "flask",
         "description": "flask",
@@ -547,6 +555,15 @@
         "documentation": {}
     },
     {
+        "label": "DataPreprocessor",
+        "kind": 6,
+        "importPath": "ai.data_preprocessing",
+        "description": "ai.data_preprocessing",
+        "peekOfCode": "class DataPreprocessor:\n    \"\"\"\n    A class for data preprocessing and feature engineering.\n    \"\"\"\n    def __init__(self):\n        pass\n    def preprocess_text(self, text):\n        \"\"\"\n        Preprocesses the input text data.\n        :param text: The text data to preprocess.",
+        "detail": "ai.data_preprocessing",
+        "documentation": {}
+    },
+    {
         "label": "NLUModel",
         "kind": 6,
         "importPath": "ai.nlu_model",
@@ -578,7 +595,7 @@
         "kind": 6,
         "importPath": "ai.receipt_processor",
         "description": "ai.receipt_processor",
-        "peekOfCode": "class ReceiptProcessor:\n    def __init__(self, tesseract_path=None):\n        if tesseract_path:\n            pytesseract.pytesseract.tesseract_cmd = tesseract_path\n    def preprocess_image(self, image_path):\n        \"\"\"Preprocess image for better OCR results\"\"\"\n        img = cv2.imread(image_path)\n        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)\n        # Apply thresholding\n        _, processed = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)",
+        "peekOfCode": "class ReceiptProcessor:\n    def __init__(self, tesseract_path=None):\n        if tesseract_path:\n            pytesseract.pytesseract.tesseract_cmd = tesseract_path\n    def preprocess_image(self, image_path):\n        data_preprocessor = DataPreprocessor()\n        \"\"\"Preprocess image for better OCR results\"\"\"\n        img = cv2.imread(image_path)\n        gray = data_preprocessor.preprocess_image(img)\n        # Apply thresholding",
         "detail": "ai.receipt_processor",
         "documentation": {}
     },

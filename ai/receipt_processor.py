@@ -3,15 +3,18 @@ import pytesseract
 from datetime import datetime
 import re
 
+from ai.data_preprocessing import DataPreprocessor
+
 class ReceiptProcessor:
     def __init__(self, tesseract_path=None):
         if tesseract_path:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
 
     def preprocess_image(self, image_path):
+        data_preprocessor = DataPreprocessor()
         """Preprocess image for better OCR results"""
         img = cv2.imread(image_path)
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        gray = data_preprocessor.preprocess_image(img)
         # Apply thresholding
         _, processed = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
         return processed
