@@ -217,6 +217,14 @@
         "documentation": {}
     },
     {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
         "label": "Flask",
         "importPath": "flask",
         "description": "flask",
@@ -583,6 +591,24 @@
         "documentation": {}
     },
     {
+        "label": "handle_received_item",
+        "kind": 2,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "def handle_received_item():\n    \"\"\"Handle conversations about items (received, bought, found, etc.).\"\"\"\n    try:\n        data = request.get_json()\n        if not data or \"statement\" not in data:\n            return jsonify({\"error\": \"Missing statement in request\"}), 400\n        statement = data[\"statement\"].lower()\n        # Analyze the statement to determine the type of transaction\n        acquisition_patterns = {\n            \"got\": \"received\",",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
+        "label": "continue_received_item_conversation",
+        "kind": 2,
+        "importPath": "backend.app",
+        "description": "backend.app",
+        "peekOfCode": "def continue_received_item_conversation():\n    \"\"\"Continue the conversation about an item.\"\"\"\n    try:\n        data = request.get_json()\n        if not data or \"conversation_state\" not in data or \"answer\" not in data:\n            return jsonify({\"error\": \"Missing required data\"}), 400\n        state = data[\"conversation_state\"]\n        answer = data[\"answer\"]\n        # Store the answer\n        current_question = state[\"questions\"][state[\"current_question_index\"]]",
+        "detail": "backend.app",
+        "documentation": {}
+    },
+    {
         "label": "get_db",
         "kind": 2,
         "importPath": "backend.app",
@@ -668,7 +694,7 @@
         "kind": 5,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "nlu_processor = NLUProcessor(model_path=\"ai_models/nlu_model.pkl\")\n# Ensure the uploads directory exists\nuploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')",
+        "peekOfCode": "nlu_processor = NLUProcessor(model_path=\"ai_models/nlu_model.pkl\")\n# Ensure the uploads directory exists\nuploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\n@app.route(\"/api/received_item\", methods=[\"POST\"])\ndef handle_received_item():\n    \"\"\"Handle conversations about items (received, bought, found, etc.).\"\"\"",
         "detail": "backend.app",
         "documentation": {}
     },
@@ -677,7 +703,7 @@
         "kind": 5,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    try:\n        conn = sqlite3.connect(db_path)",
+        "peekOfCode": "uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\n@app.route(\"/api/received_item\", methods=[\"POST\"])\ndef handle_received_item():\n    \"\"\"Handle conversations about items (received, bought, found, etc.).\"\"\"\n    try:\n        data = request.get_json()",
         "detail": "backend.app",
         "documentation": {}
     },
@@ -686,7 +712,7 @@
         "kind": 5,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    try:\n        conn = sqlite3.connect(db_path)\n    except Exception as e:\n        print(f\"Database connection error: {e}\")\n        return None",
+        "peekOfCode": "db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\n@app.route(\"/api/received_item\", methods=[\"POST\"])\ndef handle_received_item():\n    \"\"\"Handle conversations about items (received, bought, found, etc.).\"\"\"\n    try:\n        data = request.get_json()\n        if not data or \"statement\" not in data:\n            return jsonify({\"error\": \"Missing statement in request\"}), 400\n        statement = data[\"statement\"].lower()",
         "detail": "backend.app",
         "documentation": {}
     },

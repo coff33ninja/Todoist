@@ -22,3 +22,4 @@ debugpy==1.8.12
 ipython==8.32.0
 jupyter-client==8.6.3
 pyzmq==26.2.1
+spacy-download==1.1.0
