@@ -702,7 +702,7 @@
         "kind": 6,
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
-        "peekOfCode": "class DatabaseError(Exception):\n    \"\"\"Custom exception for database-related errors\"\"\"\n    pass\nclass ModelError(Exception):\n    \"\"\"Custom exception for model-related errors\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self, \n                 model_path: str = \"ai_models/nlu_model\", \n                 db_path: str = \"inventory.db\", ",
+        "peekOfCode": "class DatabaseError(Exception):\n    \"\"\"Custom exception for database-related errors\"\"\"\n    pass\nclass ModelError(Exception):\n    \"\"\"Custom exception for model-related errors\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self,\n                 model_path: str = \"ai_models/nlu_model\",\n                 db_path: str = \"inventory.db\",",
         "detail": "ai.nlu_processor",
         "documentation": {}
     },
@@ -711,7 +711,7 @@
         "kind": 6,
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
-        "peekOfCode": "class ModelError(Exception):\n    \"\"\"Custom exception for model-related errors\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self, \n                 model_path: str = \"ai_models/nlu_model\", \n                 db_path: str = \"inventory.db\", \n                 max_retries: int = 3, \n                 retry_delay: int = 1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.",
+        "peekOfCode": "class ModelError(Exception):\n    \"\"\"Custom exception for model-related errors\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self,\n                 model_path: str = \"ai_models/nlu_model\",\n                 db_path: str = \"inventory.db\",\n                 max_retries: int = 3,\n                 retry_delay: int = 1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.",
         "detail": "ai.nlu_processor",
         "documentation": {}
     },
@@ -720,7 +720,7 @@
         "kind": 6,
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
-        "peekOfCode": "class NLUProcessor:\n    def __init__(self, \n                 model_path: str = \"ai_models/nlu_model\", \n                 db_path: str = \"inventory.db\", \n                 max_retries: int = 3, \n                 retry_delay: int = 1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\n        Args:\n            model_path: Path to the NLU model\n            db_path: Path to the SQLite database",
+        "peekOfCode": "class NLUProcessor:\n    def __init__(self,\n                 model_path: str = \"ai_models/nlu_model\",\n                 db_path: str = \"inventory.db\",\n                 max_retries: int = 3,\n                 retry_delay: int = 1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\n        Args:\n            model_path: Path to the NLU model\n            db_path: Path to the SQLite database",
         "detail": "ai.nlu_processor",
         "documentation": {}
     },
