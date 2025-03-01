@@ -10,6 +10,7 @@ import sys
 from datetime import datetime
 from werkzeug.utils import secure_filename
 import logging
+import traceback
 
 # Configure logging
 logging.basicConfig(level=logging.ERROR, filename='app.log', format='%(asctime)s %(levelname)s:%(message)s')
@@ -158,7 +159,8 @@ def add_item():
         return jsonify({"message": "Item added successfully", "item": item})
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error in add_item: %s", traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 @app.route("/api/items/<int:item_id>", methods=["DELETE"])
 def delete_item(item_id):
@@ -175,7 +177,8 @@ def delete_item(item_id):
         conn.close()
         return jsonify({"message": "Item deleted successfully"})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error in delete_item: %s", traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 @app.route("/api/locations", methods=["GET"])
 def get_locations():
@@ -188,7 +191,8 @@ def get_locations():
         conn.close()
         return jsonify({"locations": locations})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error in get_locations: %s", traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
@@ -244,10 +248,8 @@ def upload_receipt():
         return jsonify(result)
 
     except Exception as e:
-        print(f"Error processing receipt: {e}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error processing receipt: %s", traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 if __name__ == "__main__":
             app.run(debug=True, port=5000)
