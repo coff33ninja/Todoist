@@ -56,6 +56,9 @@ def process_query():
 
         query = data["query"]
         result = nlu_processor.process_natural_language_query(query, get_db)
+        if "error" in result:
+            logging.error("Error in NLU processing: %s", result["error"])
+            return jsonify({"error": "An internal error has occurred."}), 500
         return jsonify(result)
 
     except Exception as e:

@@ -254,7 +254,8 @@ class NLUProcessor:
             else:
                 cursor = self.db_conn.cursor()
         except Exception as e:
-            return {"error": str(e), "intent": "unknown"}
+            logging.error("Database connection error: %s", str(e))
+            return {"error": "Database connection failed", "intent": "unknown"}
 
         # ML-based intent classification
         inputs = self.tokenizer(
@@ -316,7 +317,8 @@ class NLUProcessor:
             self.set_context({"previous_filters": filters})  # Update context
             return result
         except Exception as e:
-            return {"error": str(e), "intent": predicted_intent}
+            logging.error("Error handling intent '%s': %s", predicted_intent, str(e))
+            return {"error": "Failed to process query", "intent": predicted_intent}
 
     def handle_search(self, cursor, filters):
         """Handle search intent."""
