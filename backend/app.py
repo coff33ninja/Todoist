@@ -9,7 +9,7 @@ import os
 import sys
 from datetime import datetime
 from werkzeug.utils import secure_filename
-
+import traceback
 # Ensure repository path is accessible
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from ai.nlu_processor import NLUProcessor
@@ -54,7 +54,8 @@ def process_query():
         return jsonify(result)
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred!"}), 500
 
 
 @app.route("/api/categories", methods=["GET"])
@@ -152,7 +153,8 @@ def add_item():
         return jsonify({"message": "Item added successfully", "item": item})
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred!"}), 500
 
 @app.route("/api/items/<int:item_id>", methods=["DELETE"])
 def delete_item(item_id):
@@ -169,7 +171,8 @@ def delete_item(item_id):
         conn.close()
         return jsonify({"message": "Item deleted successfully"})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred!"}), 500
 
 @app.route("/api/locations", methods=["GET"])
 def get_locations():
@@ -182,7 +185,8 @@ def get_locations():
         conn.close()
         return jsonify({"locations": locations})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred!"}), 500
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
