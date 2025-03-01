@@ -616,11 +616,20 @@
         "documentation": {}
     },
     {
+        "label": "ModelError",
+        "kind": 6,
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "peekOfCode": "class ModelError(Exception):\n    \"\"\"Custom exception for model loading errors.\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self, model_path=\"ai_models/nlu_model\", db_path=\"inventory.db\", max_retries=3, retry_delay=1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\n        Args:\n            model_path: Path to the NLU model\n            db_path: Path to the SQLite database\n            max_retries: Maximum number of retries for operations",
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
         "label": "NLUProcessor",
         "kind": 6,
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
-        "peekOfCode": "class NLUProcessor:\n    def __init__(self, model_path=\"ai_models/nlu_model\", db_path=\"inventory.db\"):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\"\"\"\n        # Define supported intents as a class attribute for easy modification\n        self.intents = [\n            \"search\",\n            \"count\",\n            \"value\",\n            \"price_range\",\n            \"repair\",",
+        "peekOfCode": "class NLUProcessor:\n    def __init__(self, model_path=\"ai_models/nlu_model\", db_path=\"inventory.db\", max_retries=3, retry_delay=1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\n        Args:\n            model_path: Path to the NLU model\n            db_path: Path to the SQLite database\n            max_retries: Maximum number of retries for operations\n            retry_delay: Delay between retries in seconds\n        \"\"\"\n        self.max_retries = max_retries",
         "detail": "ai.nlu_processor",
         "documentation": {}
     },
@@ -629,7 +638,7 @@
         "kind": 5,
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
-        "peekOfCode": "logger = logging.getLogger(__name__)\nclass NLUProcessor:\n    def __init__(self, model_path=\"ai_models/nlu_model\", db_path=\"inventory.db\"):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\"\"\"\n        # Define supported intents as a class attribute for easy modification\n        self.intents = [\n            \"search\",\n            \"count\",\n            \"value\",\n            \"price_range\",",
+        "peekOfCode": "logger = logging.getLogger(__name__)\nclass ModelError(Exception):\n    \"\"\"Custom exception for model loading errors.\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self, model_path=\"ai_models/nlu_model\", db_path=\"inventory.db\", max_retries=3, retry_delay=1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\n        Args:\n            model_path: Path to the NLU model\n            db_path: Path to the SQLite database",
         "detail": "ai.nlu_processor",
         "documentation": {}
     },

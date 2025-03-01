@@ -16,9 +16,24 @@ import torch
 logger = logging.getLogger(__name__)
 
 
+class ModelError(Exception):
+    """Custom exception for model loading errors."""
+    pass
+
+
 class NLUProcessor:
-    def __init__(self, model_path="ai_models/nlu_model", db_path="inventory.db"):
-        """Initialize the NLUProcessor with model and database connections."""
+    def __init__(self, model_path="ai_models/nlu_model", db_path="inventory.db", max_retries=3, retry_delay=1):
+        """Initialize the NLUProcessor with model and database connections.
+        
+        Args:
+            model_path: Path to the NLU model
+            db_path: Path to the SQLite database
+            max_retries: Maximum number of retries for operations
+            retry_delay: Delay between retries in seconds
+        """
+        self.max_retries = max_retries
+        self.retry_delay = retry_delay
+        
         # Define supported intents as a class attribute for easy modification
         self.intents = [
             "search",
@@ -50,33 +65,165 @@ class NLUProcessor:
         }
 
         self.model_path = model_path
-        self.db_conn = sqlite3.connect(db_path)  # Internal database connection
-        self.model, self.tokenizer = self._load_or_create_model()
+        self._init_database(db_path)
+        self.model, self.tokenizer = self._load_or_create_model_with_retry()
         self.trained = False
         self.context = None  # For multi-turn conversation support
-        self.nlp = spacy.load("en_core_web_sm")  # Load spaCy for advanced NLP
+        self._init_nlp()
 
     def _load_or_create_model(self):
         """Load an existing model or create a new one if it doesn't exist."""
         model_name = "distilbert-base-uncased"
-        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        
         try:
+            # Load tokenizer with error handling
+            tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+            
+            # Try to load existing model
             if os.path.exists(self.model_path) and os.path.exists(
                 os.path.join(self.model_path, "config.json")
             ):
+                logger.info("Loading existing model from %s", self.model_path)
                 model = AutoModelForSequenceClassification.from_pretrained(
-                    self.model_path
+                    self.model_path,
+                    num_labels=len(self.intents),
+                    problem_type="single_label_classification"
                 )
             else:
+                logger.info("Creating new model based on %s", model_name)
                 model = AutoModelForSequenceClassification.from_pretrained(
-                    model_name, num_labels=len(self.intents)
+                    model_name,
+                    num_labels=len(self.intents),
+                    problem_type="single_label_classification"
                 )
+                
+            # Verify model configuration
+            if model.config.num_labels != len(self.intents):
+                logger.warning(
+                    "Model number of labels (%d) doesn't match intents count (%d). Recreating model.",
+                    model.config.num_labels,
+                    len(self.intents)
+                )
+                model = AutoModelForSequenceClassification.from_pretrained(
+                    model_name,
+                    num_labels=len(self.intents),
+                    problem_type="single_label_classification"
+                )
+                
+            return model, tokenizer
+            
         except Exception as e:
-            print(f"Error loading model: {e}")
-            model = AutoModelForSequenceClassification.from_pretrained(
-                model_name, num_labels=len(self.intents)
-            )
-        return model, tokenizer
+            logger.error("Error in model loading: %s", str(e))
+            raise ModelError(f"Failed to load/create model: {str(e)}")
+
+    def _get_intent_confidence(self, query: str) -> tuple[str, float]:
+        """Get intent and confidence score for a query using the ML model.
+        
+        Args:
+            query: The input query string
+            
+        Returns:
+            Tuple of (predicted_intent, confidence_score)
+        """
+        # Prepare input
+        inputs = self.tokenizer(
+            query,
+            return_tensors="pt",
+            truncation=True,
+            padding=True,
+            max_length=512
+        )
+        
+        try:
+            # Get model prediction
+            with torch.no_grad():
+                outputs = self.model(**inputs)
+                logits = outputs.logits
+                probabilities = softmax(logits, dim=1)
+                confidence = torch.max(probabilities, dim=1).values.item()
+                predicted_label = int(torch.argmax(probabilities, dim=1).item())
+                
+            # Handle out-of-range predictions
+            if predicted_label >= len(self.intents):
+                return "unknown", 0.0
+                
+            return self.intents[predicted_label], confidence
+            
+        except Exception as e:
+            logger.error("Error in intent classification: %s", str(e))
+            return "unknown", 0.0
+
+    def _get_rule_based_intent(self, query: str) -> Optional[str]:
+        """Get intent using rule-based classification.
+        
+        Args:
+            query: The input query string
+            
+        Returns:
+            Predicted intent or None if no match
+        """
+        # Normalize query
+        query = query.lower().strip()
+        
+        # Check each pattern
+        for intent, patterns in self.patterns.items():
+            for pattern in patterns:
+                if re.search(pattern, query, re.IGNORECASE):
+                    return intent
+                    
+        return None
+
+    def _should_override_intent(self, query: str, ml_intent: str, confidence: float) -> bool:
+        """Determine if rule-based intent should override ML intent.
+        
+        Args:
+            query: The input query string
+            ml_intent: The ML-predicted intent
+            confidence: The confidence score from ML prediction
+            
+        Returns:
+            True if should override, False otherwise
+        """
+        # Always override for very low confidence
+        if confidence < 0.3:
+            return True
+            
+        # Override for specific patterns regardless of confidence
+        if re.search(r"^how\s+many\b", query, re.IGNORECASE):
+            return True
+            
+        if re.search(r"^what\s+needs\s+(?:to\s+be\s+)?(?:fix|repair)", query, re.IGNORECASE):
+            return True
+            
+        # Override if ML intent is unknown but confidence is not very high
+        if ml_intent == "unknown" and confidence < 0.8:
+            return True
+            
+        return False
+
+    def get_intent(self, query: str) -> tuple[str, float]:
+        """Get the final intent using both ML and rule-based approaches.
+        
+        Args:
+            query: The input query string
+            
+        Returns:
+            Tuple of (final_intent, confidence_score)
+        """
+        # Get ML-based intent
+        ml_intent, confidence = self._get_intent_confidence(query)
+        
+        # Check if we should use rule-based override
+        if self._should_override_intent(query, ml_intent, confidence):
+            rule_based_intent = self._get_rule_based_intent(query)
+            if rule_based_intent:
+                logger.info(
+                    "Overriding ML intent '%s' (conf: %.2f) with rule-based intent '%s'",
+                    ml_intent, confidence, rule_based_intent
+                )
+                return rule_based_intent, 1.0
+                
+        return ml_intent, confidence
 
     def train_model(
         self, train_dataset, eval_dataset=None, epochs=3, batch_size=16, output_dir=None
@@ -232,7 +379,7 @@ class NLUProcessor:
             return True
         return False
 
-    def process_natural_language_query(self, query, db_conn=None):
+    def process_natural_language_query(self, query: str, db_conn=None) -> Dict[str, Any]:
         """Process a natural language query and return the result.
         
         Args:
@@ -245,61 +392,77 @@ class NLUProcessor:
         if not query:
             return {"error": "Empty query", "intent": "unknown"}
 
-        # Use provided database connection or default
+        # Use provided database connection or default with retry mechanism
         try:
-            if db_conn:
-                # For test cases
-                if callable(db_conn):
-                    conn = db_conn()
-                    cursor = conn.cursor()
-                else:
-                    # Handle case where db_conn is already a cursor or connection
-                    cursor = db_conn
-            else:
-                cursor = self.db_conn.cursor()
-        except Exception as e:
+            cursor = self._get_database_cursor(db_conn)
+        except DatabaseError as e:
             logger.error("Database connection error: %s", str(e))
-            return {"error": "Database connection failed", "intent": "unknown"}
+            return {"error": str(e), "intent": "unknown"}
 
-        # ML-based intent classification
-        inputs = self.tokenizer(
-            query, return_tensors="pt", truncation=True, padding=True
-        )
-        with torch.no_grad():
-            logits = self.model(**inputs).logits
-        probabilities = softmax(logits, dim=1)
-        confidence = torch.max(probabilities, dim=1).values.item()
-        predicted_label = int(torch.argmax(probabilities, dim=1).item())
-        
-        # Handle out-of-range predictions (for "unknown" intent)
-        if predicted_label >= len(self.intents):
-            predicted_intent = "unknown"
-        else:
-            predicted_intent = self.intents[predicted_label]
-        
-        # Rule-based fallback for low confidence or specific patterns
-        CONFIDENCE_THRESHOLD = 0.7  # Adjust based on model performance
-        
-        # Apply rule-based classification if confidence is low or for specific patterns
-        if confidence < CONFIDENCE_THRESHOLD or self._should_override_intent(query):
-            rule_based_intent = self._rule_based_intent_classification(query)
-            if rule_based_intent:
-                print(f"[Hybrid] ML intent: {predicted_intent} (confidence: {confidence:.2f}), "
-                      f"Rule-based override: {rule_based_intent}")
-                predicted_intent = rule_based_intent
-            else:
-                print(f"[Hybrid] Using ML intent: {predicted_intent} (confidence: {confidence:.2f})")
-        else:
-            print(f"[Hybrid] Using ML intent: {predicted_intent} (confidence: {confidence:.2f})")
+        # Get the final intent using both ML and rule-based approaches
+        try:
+            predicted_intent, confidence = self.get_intent(query)
+        except Exception as e:
+            logger.error("Intent classification error: %s", str(e))
+            return {"error": "Failed to classify intent", "intent": "unknown"}
 
-        # Use context for multi-turn conversations
+        # Extract and merge filters with context
+        try:
+            filters = self._get_filters_with_context(query)
+        except Exception as e:
+            logger.error("Filter extraction error: %s", str(e))
+            return {"error": "Failed to extract filters", "intent": predicted_intent}
+
+        # Intent handlers with proper error handling
+        try:
+            result = self._handle_intent(predicted_intent, cursor, filters)
+            result["intent"] = predicted_intent
+            result["confidence"] = confidence
+            
+            # Update context for multi-turn conversations
+            self.set_context({"previous_filters": filters})
+            
+            return result
+        except Exception as e:
+            logger.error("Error handling intent '%s': %s", predicted_intent, str(e))
+            return {
+                "error": "Failed to process query",
+                "intent": predicted_intent,
+                "confidence": confidence
+            }
+
+    def _get_database_cursor(self, db_conn) -> sqlite3.Cursor:
+        """Get database cursor with retry mechanism."""
+        for attempt in range(self.max_retries):
+            try:
+                if db_conn:
+                    if callable(db_conn):
+                        conn = db_conn()
+                        return conn.cursor()
+                    return db_conn
+                return self.db_conn.cursor()
+            except Exception as e:
+                if attempt == self.max_retries - 1:
+                    raise DatabaseError(f"Database connection failed: {str(e)}")
+                time.sleep(self.retry_delay)
+
+    def _get_filters_with_context(self, query: str) -> Dict[str, Any]:
+        """Extract filters and merge with context."""
+        # Extract new filters
+        new_filters = self.extract_filters(query)
+        
+        # Merge with context if available
         if self.context and "previous_filters" in self.context:
-            filters = self.context["previous_filters"]
-            filters.update(self.extract_filters(query))
+            filters = self.context["previous_filters"].copy()
+            # Override previous filters with new ones
+            filters.update(new_filters)
         else:
-            filters = self.extract_filters(query)
+            filters = new_filters
+            
+        return filters
 
-        # Intent handlers
+    def _handle_intent(self, intent: str, cursor: sqlite3.Cursor, filters: Dict[str, Any]) -> Dict[str, Any]:
+        """Handle intent with proper error handling."""
         handlers = {
             "search": self.handle_search,
             "count": self._handle_count,
@@ -307,22 +470,37 @@ class NLUProcessor:
             "price_range": self._handle_price_range,
             "repair": self._handle_repair,
             "purchase_history": self._handle_purchase_history,
-            "unknown": lambda cursor, filters: {
-                "message": "I'm not sure how to handle that."
-            },
         }
-
-        handler = handlers.get(predicted_intent, handlers["unknown"])
+        
+        handler = handlers.get(intent, lambda c, f: {"message": "I'm not sure how to handle that."})
         
         try:
-            result = handler(cursor, filters)
-            # Add intent to the result for testing
-            result["intent"] = predicted_intent
-            self.set_context({"previous_filters": filters})  # Update context
-            return result
+            return handler(cursor, filters)
+        except sqlite3.Error as e:
+            logger.error("Database error handling intent '%s': %s", intent, str(e))
+            raise DatabaseError(f"Database error: {str(e)}")
         except Exception as e:
-            logger.error("Error handling intent '%s': %s", predicted_intent, str(e))
-            return {"error": "Failed to process query", "intent": predicted_intent}
+            logger.error("Error handling intent '%s': %s", intent, str(e))
+            raise
+
+    def set_context(self, context: Dict[str, Any]) -> None:
+        """Set conversation context with validation."""
+        if not isinstance(context, dict):
+            logger.warning("Invalid context type: %s. Expected dict.", type(context))
+            return
+            
+        # Validate and clean context
+        cleaned_context = {}
+        if "previous_filters" in context:
+            if isinstance(context["previous_filters"], dict):
+                # Only keep valid filter types
+                cleaned_filters = {}
+                for k, v in context["previous_filters"].items():
+                    if isinstance(k, str) and v is not None:
+                        cleaned_filters[k] = v
+                cleaned_context["previous_filters"] = cleaned_filters
+                
+        self.context = cleaned_context
 
     def handle_search(self, cursor, filters):
         """Handle search intent."""
@@ -331,7 +509,7 @@ class NLUProcessor:
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='items'")
             if not cursor.fetchone():
                 # Create the items table if it doesn't exist (for tests)
-                cursor.execute("""
+                cursor.execute(""" 
                 CREATE TABLE IF NOT EXISTS items (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
@@ -529,7 +707,7 @@ class NLUProcessor:
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='repairs'")
             if not cursor.fetchone():
                 # Create the repairs table if it doesn't exist (for tests)
-                cursor.execute("""
+                cursor.execute(""" 
                 CREATE TABLE IF NOT EXISTS repairs (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     item_id INTEGER,
@@ -547,7 +725,7 @@ class NLUProcessor:
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='items'")
             if not cursor.fetchone():
                 # Create the items table if it doesn't exist (for tests)
-                cursor.execute("""
+                cursor.execute(""" 
                 CREATE TABLE IF NOT EXISTS items (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     name TEXT NOT NULL,
