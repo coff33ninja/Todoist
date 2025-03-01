@@ -7,6 +7,7 @@ from ai.receipt_processor import ReceiptProcessor
 from core.task_manager import TaskManager
 from utils.budget_tracker import BudgetTracker
 import threading
+from werkzeug.utils import secure_filename
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -155,8 +156,10 @@ def upload_receipt():
         return jsonify({"error": "No selected file"}), 400
 
     try:
+        # Sanitize the filename
+        safe_filename = secure_filename(file.filename)  # Sanitize the filename
         # Save the file
-        file_path = os.path.join(str(UPLOAD_FOLDER), str(file.filename))
+        file_path = os.path.join(str(UPLOAD_FOLDER), safe_filename)
         file.save(file_path)
 
         # Process the receipt
@@ -171,10 +174,15 @@ def upload_receipt():
                 acquisition_type="purchase",
             )
 
-        return jsonify({
-            "message": "Receipt processed and items added to inventory",
-            "data": parsed_data,
-        }), 200
+        return (
+            jsonify(
+                {
+                    "message": "Receipt processed and items added to inventory",
+                    "data": parsed_data,
+                }
+            ),
+            200,
+        )
 
     except Exception as _:
         return jsonify({"error": str(_)}), 500

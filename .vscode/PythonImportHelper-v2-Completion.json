@@ -419,6 +419,14 @@
         "documentation": {}
     },
     {
+        "label": "secure_filename",
+        "importPath": "werkzeug.utils",
+        "description": "werkzeug.utils",
+        "isExtraImport": true,
+        "detail": "werkzeug.utils",
+        "documentation": {}
+    },
+    {
         "label": "random",
         "kind": 6,
         "isExtraImport": true,
@@ -784,7 +792,7 @@
         "kind": 2,
         "importPath": "core.main",
         "description": "core.main",
-        "peekOfCode": "def upload_receipt():\n    if \"file\" not in request.files:\n        return jsonify({\"error\": \"No file part\"}), 400\n    file = request.files[\"file\"]\n    if file.filename == \"\":\n        return jsonify({\"error\": \"No selected file\"}), 400\n    try:\n        # Save the file\n        file_path = os.path.join(str(UPLOAD_FOLDER), str(file.filename))\n        file.save(file_path)",
+        "peekOfCode": "def upload_receipt():\n    if \"file\" not in request.files:\n        return jsonify({\"error\": \"No file part\"}), 400\n    file = request.files[\"file\"]\n    if file.filename == \"\":\n        return jsonify({\"error\": \"No selected file\"}), 400\n    try:\n        # Sanitize the filename\n        safe_filename = secure_filename(file.filename)  # Sanitize the filename\n        # Save the file",
         "detail": "core.main",
         "documentation": {}
     },
