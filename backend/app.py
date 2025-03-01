@@ -9,6 +9,10 @@ import os
 import sys
 from datetime import datetime
 from werkzeug.utils import secure_filename
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.ERROR, filename='app.log', format='%(asctime)s %(levelname)s:%(message)s')
 
 # Ensure repository path is accessible
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -54,7 +58,8 @@ def process_query():
         return jsonify(result)
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error processing query: %s", str(e))
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 
 @app.route("/api/categories", methods=["GET"])
@@ -68,7 +73,8 @@ def get_categories():
         conn.close()
         return jsonify({"categories": categories})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error fetching categories: %s", str(e))
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 
 @app.route("/api/items", methods=["POST"])
