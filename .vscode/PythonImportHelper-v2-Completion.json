@@ -151,6 +151,128 @@
         "documentation": {}
     },
     {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Union",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "dataclass",
+        "importPath": "dataclasses",
+        "description": "dataclasses",
+        "isExtraImport": true,
+        "detail": "dataclasses",
+        "documentation": {}
+    },
+    {
         "label": "softmax",
         "importPath": "torch.nn.functional",
         "description": "torch.nn.functional",
@@ -183,46 +305,6 @@
         "importPath": "numpy",
         "description": "numpy",
         "detail": "numpy",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
         "documentation": {}
     },
     {
@@ -505,24 +587,6 @@
         "documentation": {}
     },
     {
-        "label": "time",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "time",
-        "description": "time",
-        "detail": "time",
-        "documentation": {}
-    },
-    {
-        "label": "json",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "json",
-        "description": "json",
-        "detail": "json",
-        "documentation": {}
-    },
-    {
         "label": "train_test_split",
         "importPath": "sklearn.model_selection",
         "description": "sklearn.model_selection",
@@ -616,11 +680,38 @@
         "documentation": {}
     },
     {
+        "label": "ModelMetadata",
+        "kind": 6,
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "peekOfCode": "class ModelMetadata:\n    \"\"\"Metadata for model versioning and tracking.\"\"\"\n    version: str\n    created_at: str\n    last_trained: str\n    num_intents: int\n    training_samples: int\n    accuracy: float\n    parameters: Dict[str, Any]\nclass ModelVersionError(Exception):",
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "ModelVersionError",
+        "kind": 6,
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "peekOfCode": "class ModelVersionError(Exception):\n    \"\"\"Raised when there are issues with model versioning.\"\"\"\n    pass\nclass DatabaseError(Exception):\n    \"\"\"Custom exception for database-related errors\"\"\"\n    pass\nclass ModelError(Exception):\n    \"\"\"Custom exception for model-related errors\"\"\"\n    pass\nclass NLUProcessor:",
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "DatabaseError",
+        "kind": 6,
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "peekOfCode": "class DatabaseError(Exception):\n    \"\"\"Custom exception for database-related errors\"\"\"\n    pass\nclass ModelError(Exception):\n    \"\"\"Custom exception for model-related errors\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self, \n                 model_path: str = \"ai_models/nlu_model\", \n                 db_path: str = \"inventory.db\", ",
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
         "label": "ModelError",
         "kind": 6,
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
-        "peekOfCode": "class ModelError(Exception):\n    \"\"\"Custom exception for model loading errors.\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self, model_path=\"ai_models/nlu_model\", db_path=\"inventory.db\", max_retries=3, retry_delay=1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\n        Args:\n            model_path: Path to the NLU model\n            db_path: Path to the SQLite database\n            max_retries: Maximum number of retries for operations",
+        "peekOfCode": "class ModelError(Exception):\n    \"\"\"Custom exception for model-related errors\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self, \n                 model_path: str = \"ai_models/nlu_model\", \n                 db_path: str = \"inventory.db\", \n                 max_retries: int = 3, \n                 retry_delay: int = 1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.",
         "detail": "ai.nlu_processor",
         "documentation": {}
     },
@@ -629,7 +720,7 @@
         "kind": 6,
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
-        "peekOfCode": "class NLUProcessor:\n    def __init__(self, model_path=\"ai_models/nlu_model\", db_path=\"inventory.db\", max_retries=3, retry_delay=1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\n        Args:\n            model_path: Path to the NLU model\n            db_path: Path to the SQLite database\n            max_retries: Maximum number of retries for operations\n            retry_delay: Delay between retries in seconds\n        \"\"\"\n        self.max_retries = max_retries",
+        "peekOfCode": "class NLUProcessor:\n    def __init__(self, \n                 model_path: str = \"ai_models/nlu_model\", \n                 db_path: str = \"inventory.db\", \n                 max_retries: int = 3, \n                 retry_delay: int = 1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\n        Args:\n            model_path: Path to the NLU model\n            db_path: Path to the SQLite database",
         "detail": "ai.nlu_processor",
         "documentation": {}
     },
@@ -638,7 +729,7 @@
         "kind": 5,
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
-        "peekOfCode": "logger = logging.getLogger(__name__)\nclass ModelError(Exception):\n    \"\"\"Custom exception for model loading errors.\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self, model_path=\"ai_models/nlu_model\", db_path=\"inventory.db\", max_retries=3, retry_delay=1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\n        Args:\n            model_path: Path to the NLU model\n            db_path: Path to the SQLite database",
+        "peekOfCode": "logger = logging.getLogger(__name__)\n@dataclass\nclass ModelMetadata:\n    \"\"\"Metadata for model versioning and tracking.\"\"\"\n    version: str\n    created_at: str\n    last_trained: str\n    num_intents: int\n    training_samples: int\n    accuracy: float",
         "detail": "ai.nlu_processor",
         "documentation": {}
     },

@@ -1,15 +1,14 @@
-# 🧠 AI-Powered Task Manager for the Angry Wife™
+# Todoist - Smart Task Management System
 
-Ever had that moment when your significant other asks "Where did you put that thing?" and you have no idea what "that thing" is? Welcome to the solution! This project combines the power of natural language processing, inventory management, and AI to create the ultimate household organization system.
+A smart task management system that uses Natural Language Processing (NLP) to understand and process user requests.
 
-## 🌟 Features
+## Features
 
-- **Natural Language Queries**: Just ask normally! "Where's that thing I bought last week?" - it understands!
-- **Smart Inventory Management**: Track items, their locations, and history
-- **Receipt Processing**: Scan receipts to automatically add items
-- **Budget Tracking**: Keep track of spending (before someone else does!)
-- **Repair Management**: Track item repairs and maintenance
-- **Trade History**: Keep records of items traded or gifted
+- Natural Language Understanding (NLU) for task management
+- Inventory tracking with smart categorization
+- Multi-turn conversation support
+- Robust AI system with performance monitoring
+- Automatic error recovery and version management
 
 ## 🛠️ Setup
 
@@ -42,13 +41,9 @@ Ever had that moment when your significant other asks "Where did you put that th
    python main.py
    ```
 
-## 🚀 Usage
+## Usage Examples
 
-### Starting the Application
-- Run `python main.py` to start the Flask server
-- Alternatively, use `./start.bat start` (Windows) to launch
-  - **Note**: `start.bat` handles most of the heavy lifting, including environment setup, starting the application, training models, running tests, and adding sample data. It provides an interactive menu for easy management.
-- Access the API at `http://localhost:5000`
+### Monitor Model Performance
 
 ---
 
@@ -173,9 +168,9 @@ Feel free to contribute! We're especially looking for:
 - AI model integrations
 - Additional features for domestic peace
 
-## 📝 License
+## License
 
-MIT License - Feel free to use this to save your own domestic situations!
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 🙏 Acknowledgments
 

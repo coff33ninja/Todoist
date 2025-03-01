@@ -3,6 +3,11 @@ import os
 import sqlite3
 import spacy
 import logging
+import time
+import json
+from datetime import datetime
+from typing import Dict, Any, Optional, Union, List, Tuple
+from dataclasses import dataclass
 from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
@@ -15,14 +20,35 @@ import torch
 # Get logger for this module
 logger = logging.getLogger(__name__)
 
+@dataclass
+class ModelMetadata:
+    """Metadata for model versioning and tracking."""
+    version: str
+    created_at: str
+    last_trained: str
+    num_intents: int
+    training_samples: int
+    accuracy: float
+    parameters: Dict[str, Any]
 
-class ModelError(Exception):
-    """Custom exception for model loading errors."""
+class ModelVersionError(Exception):
+    """Raised when there are issues with model versioning."""
     pass
 
+class DatabaseError(Exception):
+    """Custom exception for database-related errors"""
+    pass
+
+class ModelError(Exception):
+    """Custom exception for model-related errors"""
+    pass
 
 class NLUProcessor:
-    def __init__(self, model_path="ai_models/nlu_model", db_path="inventory.db", max_retries=3, retry_delay=1):
+    def __init__(self, 
+                 model_path: str = "ai_models/nlu_model", 
+                 db_path: str = "inventory.db", 
+                 max_retries: int = 3, 
+                 retry_delay: int = 1):
         """Initialize the NLUProcessor with model and database connections.
         
         Args:
@@ -34,6 +60,25 @@ class NLUProcessor:
         self.max_retries = max_retries
         self.retry_delay = retry_delay
         
+        # Model versioning and checkpointing
+        self.model_path = model_path
+        self.checkpoint_dir = os.path.join(model_path, "checkpoints")
+        self.metadata_path = os.path.join(model_path, "metadata.json")
+        os.makedirs(self.checkpoint_dir, exist_ok=True)
+        
+        # Initialize or load model metadata
+        self.metadata = self._init_or_load_metadata()
+        
+        # Initialize performance tracking
+        self._prediction_stats = {
+            'total': 0,
+            'by_intent': {},
+            'confidence_sum': 0,
+            'low_confidence_count': 0,
+            'errors': 0,
+            'last_evaluation': None
+        }
+
         # Define supported intents as a class attribute for easy modification
         self.intents = [
             "search",
@@ -64,7 +109,6 @@ class NLUProcessor:
             ],
         }
 
-        self.model_path = model_path
         self._init_database(db_path)
         self.model, self.tokenizer = self._load_or_create_model_with_retry()
         self.trained = False
@@ -225,38 +269,86 @@ class NLUProcessor:
                 
         return ml_intent, confidence
 
-    def train_model(
-        self, train_dataset, eval_dataset=None, epochs=3, batch_size=16, output_dir=None
-    ):
-        """
-        Train the NLU model.
-
+    def train(self, training_data: List[Dict[str, Any]], evaluation_data: Optional[List[Dict[str, Any]]] = None) -> None:
+        """Train the model with new data.
+        
         Args:
-            train_dataset: A transformers Dataset with 'text' (query) and 'label' (intent index) columns.
-            eval_dataset: Optional evaluation dataset for validation during training.
-            epochs: Number of training epochs (default: 3).
-            batch_size: Batch size for training and evaluation (default: 16).
-            output_dir: Directory to save the trained model (default: self.model_path).
+            training_data: List of training examples
+            evaluation_data: Optional list of evaluation examples
         """
-        training_args = TrainingArguments(
-            output_dir=output_dir or self.model_path,
-            num_train_epochs=epochs,
-            per_device_train_batch_size=batch_size,
-            per_device_eval_batch_size=batch_size,
-            evaluation_strategy="epoch" if eval_dataset else "no",
-            save_steps=10_000,
-            save_total_limit=2,
-            logging_dir="./logs",
-        )
-        trainer = Trainer(
-            model=self.model,
-            args=training_args,
-            train_dataset=train_dataset,
-            eval_dataset=eval_dataset,
-        )
-        trainer.train()
-        trainer.save_model(output_dir or self.model_path)
-        self.trained = True
+        # Validate training data
+        valid_training_data = self.validate_training_data(training_data)
+        
+        if not valid_training_data:
+            raise ValueError("No valid training examples provided")
+            
+        try:
+            # Create checkpoint before training
+            self.create_checkpoint()
+            
+            # Update metadata
+            self.metadata.training_samples += len(valid_training_data)
+            self.metadata.last_trained = datetime.now().isoformat()
+            
+            # Prepare training arguments
+            training_args = TrainingArguments(
+                output_dir=self.model_path,
+                num_train_epochs=3,
+                per_device_train_batch_size=self.metadata.parameters["batch_size"],
+                learning_rate=self.metadata.parameters["learning_rate"],
+                save_strategy="epoch",
+                evaluation_strategy="epoch" if evaluation_data else "no",
+                load_best_model_at_end=True if evaluation_data else False,
+            )
+            
+            # Initialize trainer
+            trainer = Trainer(
+                model=self.model,
+                args=training_args,
+                train_dataset=valid_training_data,
+                eval_dataset=evaluation_data if evaluation_data else None,
+            )
+            
+            # Train the model
+            trainer.train()
+            
+            # Update metadata and save
+            if evaluation_data:
+                eval_results = trainer.evaluate()
+                self.metadata.accuracy = eval_results.get("eval_accuracy", 0.0)
+            
+            # Increment version (patch)
+            version_parts = self.metadata.version.split('.')
+            version_parts[-1] = str(int(version_parts[-1]) + 1)
+            self.metadata.version = '.'.join(version_parts)
+            
+            self._save_metadata(self.metadata)
+            
+            # Reset prediction stats after training
+            self._prediction_stats = {
+                'total': 0,
+                'by_intent': {},
+                'confidence_sum': 0,
+                'low_confidence_count': 0,
+                'errors': 0,
+                'last_evaluation': None
+            }
+            
+            logger.info("Model training completed successfully")
+            logger.info("New model version: %s", self.metadata.version)
+            
+        except Exception as e:
+            logger.error("Training failed: %s", str(e))
+            # Try to restore from last checkpoint
+            try:
+                checkpoints = sorted(os.listdir(self.checkpoint_dir))
+                if checkpoints:
+                    latest_checkpoint = os.path.join(self.checkpoint_dir, checkpoints[-1])
+                    self.load_checkpoint(latest_checkpoint)
+                    logger.info("Restored from checkpoint: %s", latest_checkpoint)
+            except Exception as restore_error:
+                logger.error("Failed to restore from checkpoint: %s", str(restore_error))
+            raise
 
     def extract_filters(self, query):
         """Extract filters from the query using spaCy and regex."""
@@ -397,13 +489,19 @@ class NLUProcessor:
             cursor = self._get_database_cursor(db_conn)
         except DatabaseError as e:
             logger.error("Database connection error: %s", str(e))
+            self._prediction_stats['errors'] += 1
             return {"error": str(e), "intent": "unknown"}
 
         # Get the final intent using both ML and rule-based approaches
         try:
             predicted_intent, confidence = self.get_intent(query)
+            
+            # Monitor prediction
+            self._monitor_prediction(query, predicted_intent, confidence)
+            
         except Exception as e:
             logger.error("Intent classification error: %s", str(e))
+            self._prediction_stats['errors'] += 1
             return {"error": "Failed to classify intent", "intent": "unknown"}
 
         # Extract and merge filters with context
@@ -411,6 +509,7 @@ class NLUProcessor:
             filters = self._get_filters_with_context(query)
         except Exception as e:
             logger.error("Filter extraction error: %s", str(e))
+            self._prediction_stats['errors'] += 1
             return {"error": "Failed to extract filters", "intent": predicted_intent}
 
         # Intent handlers with proper error handling
@@ -418,6 +517,7 @@ class NLUProcessor:
             result = self._handle_intent(predicted_intent, cursor, filters)
             result["intent"] = predicted_intent
             result["confidence"] = confidence
+            result["model_version"] = self.metadata.version
             
             # Update context for multi-turn conversations
             self.set_context({"previous_filters": filters})
@@ -425,10 +525,12 @@ class NLUProcessor:
             return result
         except Exception as e:
             logger.error("Error handling intent '%s': %s", predicted_intent, str(e))
+            self._prediction_stats['errors'] += 1
             return {
                 "error": "Failed to process query",
                 "intent": predicted_intent,
-                "confidence": confidence
+                "confidence": confidence,
+                "model_version": self.metadata.version
             }
 
     def _get_database_cursor(self, db_conn) -> sqlite3.Cursor:
