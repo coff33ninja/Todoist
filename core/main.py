@@ -247,7 +247,8 @@ def handle_query():
         
         return jsonify(response)
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error("An error occurred while processing the query: %s", str(e))
+        return jsonify({"error": "An internal error has occurred!"}), 500
 
 
 if __name__ == "__main__":
