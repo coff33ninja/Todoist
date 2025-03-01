@@ -2,6 +2,7 @@ import re
 import os
 import sqlite3
 import spacy
+import logging
 from transformers import (
     AutoTokenizer,
     AutoModelForSequenceClassification,
@@ -10,6 +11,9 @@ from transformers import (
 )
 from torch.nn.functional import softmax
 import torch
+
+# Get logger for this module
+logger = logging.getLogger(__name__)
 
 
 class NLUProcessor:
@@ -254,7 +258,7 @@ class NLUProcessor:
             else:
                 cursor = self.db_conn.cursor()
         except Exception as e:
-            logging.error("Database connection error: %s", str(e))
+            logger.error("Database connection error: %s", str(e))
             return {"error": "Database connection failed", "intent": "unknown"}
 
         # ML-based intent classification
@@ -317,7 +321,7 @@ class NLUProcessor:
             self.set_context({"previous_filters": filters})  # Update context
             return result
         except Exception as e:
-            logging.error("Error handling intent '%s': %s", predicted_intent, str(e))
+            logger.error("Error handling intent '%s': %s", predicted_intent, str(e))
             return {"error": "Failed to process query", "intent": predicted_intent}
 
     def handle_search(self, cursor, filters):

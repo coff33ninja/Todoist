@@ -9,6 +9,24 @@ from utils.budget_tracker import BudgetTracker
 import threading
 from werkzeug.utils import secure_filename
 import logging
+import logging.handlers
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.handlers.RotatingFileHandler(
+            'app.log',
+            maxBytes=1024 * 1024,  # 1MB
+            backupCount=5
+        )
+    ]
+)
+
+# Get logger for this module
+logger = logging.getLogger(__name__)
 
 # Initialize Flask app
 app = Flask(__name__)
