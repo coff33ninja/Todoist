@@ -314,6 +314,22 @@
         "documentation": {}
     },
     {
+        "label": "secure_filename",
+        "importPath": "werkzeug.utils",
+        "description": "werkzeug.utils",
+        "isExtraImport": true,
+        "detail": "werkzeug.utils",
+        "documentation": {}
+    },
+    {
+        "label": "secure_filename",
+        "importPath": "werkzeug.utils",
+        "description": "werkzeug.utils",
+        "isExtraImport": true,
+        "detail": "werkzeug.utils",
+        "documentation": {}
+    },
+    {
         "label": "NLUProcessor",
         "importPath": "ai.nlu_processor",
         "description": "ai.nlu_processor",
@@ -416,14 +432,6 @@
         "description": "utils.budget_tracker",
         "isExtraImport": true,
         "detail": "utils.budget_tracker",
-        "documentation": {}
-    },
-    {
-        "label": "secure_filename",
-        "importPath": "werkzeug.utils",
-        "description": "werkzeug.utils",
-        "isExtraImport": true,
-        "detail": "werkzeug.utils",
         "documentation": {}
     },
     {

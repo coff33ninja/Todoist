@@ -8,6 +8,7 @@ import sqlite3
 import os
 import sys
 from datetime import datetime
+from werkzeug.utils import secure_filename
 
 # Ensure repository path is accessible
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -195,7 +196,7 @@ def upload_receipt():
         if 'file' not in request.files:
             print("No file part in request")
             return jsonify({"error": "No file part"}), 400
-        
+
         file = request.files['file']
         if file.filename == '':
             print("No selected file")
@@ -203,13 +204,14 @@ def upload_receipt():
 
         # Create a timestamp for unique filename
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
+
         # Get the file extension
         _, ext = os.path.splitext(file.filename)
-        
+
         # Create a new filename with timestamp
-        new_filename = f"receipt_{timestamp}{ext}"
-        
+        secure_filename(file.filename)
+        new_filename = f"receipt_{timestamp}_{secure_filename(file.filename)}"
+
         # Save the file to uploads directory
         upload_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads', new_filename)
         print(f"Saving file to: {upload_path}")
@@ -222,11 +224,11 @@ def upload_receipt():
 
         # Initialize receipt processor
         receipt_processor = ReceiptProcessor()
-        
+
         # Process the receipt
         result = receipt_processor.parse_receipt(content)
         print(f"Parsing result: {result}")
-        
+
         if result is None:
             return jsonify({"error": "Failed to parse receipt data"}), 400
 
