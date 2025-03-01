@@ -9,7 +9,7 @@ import os
 import sys
 from datetime import datetime
 from werkzeug.utils import secure_filename
-
+import logging
 # Ensure repository path is accessible
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from ai.nlu_processor import NLUProcessor
@@ -54,7 +54,8 @@ def process_query():
         return jsonify(result)
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(f"Error processing query: {e}")
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 
 @app.route("/api/categories", methods=["GET"])
@@ -68,7 +69,8 @@ def get_categories():
         conn.close()
         return jsonify({"categories": categories})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(f"Error getting categories: {e}")
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 
 @app.route("/api/items", methods=["POST"])
@@ -152,7 +154,8 @@ def add_item():
         return jsonify({"message": "Item added successfully", "item": item})
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        app.logger.error(f"Error adding item: {e}")
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 @app.route("/api/items/<int:item_id>", methods=["DELETE"])
 def delete_item(item_id):
