@@ -8,6 +8,7 @@ from core.task_manager import TaskManager
 from utils.budget_tracker import BudgetTracker
 import threading
 from werkzeug.utils import secure_filename
+import logging
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -104,7 +105,8 @@ def add_item():
 
         return jsonify({"message": "Item added successfully", "id": item_id}), 201
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error(f"Error adding item: {e}")
+        return jsonify({"error": "An internal error has occurred!"}), 500
 
 
 @app.route("/api/repairs", methods=["POST"])
@@ -143,7 +145,8 @@ def add_repair():
         }
         return jsonify(response), 201
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error(f"Error adding repair: {e}")
+        return jsonify({"error": "An internal error has occurred!"}), 500
 
 
 @app.route("/api/receipts/upload", methods=["POST"])
@@ -184,8 +187,9 @@ def upload_receipt():
             200,
         )
 
-    except Exception as _:
-        return jsonify({"error": str(_)}), 500
+    except Exception as e:
+        logging.error(f"Error uploading receipt: {e}")
+        return jsonify({"error": "An internal error has occurred!"}), 500
 
 
 @app.route("/api/receipts/<filename>", methods=["GET"])
