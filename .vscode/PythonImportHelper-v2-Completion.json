@@ -222,6 +222,14 @@
         "documentation": {}
     },
     {
+        "label": "softmax",
+        "importPath": "torch.nn.functional",
+        "description": "torch.nn.functional",
+        "isExtraImport": true,
+        "detail": "torch.nn.functional",
+        "documentation": {}
+    },
+    {
         "label": "os",
         "kind": 6,
         "isExtraImport": true,
@@ -237,6 +245,14 @@
         "importPath": "json",
         "description": "json",
         "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
         "documentation": {}
     },
     {
@@ -321,6 +337,38 @@
     },
     {
         "label": "DistilBertForSequenceClassification",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
+        "label": "Trainer",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
+        "label": "TrainingArguments",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
+        "label": "AutoTokenizer",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
+        "label": "AutoModelForSequenceClassification",
         "importPath": "transformers",
         "description": "transformers",
         "isExtraImport": true,
@@ -484,6 +532,30 @@
         "documentation": {}
     },
     {
+        "label": "request",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "jsonify",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
         "label": "jsonify",
         "importPath": "flask",
         "description": "flask",
@@ -513,6 +585,14 @@
         "description": "flask",
         "isExtraImport": true,
         "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "CORS",
+        "importPath": "flask_cors",
+        "description": "flask_cors",
+        "isExtraImport": true,
+        "detail": "flask_cors",
         "documentation": {}
     },
     {
@@ -595,6 +675,22 @@
         "description": "ai.nlu_processor",
         "isExtraImport": true,
         "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "NLUProcessor",
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "isExtraImport": true,
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
+        "label": "ReceiptProcessor",
+        "importPath": "ai.ocr_processor",
+        "description": "ai.ocr_processor",
+        "isExtraImport": true,
+        "detail": "ai.ocr_processor",
         "documentation": {}
     },
     {
@@ -795,6 +891,51 @@
         "description": "PIL",
         "isExtraImport": true,
         "detail": "PIL",
+        "documentation": {}
+    },
+    {
+        "label": "glob",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "glob",
+        "description": "glob",
+        "detail": "glob",
+        "documentation": {}
+    },
+    {
+        "label": "shutil",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "shutil",
+        "description": "shutil",
+        "detail": "shutil",
+        "documentation": {}
+    },
+    {
+        "label": "sysconfig",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sysconfig",
+        "description": "sysconfig",
+        "detail": "sysconfig",
+        "documentation": {}
+    },
+    {
+        "label": "winreg",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "winreg",
+        "description": "winreg",
+        "detail": "winreg",
+        "documentation": {}
+    },
+    {
+        "label": "site",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "site",
+        "description": "site",
+        "detail": "site",
         "documentation": {}
     },
     {
@@ -1014,6 +1155,15 @@
         "documentation": {}
     },
     {
+        "label": "NLUProcessor",
+        "kind": 6,
+        "importPath": "ai.nlu_processor",
+        "description": "ai.nlu_processor",
+        "peekOfCode": "class NLUProcessor:\n    def __init__(self, model_path=\"ai_models/nlu_model\", db_path=\"inventory.db\"):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\"\"\"\n        # Define supported intents as a class attribute for easy modification\n        self.intents = [\n            \"search\",\n            \"count\",\n            \"value\",\n            \"price_range\",\n            \"repair\",",
+        "detail": "ai.nlu_processor",
+        "documentation": {}
+    },
+    {
         "label": "ReceiptProcessor",
         "kind": 6,
         "importPath": "ai.ocr_processor",
@@ -1034,6 +1184,114 @@
     {
         "label": "get_db",
         "kind": 2,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "def get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    try:\n        conn = sqlite3.connect(db_path)\n    except Exception as e:\n        print(f\"Database connection error: {e}\")\n        return None\n    conn.row_factory = sqlite3.Row\n    return conn",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "process_query",
+        "kind": 2,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "def process_query():\n    \"\"\"Process natural language queries.\"\"\"\n    try:\n        data = request.get_json()\n        if not data or \"query\" not in data:\n            return jsonify({\"error\": \"Missing query in request\"}), 400\n        query = data[\"query\"]\n        result = nlu_processor.process_natural_language_query(query, get_db)\n        if \"error\" in result:\n            logging.error(\"Error in NLU processing: %s\", result[\"error\"])",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "get_categories",
+        "kind": 2,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "def get_categories():\n    \"\"\"Get list of predefined categories.\"\"\"\n    try:\n        conn = get_db()\n        cursor = conn.cursor()\n        cursor.execute(\"SELECT name FROM categories ORDER BY name\")\n        categories = [row[0] for row in cursor.fetchall()]\n        conn.close()\n        return jsonify({\"categories\": categories})\n    except Exception as e:",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "add_item",
+        "kind": 2,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "def add_item():\n    \"\"\"Add a new item to the inventory.\"\"\"\n    try:\n        data = request.get_json()\n        required_fields = [\"name\", \"quantity\", \"price\", \"location\"]\n        # Validate required fields\n        if not all(field in data for field in required_fields):\n            return (\n                jsonify(\n                    {",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "delete_item",
+        "kind": 2,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "def delete_item(item_id):\n    \"\"\"Delete an item from the inventory.\"\"\"\n    try:\n        conn = get_db()\n        cursor = conn.cursor()\n        cursor.execute(\"SELECT 1 FROM items WHERE id = ?\", (item_id,))\n        if not cursor.fetchone():\n            return jsonify({\"error\": \"Item not found\"}), 404\n        cursor.execute(\"DELETE FROM items WHERE id = ?\", (item_id,))\n        conn.commit()",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "get_locations",
+        "kind": 2,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "def get_locations():\n    \"\"\"Get list of existing locations for autocomplete.\"\"\"\n    try:\n        conn = get_db()\n        cursor = conn.cursor()\n        cursor.execute('SELECT DISTINCT location FROM items WHERE location IS NOT NULL')\n        locations = [row[0] for row in cursor.fetchall()]\n        conn.close()\n        return jsonify({\"locations\": locations})\n    except Exception as e:",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "health_check",
+        "kind": 2,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "def health_check():\n    \"\"\"Health check endpoint.\"\"\"\n    return jsonify({\"status\": \"healthy\"})\n@app.route('/api/upload_receipt', methods=['POST'])\ndef upload_receipt():\n    try:\n        print(\"Received upload_receipt request\")\n        if 'file' not in request.files:\n            print(\"No file part in request\")\n            return jsonify({\"error\": \"No file part\"}), 400",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "upload_receipt",
+        "kind": 2,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "def upload_receipt():\n    try:\n        print(\"Received upload_receipt request\")\n        if 'file' not in request.files:\n            print(\"No file part in request\")\n            return jsonify({\"error\": \"No file part\"}), 400\n        file = request.files['file']\n        if file.filename == '':\n            print(\"No selected file\")\n            return jsonify({\"error\": \"No selected file\"}), 400",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "app = Flask(__name__)\nCORS(app)  # Enable CORS for all routes\n# Initialize NLU processor\nnlu_processor = NLUProcessor(model_path=\"ai_models/nlu_model.pkl\")\n# Ensure the uploads directory exists\nuploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "nlu_processor",
+        "kind": 5,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "nlu_processor = NLUProcessor(model_path=\"ai_models/nlu_model.pkl\")\n# Ensure the uploads directory exists\nuploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "uploads_dir",
+        "kind": 5,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')\nos.makedirs(uploads_dir, exist_ok=True)\n# Ensure the db directory exists\ndb_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    try:\n        conn = sqlite3.connect(db_path)",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "db_dir",
+        "kind": 5,
+        "importPath": "backend.app-test",
+        "description": "backend.app-test",
+        "peekOfCode": "db_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'db')\nos.makedirs(db_dir, exist_ok=True)\ndef get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    try:\n        conn = sqlite3.connect(db_path)\n    except Exception as e:\n        print(f\"Database connection error: {e}\")\n        return None",
+        "detail": "backend.app-test",
+        "documentation": {}
+    },
+    {
+        "label": "get_db",
+        "kind": 2,
         "importPath": "backend.app",
         "description": "backend.app",
         "peekOfCode": "def get_db():\n    \"\"\"Get database connection with row factory.\"\"\"\n    db_path = os.path.join(db_dir, 'inventory.db')\n    try:\n        conn = sqlite3.connect(db_path)\n    except Exception as e:\n        print(f\"Database connection error: {e}\")\n        return None\n    conn.row_factory = sqlite3.Row\n    return conn",
@@ -1045,7 +1303,7 @@
         "kind": 2,
         "importPath": "backend.app",
         "description": "backend.app",
-        "peekOfCode": "def process_query():\n    \"\"\"Process natural language queries.\"\"\"\n    try:\n        data = request.get_json()\n        if not data or \"query\" not in data:\n            return jsonify({\"error\": \"Missing query in request\"}), 400\n        query = data[\"query\"]\n        result = nlu_processor.process_natural_language_query(query, get_db)\n        if \"error\" in result:\n            logging.error(\"Error in NLU processing: %s\", result[\"error\"])",
+        "peekOfCode": "def process_query():\n    \"\"\"Process natural language queries.\"\"\"\n    try:\n        data = request.get_json()\n        if not data or \"query\" not in data:\n            return jsonify({\"error\": \"Missing query in request\"}), 400\n        query = data[\"query\"]\n        result = nlu_processor.process_natural_language_query(query, get_db)\n        return jsonify(result)\n    except Exception as e:",
         "detail": "backend.app",
         "documentation": {}
     },
@@ -1614,6 +1872,258 @@
         "description": "utils.populate_test_data",
         "peekOfCode": "def populate_test_data(db_path):\n    conn = sqlite3.connect(db_path)\n    cursor = conn.cursor()\n    # Insert test items\n    cursor.executemany(\"\"\"\n        INSERT INTO items (name, description, quantity, purchase_date, price)\n        VALUES (?, ?, ?, ?, ?)\n    \"\"\", [\n        (\"Test Item 1\", \"First test item\", 5, \"2023-01-01\", 100.0),\n        (\"Test Item 2\", \"Second test item\", 3, \"2023-02-01\", 150.0)",
         "detail": "utils.populate_test_data",
+        "documentation": {}
+    },
+    {
+        "label": "Tee",
+        "kind": 6,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "class Tee:\n    def __init__(self, file):\n        self.f = file\n    def write(self, what):\n        if self.f is not None:\n            try:\n                self.f.write(what.replace(\"\\n\", \"\\r\\n\"))\n            except OSError:\n                pass\n        tee_f.write(what)",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "CopyTo",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def CopyTo(desc, src, dest):\n    import win32api\n    import win32con\n    while 1:\n        try:\n            win32api.CopyFile(src, dest, 0)\n            return\n        except win32api.error as details:\n            if details.winerror == 5:  # access denied - user not admin.\n                raise",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "LoadSystemModule",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def LoadSystemModule(lib_dir, modname):\n    # See if this is a debug build.\n    import importlib.machinery\n    import importlib.util\n    suffix = \"_d\" if \"_d.pyd\" in importlib.machinery.EXTENSION_SUFFIXES else \"\"\n    filename = \"%s%d%d%s.dll\" % (\n        modname,\n        sys.version_info.major,\n        sys.version_info.minor,\n        suffix,",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "SetPyKeyVal",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def SetPyKeyVal(key_name, value_name, value):\n    root_hkey = get_root_hkey()\n    root_key = winreg.OpenKey(root_hkey, root_key_name)\n    try:\n        my_key = winreg.CreateKey(root_key, key_name)\n        try:\n            winreg.SetValueEx(my_key, value_name, 0, winreg.REG_SZ, value)\n            if verbose:\n                print(f\"-> {root_key_name}\\\\{key_name}[{value_name}]={value!r}\")\n        finally:",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "UnsetPyKeyVal",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def UnsetPyKeyVal(key_name, value_name, delete_key=False):\n    root_hkey = get_root_hkey()\n    root_key = winreg.OpenKey(root_hkey, root_key_name)\n    try:\n        my_key = winreg.OpenKey(root_key, key_name, 0, winreg.KEY_SET_VALUE)\n        try:\n            winreg.DeleteValue(my_key, value_name)\n            if verbose:\n                print(f\"-> DELETE {root_key_name}\\\\{key_name}[{value_name}]\")\n        finally:",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "RegisterCOMObjects",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def RegisterCOMObjects(register=True):\n    import win32com.server.register\n    if register:\n        func = win32com.server.register.RegisterClasses\n    else:\n        func = win32com.server.register.UnregisterClasses\n    flags = {}\n    if not verbose:\n        flags[\"quiet\"] = 1\n    for module, klass_name in com_modules:",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "RegisterHelpFile",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def RegisterHelpFile(register=True, lib_dir=None):\n    if lib_dir is None:\n        lib_dir = sysconfig.get_paths()[\"platlib\"]\n    if register:\n        # Register the .chm help file.\n        chm_file = os.path.join(lib_dir, \"PyWin32.chm\")\n        if os.path.isfile(chm_file):\n            # This isn't recursive, so if 'Help' doesn't exist, we croak\n            SetPyKeyVal(\"Help\", None, None)\n            SetPyKeyVal(\"Help\\\\Pythonwin Reference\", None, chm_file)",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "RegisterPythonwin",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def RegisterPythonwin(register=True, lib_dir=None):\n    \"\"\"Add (or remove) Pythonwin to context menu for python scripts.\n    ??? Should probably also add Edit command for pys files also.\n    Also need to remove these keys on uninstall, but there's no function\n        like file_created to add registry entries to uninstall log ???\n    \"\"\"\n    import os\n    if lib_dir is None:\n        lib_dir = sysconfig.get_paths()[\"platlib\"]\n    classes_root = get_root_hkey()",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "get_shortcuts_folder",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def get_shortcuts_folder():\n    if get_root_hkey() == winreg.HKEY_LOCAL_MACHINE:\n        try:\n            fldr = get_special_folder_path(\"CSIDL_COMMON_PROGRAMS\")\n        except OSError:\n            # No CSIDL_COMMON_PROGRAMS on this platform\n            fldr = get_special_folder_path(\"CSIDL_PROGRAMS\")\n    else:\n        # non-admin install - always goes in this user's start menu.\n        fldr = get_special_folder_path(\"CSIDL_PROGRAMS\")",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "get_system_dir",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def get_system_dir():\n    import win32api  # we assume this exists.\n    try:\n        import pythoncom\n        import win32process\n        from win32com.shell import shell, shellcon\n        try:\n            if win32process.IsWow64Process():\n                return shell.SHGetSpecialFolderPath(0, shellcon.CSIDL_SYSTEMX86)\n            return shell.SHGetSpecialFolderPath(0, shellcon.CSIDL_SYSTEM)",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "fixup_dbi",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def fixup_dbi():\n    # We used to have a dbi.pyd with our .pyd files, but now have a .py file.\n    # If the user didn't uninstall, they will find the .pyd which will cause\n    # problems - so handle that.\n    import win32api\n    import win32con\n    pyd_name = os.path.join(os.path.dirname(win32api.__file__), \"dbi.pyd\")\n    pyd_d_name = os.path.join(os.path.dirname(win32api.__file__), \"dbi_d.pyd\")\n    py_name = os.path.join(os.path.dirname(win32con.__file__), \"dbi.py\")\n    for this_pyd in (pyd_name, pyd_d_name):",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "install",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def install(lib_dir):\n    import traceback\n    # The .pth file is now installed as a regular file.\n    # Create the .pth file in the site-packages dir, and use only relative paths\n    # We used to write a .pth directly to sys.prefix - clobber it.\n    if os.path.isfile(os.path.join(sys.prefix, \"pywin32.pth\")):\n        os.unlink(os.path.join(sys.prefix, \"pywin32.pth\"))\n    # The .pth may be new and therefore not loaded in this session.\n    # Setup the paths just in case.\n    for name in \"win32 win32\\\\lib Pythonwin\".split():",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "uninstall",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def uninstall(lib_dir):\n    # First ensure our system modules are loaded from pywin32_system, so\n    # we can remove the ones we copied...\n    LoadSystemModule(lib_dir, \"pywintypes\")\n    LoadSystemModule(lib_dir, \"pythoncom\")\n    try:\n        RegisterCOMObjects(False)\n    except Exception as why:\n        print(f\"Failed to unregister COM objects: {why}\")\n    try:",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "verify_destination",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def verify_destination(location):\n    if not os.path.isdir(location):\n        raise argparse.ArgumentTypeError(f'Path \"{location}\" does not exist!')\n    return location\ndef main():\n    parser = argparse.ArgumentParser(\n        formatter_class=argparse.RawDescriptionHelpFormatter,\n        description=\"\"\"A post-install script for the pywin32 extensions.\n    * Typical usage:\n    > python pywin32_postinstall.py -install",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "def main():\n    parser = argparse.ArgumentParser(\n        formatter_class=argparse.RawDescriptionHelpFormatter,\n        description=\"\"\"A post-install script for the pywin32 extensions.\n    * Typical usage:\n    > python pywin32_postinstall.py -install\n    If you installed pywin32 via a .exe installer, this should be run\n    automatically after installation, but if it fails you can run it again.\n    If you installed pywin32 via PIP, you almost certainly need to run this to\n    setup the environment correctly.",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "tee_f",
+        "kind": 5,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "tee_f = open(os.path.join(tempfile.gettempdir(), \"pywin32_postinstall.log\"), \"w\")\nclass Tee:\n    def __init__(self, file):\n        self.f = file\n    def write(self, what):\n        if self.f is not None:\n            try:\n                self.f.write(what.replace(\"\\n\", \"\\r\\n\"))\n            except OSError:\n                pass",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "sys.stderr",
+        "kind": 5,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "sys.stderr = Tee(sys.stderr)\nsys.stdout = Tee(sys.stdout)\ncom_modules = [\n    # module_name,                      class_names\n    (\"win32com.servers.interp\", \"Interpreter\"),\n    (\"win32com.servers.dictionary\", \"DictionaryPolicy\"),\n    (\"win32com.axscript.client.pyscript\", \"PyScript\"),\n]\n# Is this a 'silent' install - ie, avoid all dialogs.\n# Different than 'verbose'",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "sys.stdout",
+        "kind": 5,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "sys.stdout = Tee(sys.stdout)\ncom_modules = [\n    # module_name,                      class_names\n    (\"win32com.servers.interp\", \"Interpreter\"),\n    (\"win32com.servers.dictionary\", \"DictionaryPolicy\"),\n    (\"win32com.axscript.client.pyscript\", \"PyScript\"),\n]\n# Is this a 'silent' install - ie, avoid all dialogs.\n# Different than 'verbose'\nsilent = 0",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "com_modules",
+        "kind": 5,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "com_modules = [\n    # module_name,                      class_names\n    (\"win32com.servers.interp\", \"Interpreter\"),\n    (\"win32com.servers.dictionary\", \"DictionaryPolicy\"),\n    (\"win32com.axscript.client.pyscript\", \"PyScript\"),\n]\n# Is this a 'silent' install - ie, avoid all dialogs.\n# Different than 'verbose'\nsilent = 0\n# Verbosity of output messages.",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "silent",
+        "kind": 5,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "silent = 0\n# Verbosity of output messages.\nverbose = 1\nroot_key_name = \"Software\\\\Python\\\\PythonCore\\\\\" + sys.winver\ntry:\n    # When this script is run from inside the bdist_wininst installer,\n    # file_created() and directory_created() are additional builtin\n    # functions which write lines to PythonXX\\pywin32-install.log. This is\n    # a list of actions for the uninstaller, the format is inspired by what\n    # the Wise installer also creates.",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "verbose",
+        "kind": 5,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "verbose = 1\nroot_key_name = \"Software\\\\Python\\\\PythonCore\\\\\" + sys.winver\ntry:\n    # When this script is run from inside the bdist_wininst installer,\n    # file_created() and directory_created() are additional builtin\n    # functions which write lines to PythonXX\\pywin32-install.log. This is\n    # a list of actions for the uninstaller, the format is inspired by what\n    # the Wise installer also creates.\n    file_created  # type: ignore[used-before-def]\n    # 3.10 stopped supporting bdist_wininst, but we can still build them with 3.9.",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "root_key_name",
+        "kind": 5,
+        "importPath": "venv.Scripts.pywin32_postinstall",
+        "description": "venv.Scripts.pywin32_postinstall",
+        "peekOfCode": "root_key_name = \"Software\\\\Python\\\\PythonCore\\\\\" + sys.winver\ntry:\n    # When this script is run from inside the bdist_wininst installer,\n    # file_created() and directory_created() are additional builtin\n    # functions which write lines to PythonXX\\pywin32-install.log. This is\n    # a list of actions for the uninstaller, the format is inspired by what\n    # the Wise installer also creates.\n    file_created  # type: ignore[used-before-def]\n    # 3.10 stopped supporting bdist_wininst, but we can still build them with 3.9.\n    # This can be kept until Python 3.9 or exe installers support is dropped.",
+        "detail": "venv.Scripts.pywin32_postinstall",
+        "documentation": {}
+    },
+    {
+        "label": "run_test",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_testall",
+        "description": "venv.Scripts.pywin32_testall",
+        "peekOfCode": "def run_test(script, cmdline_extras):\n    dirname, scriptname = os.path.split(script)\n    # some tests prefer to be run from their directory.\n    cmd = [sys.executable, \"-u\", scriptname] + cmdline_extras\n    print(\"--- Running '%s' ---\" % script)\n    sys.stdout.flush()\n    result = subprocess.run(cmd, check=False, cwd=dirname)\n    print(f\"*** Test script '{script}' exited with {result.returncode}\")\n    sys.stdout.flush()\n    if result.returncode:",
+        "detail": "venv.Scripts.pywin32_testall",
+        "documentation": {}
+    },
+    {
+        "label": "find_and_run",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_testall",
+        "description": "venv.Scripts.pywin32_testall",
+        "peekOfCode": "def find_and_run(possible_locations, extras):\n    for maybe in possible_locations:\n        if os.path.isfile(maybe):\n            run_test(maybe, extras)\n            break\n    else:\n        raise RuntimeError(\n            \"Failed to locate a test script in one of %s\" % possible_locations\n        )\ndef main():",
+        "detail": "venv.Scripts.pywin32_testall",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "venv.Scripts.pywin32_testall",
+        "description": "venv.Scripts.pywin32_testall",
+        "peekOfCode": "def main():\n    import argparse\n    code_directories = [this_dir] + site_packages\n    parser = argparse.ArgumentParser(\n        description=\"A script to trigger tests in all subprojects of PyWin32.\"\n    )\n    parser.add_argument(\n        \"-no-user-interaction\",\n        default=False,\n        action=\"store_true\",",
+        "detail": "venv.Scripts.pywin32_testall",
+        "documentation": {}
+    },
+    {
+        "label": "this_dir",
+        "kind": 5,
+        "importPath": "venv.Scripts.pywin32_testall",
+        "description": "venv.Scripts.pywin32_testall",
+        "peekOfCode": "this_dir = os.path.dirname(__file__)\nsite_packages = [\n    site.getusersitepackages(),\n] + site.getsitepackages()\nfailures = []\n# Run a test using subprocess and wait for the result.\n# If we get an returncode != 0, we know that there was an error, but we don't\n# abort immediately - we run as many tests as we can.\ndef run_test(script, cmdline_extras):\n    dirname, scriptname = os.path.split(script)",
+        "detail": "venv.Scripts.pywin32_testall",
+        "documentation": {}
+    },
+    {
+        "label": "site_packages",
+        "kind": 5,
+        "importPath": "venv.Scripts.pywin32_testall",
+        "description": "venv.Scripts.pywin32_testall",
+        "peekOfCode": "site_packages = [\n    site.getusersitepackages(),\n] + site.getsitepackages()\nfailures = []\n# Run a test using subprocess and wait for the result.\n# If we get an returncode != 0, we know that there was an error, but we don't\n# abort immediately - we run as many tests as we can.\ndef run_test(script, cmdline_extras):\n    dirname, scriptname = os.path.split(script)\n    # some tests prefer to be run from their directory.",
+        "detail": "venv.Scripts.pywin32_testall",
+        "documentation": {}
+    },
+    {
+        "label": "failures",
+        "kind": 5,
+        "importPath": "venv.Scripts.pywin32_testall",
+        "description": "venv.Scripts.pywin32_testall",
+        "peekOfCode": "failures = []\n# Run a test using subprocess and wait for the result.\n# If we get an returncode != 0, we know that there was an error, but we don't\n# abort immediately - we run as many tests as we can.\ndef run_test(script, cmdline_extras):\n    dirname, scriptname = os.path.split(script)\n    # some tests prefer to be run from their directory.\n    cmd = [sys.executable, \"-u\", scriptname] + cmdline_extras\n    print(\"--- Running '%s' ---\" % script)\n    sys.stdout.flush()",
+        "detail": "venv.Scripts.pywin32_testall",
         "documentation": {}
     },
     {
