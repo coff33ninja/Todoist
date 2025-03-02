@@ -1,0 +1,40 @@
+ai/
+├── nlu/
+│   ├── __init__.py          # Package initializer
+│   ├── nlu_processor.py     # Main orchestrator class
+│   ├── model_manager.py     # Handles model loading, creation, and training
+│   ├── intent_classifier.py # Manages ML and rule-based intent classification
+│   ├── filter_extractor.py  # Extracts filters from queries using spaCy and regex
+│   ├── database_handler.py  # Manages database connections and queries
+│   ├── context_manager.py   # Manages conversation context
+│   ├── error_logger.py      # Handles logging of errors and events
+│   ├── metadata_manager.py  # Manages model metadata and versioning
+│   ├── intent_handlers/     # Subdirectory for intent-specific_handlers
+│   │   ├── __init__.py
+│   │   ├── search.py        # Handles "search" intent
+│   │   ├── count.py         # Handles "count" intent
+│   │   ├── value.py         # Handles "value" intent
+│   │   ├── price_range.py   # Handles "price_range" intent
+│   │   ├── repair.py        # Handles "repair" intent
+│   │   ├── purchase_history.py # Handles "purchase_history" intent
+└── nlu_utils.py             # Existing utility functions (assumed unchanged)
+
+Explanation of Files
+
+    nlu_processor.py: The main class that ties all modules together, significantly reduced in size.
+    model_manager.py: Manages the machine learning model (loading, creating, training, checkpoints).
+    intent_classifier.py: Handles intent classification using both ML and rule-based methods.
+    filter_extractor.py: Extracts filters from queries using spaCy and regex patterns.
+    database_handler.py: Manages database connections, cursors, and query execution.
+    context_manager.py: Manages conversation context for multi-turn dialogues.
+    error_logger.py: Centralizes error logging and event tracking.
+    metadata_manager.py: Manages model metadata (versioning, saving, loading).
+    intent_handlers/: A subdirectory containing separate files for each intent handler:
+        search.py
+        count.py
+        value.py
+        price_range.py
+        repair.py
+        purchase_history.py
+
+This structure splits the code into as many modules as possible, isolating each responsibility into its own file. The intent handlers are separated into individual files within a subdirectory to keep them modular and allow for easy addition of new intents in the future.

@@ -1,20 +1,199 @@
 [
     {
-        "label": "os",
-        "kind": 6,
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
         "isExtraImport": true,
-        "importPath": "os",
-        "description": "os",
-        "detail": "os",
+        "detail": "typing",
         "documentation": {}
     },
     {
-        "label": "pandas",
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Dict",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Any",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Optional",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Union",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "List",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "Tuple",
+        "importPath": "typing",
+        "description": "typing",
+        "isExtraImport": true,
+        "detail": "typing",
+        "documentation": {}
+    },
+    {
+        "label": "sqlite3",
         "kind": 6,
         "isExtraImport": true,
-        "importPath": "pandas",
-        "description": "pandas",
-        "detail": "pandas",
+        "importPath": "sqlite3",
+        "description": "sqlite3",
+        "detail": "sqlite3",
+        "documentation": {}
+    },
+    {
+        "label": "time",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "time",
+        "description": "time",
+        "detail": "time",
+        "documentation": {}
+    },
+    {
+        "label": "logging",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "logging",
+        "description": "logging",
+        "detail": "logging",
+        "documentation": {}
+    },
+    {
+        "label": "re",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "re",
+        "description": "re",
+        "detail": "re",
+        "documentation": {}
+    },
+    {
+        "label": "spacy",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "spacy",
+        "description": "spacy",
+        "detail": "spacy",
         "documentation": {}
     },
     {
@@ -27,19 +206,109 @@
         "documentation": {}
     },
     {
-        "label": "Dataset",
-        "importPath": "datasets",
-        "description": "datasets",
+        "label": "softmax",
+        "importPath": "torch.nn.functional",
+        "description": "torch.nn.functional",
         "isExtraImport": true,
-        "detail": "datasets",
+        "detail": "torch.nn.functional",
         "documentation": {}
     },
     {
-        "label": "Dataset",
-        "importPath": "datasets",
-        "description": "datasets",
+        "label": "softmax",
+        "importPath": "torch.nn.functional",
+        "description": "torch.nn.functional",
         "isExtraImport": true,
-        "detail": "datasets",
+        "detail": "torch.nn.functional",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "json",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "json",
+        "description": "json",
+        "detail": "json",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "AutoTokenizer",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
+        "documentation": {}
+    },
+    {
+        "label": "AutoModelForSequenceClassification",
+        "importPath": "transformers",
+        "description": "transformers",
+        "isExtraImport": true,
+        "detail": "transformers",
         "documentation": {}
     },
     {
@@ -115,153 +384,28 @@
         "documentation": {}
     },
     {
-        "label": "re",
+        "label": "pandas",
         "kind": 6,
         "isExtraImport": true,
-        "importPath": "re",
-        "description": "re",
-        "detail": "re",
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
         "documentation": {}
     },
     {
-        "label": "sqlite3",
-        "kind": 6,
+        "label": "Dataset",
+        "importPath": "datasets",
+        "description": "datasets",
         "isExtraImport": true,
-        "importPath": "sqlite3",
-        "description": "sqlite3",
-        "detail": "sqlite3",
+        "detail": "datasets",
         "documentation": {}
     },
     {
-        "label": "spacy",
-        "kind": 6,
+        "label": "Dataset",
+        "importPath": "datasets",
+        "description": "datasets",
         "isExtraImport": true,
-        "importPath": "spacy",
-        "description": "spacy",
-        "detail": "spacy",
-        "documentation": {}
-    },
-    {
-        "label": "logging",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "logging",
-        "description": "logging",
-        "detail": "logging",
-        "documentation": {}
-    },
-    {
-        "label": "time",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "time",
-        "description": "time",
-        "detail": "time",
-        "documentation": {}
-    },
-    {
-        "label": "json",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "json",
-        "description": "json",
-        "detail": "json",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
-        "isExtraImport": true,
-        "detail": "datetime",
-        "documentation": {}
-    },
-    {
-        "label": "Dict",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Any",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Optional",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Union",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "List",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
-        "documentation": {}
-    },
-    {
-        "label": "Tuple",
-        "importPath": "typing",
-        "description": "typing",
-        "isExtraImport": true,
-        "detail": "typing",
+        "detail": "datasets",
         "documentation": {}
     },
     {
@@ -270,14 +414,6 @@
         "description": "dataclasses",
         "isExtraImport": true,
         "detail": "dataclasses",
-        "documentation": {}
-    },
-    {
-        "label": "softmax",
-        "importPath": "torch.nn.functional",
-        "description": "torch.nn.functional",
-        "isExtraImport": true,
-        "detail": "torch.nn.functional",
         "documentation": {}
     },
     {
@@ -662,6 +798,150 @@
         "documentation": {}
     },
     {
+        "label": "CountHandler",
+        "kind": 6,
+        "importPath": "ai.nlu.intent_handlers.count",
+        "description": "ai.nlu.intent_handlers.count",
+        "peekOfCode": "class CountHandler:\n    def __init__(self, db_path: str):\n        \"\"\"Initialize the CountHandler with the database path.\"\"\"\n        self.database_handler = DatabaseHandler(db_path)\n    def handle(self, filters):\n        \"\"\"Handle the count intent with the provided filters.\"\"\"\n        # Example logic to count items based on filters\n        query = \"SELECT COUNT(*) FROM items WHERE 1=1\"\n        params = []\n        if 'category' in filters:",
+        "detail": "ai.nlu.intent_handlers.count",
+        "documentation": {}
+    },
+    {
+        "label": "PriceRangeHandler",
+        "kind": 6,
+        "importPath": "ai.nlu.intent_handlers.price_range",
+        "description": "ai.nlu.intent_handlers.price_range",
+        "peekOfCode": "class PriceRangeHandler:\n    def __init__(self, db_path: str):\n        \"\"\"Initialize the PriceRangeHandler with the database path.\"\"\"\n        self.database_handler = DatabaseHandler(db_path)\n    def handle(self, filters):\n        \"\"\"Handle the price_range intent with the provided filters.\"\"\"\n        # Example logic to retrieve items within a specified price range\n        query = \"SELECT * FROM items WHERE price BETWEEN ? AND ?\"\n        params = []\n        if 'price_min' in filters and 'price_max' in filters:",
+        "detail": "ai.nlu.intent_handlers.price_range",
+        "documentation": {}
+    },
+    {
+        "label": "PurchaseHistoryHandler",
+        "kind": 6,
+        "importPath": "ai.nlu.intent_handlers.purchase_history",
+        "description": "ai.nlu.intent_handlers.purchase_history",
+        "peekOfCode": "class PurchaseHistoryHandler:\n    def __init__(self, db_path: str):\n        \"\"\"Initialize the PurchaseHistoryHandler with the database path.\"\"\"\n        self.database_handler = DatabaseHandler(db_path)\n    def handle(self, filters):\n        \"\"\"Handle the purchase_history intent with the provided filters.\"\"\"\n        # Example logic to retrieve purchase history\n        query = \"SELECT * FROM purchases WHERE user_id = ?\"\n        params = []\n        if 'user_id' in filters:",
+        "detail": "ai.nlu.intent_handlers.purchase_history",
+        "documentation": {}
+    },
+    {
+        "label": "RepairHandler",
+        "kind": 6,
+        "importPath": "ai.nlu.intent_handlers.repair",
+        "description": "ai.nlu.intent_handlers.repair",
+        "peekOfCode": "class RepairHandler:\n    def __init__(self, db_path: str):\n        \"\"\"Initialize the RepairHandler with the database path.\"\"\"\n        self.database_handler = DatabaseHandler(db_path)\n    def handle(self, filters):\n        \"\"\"Handle the repair intent with the provided filters.\"\"\"\n        # Example logic to process repair requests\n        query = \"SELECT * FROM repairs WHERE status = 'pending'\"\n        params = []\n        if 'item_id' in filters:",
+        "detail": "ai.nlu.intent_handlers.repair",
+        "documentation": {}
+    },
+    {
+        "label": "SearchHandler",
+        "kind": 6,
+        "importPath": "ai.nlu.intent_handlers.search",
+        "description": "ai.nlu.intent_handlers.search",
+        "peekOfCode": "class SearchHandler:\n    def __init__(self, db_path: str):\n        \"\"\"Initialize the SearchHandler with the database path.\"\"\"\n        self.database_handler = DatabaseHandler(db_path)\n    def handle(self, filters):\n        \"\"\"Handle the search intent with the provided filters.\"\"\"\n        # Example logic to query the database based on filters\n        query = \"SELECT * FROM items WHERE 1=1\"\n        params = []\n        if 'category' in filters:",
+        "detail": "ai.nlu.intent_handlers.search",
+        "documentation": {}
+    },
+    {
+        "label": "ValueHandler",
+        "kind": 6,
+        "importPath": "ai.nlu.intent_handlers.value",
+        "description": "ai.nlu.intent_handlers.value",
+        "peekOfCode": "class ValueHandler:\n    def __init__(self, db_path: str):\n        \"\"\"Initialize the ValueHandler with the database path.\"\"\"\n        self.database_handler = DatabaseHandler(db_path)\n    def handle(self, filters):\n        \"\"\"Handle the value intent with the provided filters.\"\"\"\n        # Example logic to retrieve specific values based on filters\n        query = \"SELECT value FROM items WHERE 1=1\"\n        params = []\n        if 'item_id' in filters:",
+        "detail": "ai.nlu.intent_handlers.value",
+        "documentation": {}
+    },
+    {
+        "label": "ContextManager",
+        "kind": 6,
+        "importPath": "ai.nlu.context_manager",
+        "description": "ai.nlu.context_manager",
+        "peekOfCode": "class ContextManager:\n    def __init__(self):\n        self.context = {}\n        self.error_logger = ErrorLogger()\n    def set_context(self, context: Dict[str, Any]) -> None:\n        \"\"\"Set conversation context with validation.\"\"\"\n        if not isinstance(context, dict):\n            self.error_logger.log_warning(\"Invalid context type\", type(context))\n            return\n        # Validate and clean context",
+        "detail": "ai.nlu.context_manager",
+        "documentation": {}
+    },
+    {
+        "label": "DatabaseError",
+        "kind": 6,
+        "importPath": "ai.nlu.database_handler",
+        "description": "ai.nlu.database_handler",
+        "peekOfCode": "class DatabaseError(Exception):\n    \"\"\"Custom exception for database-related errors.\n    Attributes:\n        message (str): Explanation of the error\n        error_code (int, optional): Error code associated with the database error\n        query (str, optional): SQL query that caused the error\n        original_exception (Exception, optional): The original exception caught\n    \"\"\"\n    def __init__(\n        self,",
+        "detail": "ai.nlu.database_handler",
+        "documentation": {}
+    },
+    {
+        "label": "DatabaseHandler",
+        "kind": 6,
+        "importPath": "ai.nlu.database_handler",
+        "description": "ai.nlu.database_handler",
+        "peekOfCode": "class DatabaseHandler:\n    def __init__(self, db_path: str, max_retries: int = 3, retry_delay: int = 1):\n        \"\"\"Initialize the DatabaseHandler.\n        Args:\n            db_path (str): Path to the SQLite database file\n            max_retries (int, optional): Maximum number of retry attempts for operations\n            retry_delay (int, optional): Delay in seconds between retries\n        \"\"\"\n        self.db_path = db_path\n        self.max_retries = max_retries",
+        "detail": "ai.nlu.database_handler",
+        "documentation": {}
+    },
+    {
+        "label": "ErrorLogger",
+        "kind": 6,
+        "importPath": "ai.nlu.error_logger",
+        "description": "ai.nlu.error_logger",
+        "peekOfCode": "class ErrorLogger:\n    def __init__(self):\n        self.logger = logging.getLogger(__name__)\n    def log_error(self, message: str, exception: Exception) -> None:\n        \"\"\"Log an error message with exception details.\"\"\"\n        self.logger.error(\"%s: %s\", message, str(exception))\n    def log_warning(self, message: str, *args) -> None:\n        \"\"\"Log a warning message.\"\"\"\n        self.logger.warning(message, *args)\n    def log_info(self, message: str, *args) -> None:",
+        "detail": "ai.nlu.error_logger",
+        "documentation": {}
+    },
+    {
+        "label": "FilterExtractor",
+        "kind": 6,
+        "importPath": "ai.nlu.filter_extractor",
+        "description": "ai.nlu.filter_extractor",
+        "peekOfCode": "class FilterExtractor:\n    def __init__(self):\n        self.nlp = spacy.load(\"en_core_web_sm\")\n        self.error_logger = ErrorLogger()\n    def extract_filters(self, query: str) -> Dict[str, Any]:\n        \"\"\"Extract filters from the query using spaCy and regex.\"\"\"\n        filters = {}\n        doc = self.nlp(query)\n        for ent in doc.ents:\n            if ent.label_ == \"GPE\":  # Location",
+        "detail": "ai.nlu.filter_extractor",
+        "documentation": {}
+    },
+    {
+        "label": "IntentClassifier",
+        "kind": 6,
+        "importPath": "ai.nlu.intent_classifier",
+        "description": "ai.nlu.intent_classifier",
+        "peekOfCode": "class IntentClassifier:\n    def __init__(self):\n        self.error_logger = ErrorLogger()\n    def get_intent(self, query: str, model, tokenizer, intents) -> tuple[str, float]:\n        \"\"\"Get the final intent using both ML and rule-based approaches.\n        Args:\n            query: The input query string\n            model: The ML model for intent classification\n            tokenizer: The tokenizer for the model\n            intents: List of supported intents",
+        "detail": "ai.nlu.intent_classifier",
+        "documentation": {}
+    },
+    {
+        "label": "MetadataManager",
+        "kind": 6,
+        "importPath": "ai.nlu.metadata_manager",
+        "description": "ai.nlu.metadata_manager",
+        "peekOfCode": "class MetadataManager:\n    def __init__(self, model_path: str):\n        self.metadata_path = os.path.join(model_path, \"metadata.json\")\n        self.error_logger = ErrorLogger()\n        self.metadata = self._init_or_load_metadata()\n    def _init_or_load_metadata(self) -> Dict[str, Any]:\n        \"\"\"Initialize or load model metadata.\"\"\"\n        if os.path.exists(self.metadata_path):\n            try:\n                with open(self.metadata_path, 'r') as f:",
+        "detail": "ai.nlu.metadata_manager",
+        "documentation": {}
+    },
+    {
+        "label": "ModelError",
+        "kind": 6,
+        "importPath": "ai.nlu.model_manager",
+        "description": "ai.nlu.model_manager",
+        "peekOfCode": "class ModelError(Exception):\n    \"\"\"Raised when there is an error related to model loading, creation, or configuration.\n    This exception is typically raised when:\n    - The model cannot be loaded from the specified path.\n    - The model cannot be created due to configuration issues.\n    - There is a mismatch between the model's configuration and the metadata.\n    The exception message will provide details about the specific error.\n    \"\"\"\nclass ModelManager:\n    def __init__(self, model_path: str):",
+        "detail": "ai.nlu.model_manager",
+        "documentation": {}
+    },
+    {
+        "label": "ModelManager",
+        "kind": 6,
+        "importPath": "ai.nlu.model_manager",
+        "description": "ai.nlu.model_manager",
+        "peekOfCode": "class ModelManager:\n    def __init__(self, model_path: str):\n        \"\"\"Initialize the ModelManager with a specified model path.\n        Args:\n            model_path (str): Path to store/load the model and related files.\n        \"\"\"\n        self.model_path = model_path\n        self.checkpoint_dir = os.path.join(model_path, \"checkpoints\")\n        self.metadata_path = os.path.join(model_path, \"metadata.json\")\n        os.makedirs(self.checkpoint_dir, exist_ok=True)",
+        "detail": "ai.nlu.model_manager",
+        "documentation": {}
+    },
+    {
+        "label": "NLUProcessor",
+        "kind": 6,
+        "importPath": "ai.nlu.nlu_processor",
+        "description": "ai.nlu.nlu_processor",
+        "peekOfCode": "class NLUProcessor:\n    def __init__(self,\n                 model_path: str = \"ai_models/nlu_model\",\n                 db_path: str = \"inventory.db\",\n                 max_retries: int = 3,\n                 retry_delay: int = 1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\n        Args:\n            model_path: Path to the NLU model\n            db_path: Path to the SQLite database",
+        "detail": "ai.nlu.nlu_processor",
+        "documentation": {}
+    },
+    {
         "label": "DataPreprocessor",
         "kind": 6,
         "importPath": "ai.data_preprocessing",
@@ -682,55 +962,55 @@
     {
         "label": "ModelMetadata",
         "kind": 6,
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
+        "importPath": "ai.nlu_processor-original",
+        "description": "ai.nlu_processor-original",
         "peekOfCode": "class ModelMetadata:\n    \"\"\"Metadata for model versioning and tracking.\"\"\"\n    version: str\n    created_at: str\n    last_trained: str\n    num_intents: int\n    training_samples: int\n    accuracy: float\n    parameters: Dict[str, Any]\nclass ModelVersionError(Exception):",
-        "detail": "ai.nlu_processor",
+        "detail": "ai.nlu_processor-original",
         "documentation": {}
     },
     {
         "label": "ModelVersionError",
         "kind": 6,
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
+        "importPath": "ai.nlu_processor-original",
+        "description": "ai.nlu_processor-original",
         "peekOfCode": "class ModelVersionError(Exception):\n    \"\"\"Raised when there are issues with model versioning.\"\"\"\n    pass\nclass DatabaseError(Exception):\n    \"\"\"Custom exception for database-related errors\"\"\"\n    pass\nclass ModelError(Exception):\n    \"\"\"Custom exception for model-related errors\"\"\"\n    pass\nclass NLUProcessor:",
-        "detail": "ai.nlu_processor",
+        "detail": "ai.nlu_processor-original",
         "documentation": {}
     },
     {
         "label": "DatabaseError",
         "kind": 6,
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
+        "importPath": "ai.nlu_processor-original",
+        "description": "ai.nlu_processor-original",
         "peekOfCode": "class DatabaseError(Exception):\n    \"\"\"Custom exception for database-related errors\"\"\"\n    pass\nclass ModelError(Exception):\n    \"\"\"Custom exception for model-related errors\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self,\n                 model_path: str = \"ai_models/nlu_model\",\n                 db_path: str = \"inventory.db\",",
-        "detail": "ai.nlu_processor",
+        "detail": "ai.nlu_processor-original",
         "documentation": {}
     },
     {
         "label": "ModelError",
         "kind": 6,
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
+        "importPath": "ai.nlu_processor-original",
+        "description": "ai.nlu_processor-original",
         "peekOfCode": "class ModelError(Exception):\n    \"\"\"Custom exception for model-related errors\"\"\"\n    pass\nclass NLUProcessor:\n    def __init__(self,\n                 model_path: str = \"ai_models/nlu_model\",\n                 db_path: str = \"inventory.db\",\n                 max_retries: int = 3,\n                 retry_delay: int = 1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.",
-        "detail": "ai.nlu_processor",
+        "detail": "ai.nlu_processor-original",
         "documentation": {}
     },
     {
         "label": "NLUProcessor",
         "kind": 6,
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
+        "importPath": "ai.nlu_processor-original",
+        "description": "ai.nlu_processor-original",
         "peekOfCode": "class NLUProcessor:\n    def __init__(self,\n                 model_path: str = \"ai_models/nlu_model\",\n                 db_path: str = \"inventory.db\",\n                 max_retries: int = 3,\n                 retry_delay: int = 1):\n        \"\"\"Initialize the NLUProcessor with model and database connections.\n        Args:\n            model_path: Path to the NLU model\n            db_path: Path to the SQLite database",
-        "detail": "ai.nlu_processor",
+        "detail": "ai.nlu_processor-original",
         "documentation": {}
     },
     {
         "label": "logger",
         "kind": 5,
-        "importPath": "ai.nlu_processor",
-        "description": "ai.nlu_processor",
+        "importPath": "ai.nlu_processor-original",
+        "description": "ai.nlu_processor-original",
         "peekOfCode": "logger = logging.getLogger(__name__)\n@dataclass\nclass ModelMetadata:\n    \"\"\"Metadata for model versioning and tracking.\"\"\"\n    version: str\n    created_at: str\n    last_trained: str\n    num_intents: int\n    training_samples: int\n    accuracy: float",
-        "detail": "ai.nlu_processor",
+        "detail": "ai.nlu_processor-original",
         "documentation": {}
     },
     {

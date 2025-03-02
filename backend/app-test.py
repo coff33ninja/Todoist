@@ -8,6 +8,12 @@ import sqlite3
 import os
 import sys
 from datetime import datetime
+from werkzeug.utils import secure_filename
+import logging
+import traceback
+
+# Configure logging
+logging.basicConfig(level=logging.ERROR, filename='app.log', format='%(asctime)s %(levelname)s:%(message)s')
 
 # Ensure repository path is accessible
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -50,10 +56,14 @@ def process_query():
 
         query = data["query"]
         result = nlu_processor.process_natural_language_query(query, get_db)
+        if "error" in result:
+            logging.error("Error in NLU processing: %s", result["error"])
+            return jsonify({"error": "An internal error has occurred."}), 500
         return jsonify(result)
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error processing query: %s", str(e))
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 
 @app.route("/api/categories", methods=["GET"])
@@ -67,7 +77,8 @@ def get_categories():
         conn.close()
         return jsonify({"categories": categories})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error fetching categories: %s", str(e))
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 
 @app.route("/api/items", methods=["POST"])
@@ -151,7 +162,8 @@ def add_item():
         return jsonify({"message": "Item added successfully", "item": item})
 
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error in add_item: %s", traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 @app.route("/api/items/<int:item_id>", methods=["DELETE"])
 def delete_item(item_id):
@@ -168,7 +180,8 @@ def delete_item(item_id):
         conn.close()
         return jsonify({"message": "Item deleted successfully"})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error in delete_item: %s", traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 @app.route("/api/locations", methods=["GET"])
 def get_locations():
@@ -181,7 +194,8 @@ def get_locations():
         conn.close()
         return jsonify({"locations": locations})
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error in get_locations: %s", traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 @app.route("/api/health", methods=["GET"])
 def health_check():
@@ -195,7 +209,7 @@ def upload_receipt():
         if 'file' not in request.files:
             print("No file part in request")
             return jsonify({"error": "No file part"}), 400
-        
+
         file = request.files['file']
         if file.filename == '':
             print("No selected file")
@@ -203,13 +217,14 @@ def upload_receipt():
 
         # Create a timestamp for unique filename
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
+
         # Get the file extension
         _, ext = os.path.splitext(file.filename)
-        
+
         # Create a new filename with timestamp
-        new_filename = f"receipt_{timestamp}{ext}"
-        
+        secure_filename(file.filename)
+        new_filename = f"receipt_{timestamp}_{secure_filename(file.filename)}"
+
         # Save the file to uploads directory
         upload_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads', new_filename)
         print(f"Saving file to: {upload_path}")
@@ -222,11 +237,11 @@ def upload_receipt():
 
         # Initialize receipt processor
         receipt_processor = ReceiptProcessor()
-        
+
         # Process the receipt
         result = receipt_processor.parse_receipt(content)
         print(f"Parsing result: {result}")
-        
+
         if result is None:
             return jsonify({"error": "Failed to parse receipt data"}), 400
 
@@ -236,10 +251,9 @@ def upload_receipt():
         return jsonify(result)
 
     except Exception as e:
-        print(f"Error processing receipt: {e}")
-        import traceback
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+        logging.error("Error processing receipt: %s", traceback.format_exc())
+        return jsonify({"error": "An internal error has occurred."}), 500
 
 if __name__ == "__main__":
-            app.run(debug=True, port=5000)
+            debug_mode = os.getenv("FLASK_DEBUG", "False").lower() == "true"
+            app.run(debug=debug_mode, port=5000)

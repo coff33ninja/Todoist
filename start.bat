@@ -1,20 +1,37 @@
 @echo off
-REM Todoist Application Management Script
-SETLOCAL
+REM Todoist Application Management Script with enforced virtual environment
+SETLOCAL EnableDelayedExpansion
 
 REM Change to the directory where the batch file is located
 cd /d %~dp0
 
-REM Check if Conda environment exists and activate it
-if exist "%~dp0\conda" (
-    call conda activate
-) else (
-    REM Activate the virtual environment
-    call venv\Scripts\activate.bat
+REM Define the virtual environment path
+set VENV_PATH=%~dp0venv
+
+REM Check if virtual environment exists; create it if it doesn’t
+if not exist "%VENV_PATH%\Scripts\activate.bat" (
+    echo Virtual environment not found at %VENV_PATH%. Creating one now...
+    python -m venv "%VENV_PATH%"
+    if errorlevel 1 (
+        echo Error: Failed to create virtual environment.
+        echo Please ensure Python is installed and accessible.
+        pause
+        goto :end
+    )
+    echo Virtual environment created successfully.
 )
 
+REM Activate the virtual environment
+call "%VENV_PATH%\Scripts\activate.bat"
+if errorlevel 1 (
+    echo Error: Failed to activate virtual environment at %VENV_PATH%.
+    pause
+    goto :end
+)
+echo Virtual environment activated: %VENV_PATH%
+
 REM Define valid commands
-set VALID_COMMANDS=start train test add-data
+set "VALID_COMMANDS=start train test add-data"
 
 REM If command is provided, execute it directly
 if not "%1"=="" (
@@ -30,9 +47,8 @@ if not "%1"=="" (
     echo Running command: %1
     echo.
     python start.py %1
-
     if errorlevel 1 (
-        echo Error: Command execution failed
+        echo Error: Command execution failed with error code %errorlevel%
         pause
     )
     goto :end
@@ -44,6 +60,7 @@ cls
 echo ==============================
 echo Todoist Application Management
 echo ==============================
+echo Virtual environment: %VENV_PATH%
 echo.
 echo 1. Start Flask React Application (app.py)
 echo 2. Start Flask Application (start.py)
@@ -52,10 +69,11 @@ echo 4. Run Tests
 echo 5. Add Sample Data
 echo 6. Exit
 echo.
-set /p choice=Please select an option (1-6):
+set "choice="
+set /p choice=Please select an option (1-6): 
 
 REM Handle menu selection
-if "%choice%"=="1" (
+if "!choice!"=="1" (
     echo Starting Flask React Application...
     REM Create necessary directories if they don't exist
     if not exist "ai_models" mkdir ai_models
@@ -65,16 +83,31 @@ if "%choice%"=="1" (
 
     REM Install dependencies if needed
     pip install -r requirements.txt
+    if errorlevel 1 (
+        echo Error: Failed to install requirements.
+        pause
+        goto :menu
+    )
     python -m spacy download en_core_web_sm
+    if errorlevel 1 (
+        echo Error: Failed to download SpaCy model.
+        pause
+        goto :menu
+    )
 
     REM Initialize database
     python scripts/init_db.py
+    if errorlevel 1 (
+        echo Error: Failed to initialize database.
+        pause
+        goto :menu
+    )
 
     REM Start the Flask backend
     start cmd /k python backend/app.py
 
     REM Open the frontend in the default browser
-    timeout /t 2
+    timeout /t 2 >nul
     start frontend/index.html
 
     echo Todoist AI Assistant is running!
@@ -83,31 +116,47 @@ if "%choice%"=="1" (
     pause
     goto :menu
 
-) else if "%choice%"=="2" (
+) else if "!choice!"=="2" (
     echo Starting Flask Application using start.py...
     python start.py start
+    if errorlevel 1 (
+        echo Error: Failed to start Flask application.
+        pause
+    )
     pause
     goto :menu
 
-) else if "%choice%"=="3" (
+) else if "!choice!"=="3" (
     echo Training NLU model...
     python start.py train
+    if errorlevel 1 (
+        echo Error: Failed to train NLU model.
+        pause
+    )
     pause
     goto :menu
 
-) else if "%choice%"=="4" (
+) else if "!choice!"=="4" (
     echo Running tests...
     python start.py test
+    if errorlevel 1 (
+        echo Error: Failed to run tests.
+        pause
+    )
     pause
     goto :menu
 
-) else if "%choice%"=="5" (
+) else if "!choice!"=="5" (
     echo Adding sample data...
     python start.py add-data
+    if errorlevel 1 (
+        echo Error: Failed to add sample data.
+        pause
+    )
     pause
     goto :menu
 
-) else if "%choice%"=="6" (
+) else if "!choice!"=="6" (
     goto :end
 
 ) else (
@@ -117,4 +166,8 @@ if "%choice%"=="1" (
 )
 
 :end
+REM Deactivate the virtual environment (optional, explicit cleanup)
+call deactivate 2>nul
+echo Virtual environment deactivated.
 ENDLOCAL
+exit /b
