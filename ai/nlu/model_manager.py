@@ -37,7 +37,7 @@ class ModelManager:
     def _load_or_create_model(
         self,
     ) -> Tuple[AutoModelForSequenceClassification, AutoTokenizer]:
-        """Load an existing model or create a new one if it doesn’t exist.
+        """Load an existing model or create a new one if it doesn't exist.
 
         Returns:
             Tuple[AutoModelForSequenceClassification, AutoTokenizer]: The loaded or created model and tokenizer.
@@ -48,16 +48,6 @@ class ModelManager:
         model_name = "distilbert-base-uncased"
 
         try:
-            # Load tokenizer with fallback
-            try:
-                self.error_logger.log_info("Loading fast tokenizer for %s", model_name)
-                tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
-            except Exception as e:
-                self.error_logger.log_warning(
-                    "Fast tokenizer unavailable, falling back to regular: %s", str(e)
-                )
-                tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
-
             # Get number of intents with validation
             try:
                 intents = self.metadata_manager.get_intents()
@@ -75,10 +65,33 @@ class ModelManager:
                 )
                 raise ModelError(f"Failed to retrieve intents: {str(e)}") from e
 
+            # Check if model and tokenizer exist
+            model_config_path = os.path.join(self.model_path, "config.json")
+            tokenizer_config_path = os.path.join(self.model_path, "tokenizer_config.json")
+            model_exists = os.path.exists(model_config_path)
+
+            # Load tokenizer (either from existing path or from base model)
+            try:
+                if model_exists and os.path.exists(tokenizer_config_path):
+                    self.error_logger.log_info("Loading existing tokenizer from %s", self.model_path)
+                    tokenizer = AutoTokenizer.from_pretrained(self.model_path, use_fast=True)
+                else:
+                    self.error_logger.log_info("Loading fast tokenizer for %s", model_name)
+                    tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=True)
+            except Exception as e:
+                self.error_logger.log_warning(
+                    "Fast tokenizer unavailable, falling back to regular: %s", str(e)
+                )
+                try:
+                    if model_exists and os.path.exists(tokenizer_config_path):
+                        tokenizer = AutoTokenizer.from_pretrained(self.model_path, use_fast=False)
+                    else:
+                        tokenizer = AutoTokenizer.from_pretrained(model_name, use_fast=False)
+                except Exception as e2:
+                    self.error_logger.log_error("Failed to load any tokenizer: %s", str(e2))
+                    raise ModelError(f"Failed to load tokenizer: {str(e2)}") from e2
+
             # Load or create model
-            model_exists = os.path.exists(self.model_path) and os.path.exists(
-                os.path.join(self.model_path, "config.json")
-            )
             if model_exists:
                 self.error_logger.log_info(
                     "Loading existing model from %s", self.model_path
@@ -101,6 +114,9 @@ class ModelManager:
                     num_labels,
                 )
                 try:
+                    # Create directory if it doesn't exist
+                    os.makedirs(self.model_path, exist_ok=True)
+                    
                     model = AutoModelForSequenceClassification.from_pretrained(
                         model_name,
                         num_labels=num_labels,
@@ -120,20 +136,28 @@ class ModelManager:
             # Verify model configuration
             if model.config.num_labels != num_labels:
                 self.error_logger.log_warning(
-                    "Model labels (%d) don’t match intents (%d), recreating model",
+                    "Model labels (%d) don't match intents (%d), recreating model",
                     model.config.num_labels,
                     num_labels,
                 )
-                model = AutoModelForSequenceClassification.from_pretrained(
-                    model_name,
-                    num_labels=num_labels,
-                    problem_type="single_label_classification",
-                )
-                model.save_pretrained(self.model_path)
-                tokenizer.save_pretrained(self.model_path)
-                self.error_logger.log_info(
-                    "Recreated model and tokenizer saved to %s", self.model_path
-                )
+                try:
+                    # Create a new model with the correct number of labels
+                    model = AutoModelForSequenceClassification.from_pretrained(
+                        model_name,
+                        num_labels=num_labels,
+                        problem_type="single_label_classification",
+                    )
+                    # Save both model and tokenizer to ensure consistency
+                    model.save_pretrained(self.model_path)
+                    tokenizer.save_pretrained(self.model_path)
+                    self.error_logger.log_info(
+                        "Recreated model and tokenizer saved to %s", self.model_path
+                    )
+                except Exception as e:
+                    self.error_logger.log_error(
+                        "Failed to recreate model with correct labels", e
+                    )
+                    raise ModelError(f"Failed to recreate model: {str(e)}") from e
 
             return model, tokenizer
 
